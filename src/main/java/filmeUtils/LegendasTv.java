@@ -29,7 +29,7 @@ public class LegendasTv {
 	private static final String PASSWORD = "greasemonkey";
 	private static final String LOGIN_URL = BASE_URL+"/login_verificar.php";
 	
-	private static final String FIRST_RESULT_URL = "/index.php?opcao=buscarlegenda";
+	private static final String SEARCH_ON_PAGE_URL = "/index.php?opcao=buscarlegenda&pagina=";
 	
 	private final DefaultHttpClient httpclient;
 	
@@ -49,7 +49,7 @@ public class LegendasTv {
 	}
 
 	public void search(final String searchTerm, final SearchListener searchListener) throws UnsupportedEncodingException, IOException, ClientProtocolException {
-		searchRecursively(FIRST_RESULT_URL, searchListener, searchTerm);
+		searchRecursively(1, searchListener, searchTerm);
 	}
 
 	private void extractSubtitlesLinks(final String searchResult,final SearchListener searchListener) {
@@ -62,9 +62,9 @@ public class LegendasTv {
 		}
 	}
 
-	private void searchRecursively(final String searchParams, final SearchListener searchListener, final String searchTerm)
+	private void searchRecursively(final int page, final SearchListener searchListener, final String searchTerm)
 			throws UnsupportedEncodingException, IOException,ClientProtocolException {
-		final HttpPost httpost = new HttpPost(BASE_URL+searchParams);
+		final HttpPost httpost = new HttpPost(BASE_URL+SEARCH_ON_PAGE_URL+page);
 		
 		
 	    final List <NameValuePair> nvps = new ArrayList <NameValuePair>();
@@ -81,10 +81,10 @@ public class LegendasTv {
 		extractSubtitlesLinks(content,searchListener);
 		
 		final Document parsed = Jsoup.parse(content);
-		final Element nextLink = parsed.select("a.btavvt:matches(Próxima)").first();
+		final int nextPage = page+1;
+		final Element nextLink = parsed.select("a.paginacao:matches(0?"+nextPage+")").first();
 		if(nextLink != null){
-			final String nextLinkParams = nextLink.attr("href");
-			searchRecursively(nextLinkParams, searchListener, searchTerm);
+			searchRecursively(nextPage, searchListener, searchTerm);
 		}
 	}
 

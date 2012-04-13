@@ -8,10 +8,12 @@ public class Main {
 
         final DefaultHttpClient httpclient = new DefaultHttpClient();
         
-        System.out.println("Loging...");
+        System.out.println("Loging in...");
         LegendasTv.login(httpclient);
-        System.out.println("Searching ...");
-        LegendasTv.search(httpclient);
+        
+        final String searchTerm = args[0];
+        System.out.println("Searching "+searchTerm+" ...");
+		LegendasTv.search(searchTerm,httpclient);
         
         close(httpclient);        
     }

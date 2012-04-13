@@ -4,7 +4,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -42,15 +46,43 @@ public class LegendasTv {
         httpclient.execute(httpost);
 	}
 
-	public static void search(final DefaultHttpClient httpclient) throws UnsupportedEncodingException, IOException, ClientProtocolException {
+	public static void search(final String searchTerm, final DefaultHttpClient httpclient) throws UnsupportedEncodingException, IOException, ClientProtocolException {
 		
 		final String firstSearch = FIRST_RESULT_URL;
-		//<a class="btavvt" href="/index.php?opcao=buscarlegenda&pagina=10">Próxima</a>
 		
-		final HttpPost httpost = new HttpPost(BASE_URL+firstSearch);
+		final List<String> searchResults = new ArrayList<String>();
+		searchRecursively(httpclient, firstSearch, searchResults, searchTerm);
+		
+		final Map<String, String> nameToFileLink = extractSubtitlesLinks(searchResults);
+		
+		final Set<Entry<String, String>> entrySet = nameToFileLink.entrySet();
+		for (final Entry<String, String> entry : entrySet) {			
+			System.out.println(entry.getKey()+" - "+entry.getValue());
+		}
+	}
+
+	private static Map<String, String> extractSubtitlesLinks(
+			final List<String> searchResults) {
+		final Map<String, String> nameToFileLink = new LinkedHashMap<String, String>();
+		for (final String searchResult : searchResults) {			
+			final Document parsed = Jsoup.parse(searchResult);
+			final Elements subtitleSpans = parsed.select("#conteudodest > div > span");
+			for(final Element subtitleSpan : subtitleSpans) {
+				final String subtitleName = getSubtitleName(subtitleSpan);
+				final String subtitleLink = getSubtitleLink(subtitleSpan);
+				nameToFileLink.put(subtitleName, subtitleLink);
+			}
+		}
+		return nameToFileLink;
+	}
+
+	private static void searchRecursively(final DefaultHttpClient httpclient,final String searchParams, final List<String> searchResults, final String searchTerm)
+			throws UnsupportedEncodingException, IOException,ClientProtocolException {
+		final HttpPost httpost = new HttpPost(BASE_URL+searchParams);
+		
 		
 	    final List <NameValuePair> nvps = new ArrayList <NameValuePair>();
-	    nvps.add(new BasicNameValuePair("txtLegenda", "house"));
+		nvps.add(new BasicNameValuePair("txtLegenda", searchTerm));
 	    nvps.add(new BasicNameValuePair("selTipo", "1"));
 	    nvps.add(new BasicNameValuePair("int_idioma", "1"));
 	    
@@ -60,15 +92,14 @@ public class LegendasTv {
 		final InputStream contentIS = entity.getContent();
 		final String content = IOUtils.toString(contentIS);
 		contentIS.close();
+		searchResults.add(content);
 		
 		final Document parsed = Jsoup.parse(content);
-		final Elements subtitleSpans = parsed.select("#conteudodest > div > span");
-		for(final Element subtitleSpan : subtitleSpans) {
-			final String subtitleName = getSubtitleName(subtitleSpan);
-			final String subtitleLink = getSubtitleLink(subtitleSpan);
-			System.out.println(subtitleName+" - "+subtitleLink);
+		final Element nextLink = parsed.select("a.btavvt:matches(Próxima)").first();
+		if(nextLink != null){
+			final String nextLinkParams = nextLink.attr("href");
+			searchRecursively(httpclient, nextLinkParams, searchResults, searchTerm);
 		}
-		
 	}
 
 	private static String getSubtitleLink(final Element subtitleSpan) {
@@ -86,6 +117,5 @@ public class LegendasTv {
 		final String subtitleName = subtitleNameSpan.text();
 		return subtitleName;
 	}
-	
 	
 }

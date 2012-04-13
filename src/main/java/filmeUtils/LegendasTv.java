@@ -4,11 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -35,8 +31,14 @@ public class LegendasTv {
 	
 	private static final String FIRST_RESULT_URL = "/index.php?opcao=buscarlegenda";
 	
+	private final DefaultHttpClient httpclient;
 	
-	public static void login(final DefaultHttpClient httpclient) throws UnsupportedEncodingException, IOException, ClientProtocolException {
+	public LegendasTv(final DefaultHttpClient httpclient) {
+		this.httpclient = httpclient;
+	}
+	
+	
+	public void login() throws UnsupportedEncodingException, IOException, ClientProtocolException {
 		final HttpPost httpost = new HttpPost(LOGIN_URL);
         final List <NameValuePair> nvps = new ArrayList <NameValuePair>();
         nvps.add(new BasicNameValuePair("txtLogin", USER));
@@ -46,37 +48,21 @@ public class LegendasTv {
         httpclient.execute(httpost);
 	}
 
-	public static void search(final String searchTerm, final DefaultHttpClient httpclient) throws UnsupportedEncodingException, IOException, ClientProtocolException {
-		
-		final String firstSearch = FIRST_RESULT_URL;
-		
-		final List<String> searchResults = new ArrayList<String>();
-		searchRecursively(httpclient, firstSearch, searchResults, searchTerm);
-		
-		final Map<String, String> nameToFileLink = extractSubtitlesLinks(searchResults);
-		
-		final Set<Entry<String, String>> entrySet = nameToFileLink.entrySet();
-		for (final Entry<String, String> entry : entrySet) {			
-			System.out.println(entry.getKey()+" - "+entry.getValue());
+	public void search(final String searchTerm, final SearchListener searchListener) throws UnsupportedEncodingException, IOException, ClientProtocolException {
+		searchRecursively(FIRST_RESULT_URL, searchListener, searchTerm);
+	}
+
+	private void extractSubtitlesLinks(final String searchResult,final SearchListener searchListener) {
+		final Document parsed = Jsoup.parse(searchResult);
+		final Elements subtitleSpans = parsed.select("#conteudodest > div > span");
+		for(final Element subtitleSpan : subtitleSpans) {
+			final String subtitleName = getSubtitleName(subtitleSpan);
+			final String subtitleLink = getSubtitleLink(subtitleSpan);
+			searchListener.found(subtitleName, subtitleLink);
 		}
 	}
 
-	private static Map<String, String> extractSubtitlesLinks(
-			final List<String> searchResults) {
-		final Map<String, String> nameToFileLink = new LinkedHashMap<String, String>();
-		for (final String searchResult : searchResults) {			
-			final Document parsed = Jsoup.parse(searchResult);
-			final Elements subtitleSpans = parsed.select("#conteudodest > div > span");
-			for(final Element subtitleSpan : subtitleSpans) {
-				final String subtitleName = getSubtitleName(subtitleSpan);
-				final String subtitleLink = getSubtitleLink(subtitleSpan);
-				nameToFileLink.put(subtitleName, subtitleLink);
-			}
-		}
-		return nameToFileLink;
-	}
-
-	private static void searchRecursively(final DefaultHttpClient httpclient,final String searchParams, final List<String> searchResults, final String searchTerm)
+	private void searchRecursively(final String searchParams, final SearchListener searchListener, final String searchTerm)
 			throws UnsupportedEncodingException, IOException,ClientProtocolException {
 		final HttpPost httpost = new HttpPost(BASE_URL+searchParams);
 		
@@ -92,13 +78,13 @@ public class LegendasTv {
 		final InputStream contentIS = entity.getContent();
 		final String content = IOUtils.toString(contentIS);
 		contentIS.close();
-		searchResults.add(content);
+		extractSubtitlesLinks(content,searchListener);
 		
 		final Document parsed = Jsoup.parse(content);
 		final Element nextLink = parsed.select("a.btavvt:matches(Próxima)").first();
 		if(nextLink != null){
 			final String nextLinkParams = nextLink.attr("href");
-			searchRecursively(httpclient, nextLinkParams, searchResults, searchTerm);
+			searchRecursively(nextLinkParams, searchListener, searchTerm);
 		}
 	}
 

@@ -48,5 +48,10 @@
 			<artifactId>commons-cli</artifactId>
 			<version>1.2</version>
 		</dependency>
+		<dependency>
+			<groupId>com.github.junrar</groupId>
+			<artifactId>junrar-testutil</artifactId>
+			<version>0.1</version>
+		</dependency>
 	</dependencies>
 </project>

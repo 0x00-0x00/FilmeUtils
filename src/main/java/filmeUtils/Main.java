@@ -9,17 +9,23 @@ import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.ConnectionPoolTimeoutException;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+
+import com.github.junrar.testutil.ExtractArchive;
 
 public class Main {
 
-    public static void main(final String[] args){
+    private static final int TIMEOUT = 60;
+
+	public static void main(final String[] args){
     	final MainCLI cli = new MainCLI();
     	cli.parse(args);
     	if(cli.isDone()){
@@ -41,36 +47,42 @@ public class Main {
         	unzipAndPrint(httpclient, link);
         }
 
-		private void unzipAndPrint(final DefaultHttpClient httpclient,
-				final String link) {
+		private void unzipAndPrint(final DefaultHttpClient httpclient,final String link){
 			try {
+				final File destFolder = File.createTempFile("AAA", "BBB");
+				final File destFile = new File(destFolder,"compressedSubs");
 	        	
-	        	final File destFolder = File.createTempFile("AAA", "BBB");
 	        	destFolder.delete();
 	        	destFolder.mkdir();
 	        	
-	        	final File destFile = new File(destFolder,"compressedSubs");
 				destFile.createNewFile();
 				
 	        	final HttpGet httpGet = new HttpGet(link);
 				HttpClientUtils.executeAndSaveResponseToFile(httpGet, destFile, httpclient);
-        	
-				final ZipFile zipFile = new ZipFile(destFile);
 				
-				final Enumeration<? extends ZipEntry> entries = zipFile.entries();
-				while(entries.hasMoreElements()) {
-					final ZipEntry entry = entries.nextElement();
-					final File unzippingFile = new File(destFolder,entry.getName());
-					if(entry.isDirectory()) {
-						unzippingFile.mkdir();
-					}else{
-						unzippingFile.createNewFile();
-						final FileOutputStream fileOutputStream = new FileOutputStream(unzippingFile);
-						final InputStream inputStream = zipFile.getInputStream(entry);
-						IOUtils.copy(inputStream, fileOutputStream);
+				final String contentType = HttpClientUtils.getContentType(httpGet, httpclient);
+				System.out.println(contentType);
+				
+				if(contentType.contains("rar")){
+					ExtractArchive.extractArchive(destFile, destFolder);
+				}else{
+					final ZipFile zipFile = new ZipFile(destFile);
+					
+					final Enumeration<? extends ZipEntry> entries = zipFile.entries();
+					while(entries.hasMoreElements()) {
+						final ZipEntry entry = entries.nextElement();
+						final File unzippingFile = new File(destFolder,entry.getName());
+						if(entry.isDirectory()) {
+							unzippingFile.mkdir();
+						}else{
+							unzippingFile.createNewFile();
+							final FileOutputStream fileOutputStream = new FileOutputStream(unzippingFile);
+							final InputStream inputStream = zipFile.getInputStream(entry);
+							IOUtils.copy(inputStream, fileOutputStream);
+						}
 					}
+					zipFile.close();	
 				}
-				zipFile.close();
 				
 				final Iterator<File> iterateFiles = FileUtils.iterateFiles(destFolder, new String[]{"srt"}, true);
 				while(iterateFiles.hasNext()){
@@ -79,9 +91,10 @@ public class Main {
 				}
 				
 	        	FileUtils.cleanDirectory(destFolder);
-        	} catch (final ZipException e) {
-        		System.out.println("\tOnly zip supported for now.");
-        	} catch (final IOException e1) {
+        		
+        	} catch(final ConnectionPoolTimeoutException e){
+        		System.out.println("Tempo máximo de requisição atingido ("+TIMEOUT+" segundos)");
+        	}catch (final IOException e1) {
 				throw new RuntimeException(e1);
 			}
 		}};
@@ -104,6 +117,12 @@ public class Main {
     
 	private static DefaultHttpClient start() {
 		final DefaultHttpClient httpclient = new DefaultHttpClient();
+		final HttpParams httpParameters = httpclient.getParams();
+		final int connectionTimeOutSec= TIMEOUT;
+		final int socketTimeoutSec = TIMEOUT;
+		HttpConnectionParams.setConnectionTimeout(httpParameters, connectionTimeOutSec * 1000);
+		HttpConnectionParams.setSoTimeout        (httpParameters, socketTimeoutSec * 1000);
+		
 		return httpclient;
 	}
 

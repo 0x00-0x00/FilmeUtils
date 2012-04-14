@@ -10,6 +10,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
 
@@ -32,6 +33,12 @@ public class HttpClientUtils {
 		IOUtils.copy(contentIS, os);
 		contentIS.close();
 		os.close();
+	}
+
+	public static String getContentType(final HttpGet httpGet, final DefaultHttpClient httpclient) throws ClientProtocolException, IOException {
+		final HttpResponse response = httpclient.execute(httpGet);
+	    final HttpEntity entity = response.getEntity();
+	    return entity.getContentType().getValue();
 	}
 
 }

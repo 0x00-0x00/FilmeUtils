@@ -4,28 +4,39 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 public class Main {
 
-    public static void main(final String[] args) throws Exception {
-
+    public static void main(final String[] args){
+    	final MainCLI cli = new MainCLI();
+    	cli.parse(args);
+    	if(cli.isDone()){
+    		return;
+    	}
+    	
         final DefaultHttpClient httpclient = start();
         
         final LegendasTv legendasTv = new LegendasTv(httpclient);
-        
-        System.out.println("Loging in...");
+        System.out.println("Autenticando...");
         legendasTv.login();
         
-        final String searchTerm = args[0];
-        System.out.println("Searching "+searchTerm+" ...");
+        final SearchListener searchListener = new SearchListener() {public void found(final String name, final String link) {
+        	System.out.println(name+" - "+link);
+        }};
         
-        final SearchListener searchListener = new SearchListener() {
-			public void found(final String name, final String link) {
-				System.out.println(name+" - "+link);
-			}
-		};
-		
-        legendasTv.search(searchTerm,searchListener);
+        if(cli.search()){
+        	final String searchTerm = cli.searchTerm();
+			System.out.println("Procurando '"+searchTerm+"' ...");
+        	
+        	legendasTv.search(searchTerm,searchListener);
+        }
+        
+        if(cli.showNewAdditions()){
+        	System.out.println("Novas legendas:");
+        	final int newAdditionsPageCountToShow = cli.newAdditionsPageCountToShow();
+        	legendasTv.getNewer(newAdditionsPageCountToShow,searchListener);
+        	
+        }
         close(httpclient);        
     }
-
+    
 	private static DefaultHttpClient start() {
 		final DefaultHttpClient httpclient = new DefaultHttpClient();
 		return httpclient;

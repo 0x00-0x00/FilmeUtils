@@ -15,6 +15,7 @@ public class MainCLI {
 	private static final String SEARCH_TOKEN = "p";
 	private static final String HELP_TOKEN = "h";
 	private static final String NEW_ADDITIONS_TOKEN = "n";
+	private static final String UNCOMPRESS_TOKEN = "d";
 	
 	private final Options options;
 	private boolean isDone;
@@ -28,6 +29,7 @@ public class MainCLI {
     	newAdditionOption.setOptionalArg(true);
     	
     	options.addOption(newAdditionOption);
+    	options.addOption(UNCOMPRESS_TOKEN,"descomprimir", false, "mostra o conteúdo dos arquivos");
     	options.addOption(HELP_TOKEN,"help", false, "mostra essa ajuda");
     	
     	isDone = false;
@@ -81,5 +83,9 @@ public class MainCLI {
 		}catch (final Exception e) {
 			throw new RuntimeException("Argumento deveria ser um número",e);
 		}
+	}
+
+	public boolean showCompressedContents() {
+		return cmd.hasOption(UNCOMPRESS_TOKEN);
 	}
 }

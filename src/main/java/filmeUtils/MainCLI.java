@@ -1,7 +1,6 @@
 package filmeUtils;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -20,7 +19,6 @@ public class MainCLI {
 	private static final String NEW_ADDITIONS_TOKEN = "n";
 	private static final String SHOULD_EXTRACT_TOKEN = "e";
 	private static final String SITE_LINKS_TOKEN = "s";
-	private static final String SUBS_DESTINATION_TOKEN = "l";
 	private static final String CREDENTIALS_TOKEN = "c";
 	
 	private static final String USER = "greasemonkey";
@@ -38,10 +36,9 @@ public class MainCLI {
     	newAdditionOption.setOptionalArg(true);
     	
     	options.addOption(newAdditionOption);
-    	options.addOption(SHOULD_EXTRACT_TOKEN,"extrair", false, "Extrai e os arquivos de legendas");
-    	options.addOption(SUBS_DESTINATION_TOKEN,"local", true, "Caminho onde as legendas serão extraídas, se não for informado usará um diretório temporario");
+    	options.addOption(SHOULD_EXTRACT_TOKEN,"extrair", true, "Extrai e os arquivos de legendas para o diretório informado");
     	options.addOption(SITE_LINKS_TOKEN,"site-links", false, "Imprime o link direto para os arquivos de legendas.");
-    	options.addOption(CREDENTIALS_TOKEN,"credenciais", true, "Informa usuário e senha no legendas.tv ex: joao/senha123, se não for informado um usuário padrão é usado.");
+    	options.addOption(CREDENTIALS_TOKEN,"credenciais", true, "Informa usuário e senha no legendas.tv ex: joao/senha123, se não for informado, um usuário padrão é usado.");
     	options.addOption(HELP_TOKEN,"help", false, "Imprime essa ajuda");
     	
     	isDone = false;
@@ -55,8 +52,8 @@ public class MainCLI {
 				"filmeUtils -p House\n" +
 				"Para procurar por house no legendas.tv,\n" +
 				"copie o nome do episodio que você quer (digamos House.S01E05) e use o comando:\n" +
-				"filmeUtils -p House.S01E05 -d -l CAMINHO_DAS_LEGENDAS\n" +
-				"O token -d vai extrair as legendas no local passado no -l ou em um diretório temporário\n" +
+				"filmeUtils -p House.S01E05 -e CAMINHO_DAS_LEGENDAS\n" +
+				"O token -d vai extrair as legendas no local passado no -e\n" +
 				"O magnet link aparece do lado da legenda,  use-o em seu cliente de torrent\n" +
 				"ou no próprio browser.\n" +
 				"Se quiser ver as novas legenda adicionas no legendas.tv use\n" +
@@ -108,25 +105,12 @@ public class MainCLI {
 		}
 	}
 
-	public boolean extractContents() {
-		return cmd.hasOption(SHOULD_EXTRACT_TOKEN);
-	}
-
-	public File getSubtitlesDestinationFolder() {
+	public File getSubtitlesDestinationFolderOrNull() {
 		File file;
-		if(cmd.hasOption(SUBS_DESTINATION_TOKEN)){
-			file = new File(cmd.getOptionValue(SUBS_DESTINATION_TOKEN));
+		if(cmd.hasOption(SHOULD_EXTRACT_TOKEN)){
+			file = new File(cmd.getOptionValue(SHOULD_EXTRACT_TOKEN));
 		}else{
-			try {
-				file = File.createTempFile("FILMEUTILS", ""+System.currentTimeMillis());
-				file.delete();
-				file.mkdir();
-			} catch (final IOException e) {
-				throw new RuntimeException(e);
-			}
-		}
-		if(extractContents()){
-			System.out.println("Diretório para legendas: "+file.getAbsolutePath());
+			return null;
 		}
 		return file;
 	}

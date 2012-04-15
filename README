@@ -1,11 +1,10 @@
 usage: filmeUtils
  -c,--credenciais <arg>   Informa usuário e senha no legendas.tv ex:
-                          joao/senha123, se não for informado um usuário
+                          joao/senha123, se não for informado, um usuário
                           padrão é usado.
- -e,--extrair             Extrai e os arquivos de legendas
+ -e,--extrair <arg>       Extrai e os arquivos de legendas para o
+                          diretório informado
  -h,--help                Imprime essa ajuda
- -l,--local <arg>         Caminho onde as legendas serão extraídas, se não
-                          for informado usará um diretório temporario
  -n,--novos <arg>         mostra novas legendas, o argumento é o número de
                           legendas
  -p,--procura <arg>       procura legendas
@@ -15,8 +14,8 @@ Por exemplo, se você quiser um episódio de House, use primeiro:
 filmeUtils -p House
 Para procurar por house no legendas.tv,
 copie o nome do episodio que você quer (digamos House.S01E05) e use o comando:
-filmeUtils -p House.S01E05 -d -l CAMINHO_DAS_LEGENDAS
-O token -d vai extrair as legendas no local passado no -l ou em um diretório temporário
+filmeUtils -p House.S01E05 -e CAMINHO_DAS_LEGENDAS
+O token -d vai extrair as legendas no local passado no -e
 O magnet link aparece do lado da legenda,  use-o em seu cliente de torrent
 ou no próprio browser.
 Se quiser ver as novas legenda adicionas no legendas.tv use

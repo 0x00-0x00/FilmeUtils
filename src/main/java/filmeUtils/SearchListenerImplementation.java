@@ -21,14 +21,14 @@ import filmeUtils.torrentSites.PirateBaySe;
 
 final class SearchListenerImplementation implements SearchListener {
 	private final FilmeUtilsHttpClient httpclient;
-	private final boolean showCompressedContents;
+	private final boolean extractContents;
 	private final PirateBaySe pirateBaySe;
 	private final File subtitleDestination;
 	private final boolean showDirectLink;
 
-	SearchListenerImplementation(final FilmeUtilsHttpClient httpclient,final boolean showCompressedContents,final boolean showDirectLink, final File subtitleDestination) {
+	SearchListenerImplementation(final FilmeUtilsHttpClient httpclient,final boolean showDirectLink, final File subtitleDestination) {
 		this.httpclient = httpclient;
-		this.showCompressedContents = showCompressedContents;
+		this.extractContents = subtitleDestination!= null;
 		this.showDirectLink = showDirectLink;
 		this.subtitleDestination = subtitleDestination;
         pirateBaySe = new PirateBaySe(httpclient);
@@ -40,7 +40,7 @@ final class SearchListenerImplementation implements SearchListener {
 			direct_link = " - "+link;
 		}
 		System.out.println(name+direct_link);
-		if(!showCompressedContents){
+		if(!extractContents){
 			return;
 		}
 		unzipAndPrint(name,link);

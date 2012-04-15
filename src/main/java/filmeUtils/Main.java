@@ -25,10 +25,9 @@ public class Main {
         System.out.println("Autenticando...");
         legendasTv.login(cli.getUser(),cli.getPassword());
         
-        final File subtitlesDestinationFolder = cli.getSubtitlesDestinationFolder();
-        final boolean showCompressedContents = cli.extractContents();
+        final File subtitlesDestinationFolder = cli.getSubtitlesDestinationFolderOrNull();
         final boolean showDirectLink = cli.showDirectLinks(); 
-		final SearchListener searchListener = new SearchListenerImplementation(httpclient, showCompressedContents, showDirectLink, subtitlesDestinationFolder);
+		final SearchListener searchListener = new SearchListenerImplementation(httpclient, showDirectLink, subtitlesDestinationFolder);
         
         if(cli.search()){
         	final String searchTerm = cli.searchTerm();

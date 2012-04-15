@@ -1,3 +1,6 @@
+FilmeUtils é uma ferramenta de linha de commando para pegar legendas e torrents
+atualmente usa o legendas.tv e o piratebaySe
+Versão 1.1
 usage: filmeUtils
  -c,--credenciais <arg>   Informa usuário e senha no legendas.tv ex:
                           joao/senha123, se não for informado, um usuário

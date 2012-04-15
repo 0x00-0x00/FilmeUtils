@@ -57,8 +57,8 @@ public class MainCLI {
 				"Para procurar por house no legendas.tv,\n" +
 				"copie o nome do episodio que você quer (digamos House.S01E05) e use o comando:\n" +
 				"filmeUtils -p House.S01E05 -e CAMINHO_DAS_LEGENDAS\n" +
-				"O token -d vai extrair as legendas no local passado no -e\n" +
-				"O magnet link aparece do lado da legenda,  use-o em seu cliente de torrent\n" +
+				"O token -e vai extrair as legendas no caminho passado\n" +
+				"O magnet link aparece do lado da legenda, use-o em seu cliente de torrent\n" +
 				"ou no próprio browser.\n" +
 				"Se quiser ver as novas legenda adicionadas no legendas.tv use\n" +
 				"filmeUtils -n");

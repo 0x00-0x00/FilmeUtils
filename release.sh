@@ -7,4 +7,4 @@ sed -i "s/VERSION = \"[0-9\.]*\";/VERSION = \"$VERSION\";/g" $VERSION_FILE
 git add $VERSION_FILE
 git commit -m"New version"
 mvn3 clean package release:prepare
-mvn3 release:perform -Dgoals=deploy
+mvn3 release:perform 

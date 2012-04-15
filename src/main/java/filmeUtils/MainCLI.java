@@ -18,7 +18,7 @@ public class MainCLI {
 	private static final String SEARCH_TOKEN = "p";
 	private static final String HELP_TOKEN = "h";
 	private static final String NEW_ADDITIONS_TOKEN = "n";
-	private static final String UNCOMPRESS_TOKEN = "d";
+	private static final String SHOULD_EXTRACT_TOKEN = "e";
 	private static final String SITE_LINKS_TOKEN = "s";
 	private static final String SUBS_DESTINATION_TOKEN = "l";
 	private static final String CREDENTIALS_TOKEN = "c";
@@ -38,13 +38,30 @@ public class MainCLI {
     	newAdditionOption.setOptionalArg(true);
     	
     	options.addOption(newAdditionOption);
-    	options.addOption(UNCOMPRESS_TOKEN,"descomprimir", false, "Extrai e os arquivos de legendas");
+    	options.addOption(SHOULD_EXTRACT_TOKEN,"extrair", false, "Extrai e os arquivos de legendas");
     	options.addOption(SUBS_DESTINATION_TOKEN,"local", true, "Caminho onde as legendas serão extraídas, se não for informado usará um diretório temporario");
     	options.addOption(SITE_LINKS_TOKEN,"site-links", false, "Imprime o link direto para os arquivos de legendas.");
     	options.addOption(CREDENTIALS_TOKEN,"credenciais", true, "Informa usuário e senha no legendas.tv ex: joao/senha123, se não for informado um usuário padrão é usado.");
     	options.addOption(HELP_TOKEN,"help", false, "Imprime essa ajuda");
     	
     	isDone = false;
+	}
+	
+	private void printHelp() {
+		final HelpFormatter formatter = new HelpFormatter();
+		formatter.printHelp(APPLICATION_NAME, options );
+		System.out.println(
+				"Por exemplo, se você quiser um episódio de House, use primeiro:\n" +
+				"filmeUtils -p House\n" +
+				"Para procurar por house no legendas.tv,\n" +
+				"copie o nome do episodio que você quer (digamos House.S01E05) e use o comando:\n" +
+				"filmeUtils -p House.S01E05 -d -l CAMINHO_DAS_LEGENDAS\n" +
+				"O token -d vai extrair as legendas no local passado no -l ou em um diretório temporário\n" +
+				"O magnet link aparece do lado da legenda,  use-o em seu cliente de torrent\n" +
+				"ou no próprio browser.\n" +
+				"Se quiser ver as novas legenda adicionas no legendas.tv use\n" +
+				"filmeUtils -n");
+		isDone = true;
 	}
 
 	public void parse(final String[] args) {
@@ -91,43 +108,27 @@ public class MainCLI {
 		}
 	}
 
-	public boolean showCompressedContents() {
-		return cmd.hasOption(UNCOMPRESS_TOKEN);
-	}
-
-	private void printHelp() {
-		final HelpFormatter formatter = new HelpFormatter();
-		formatter.printHelp(APPLICATION_NAME, options );
-		System.out.println(
-				"Por exemplo, se você quiser um episódio de House, use primeiro:\n" +
-				"filmeUtils -p House\n" +
-				"Para procurar por house no legendas.tv,\n" +
-				"copie o nome do episodio que você quer (digamos House.S01E05) e use o comando:\n" +
-				"filmeUtils -p House.S01E05 -d -l CAMINHO_DAS_LEGENDAS\n" +
-				"O token -d vai extrair as legendas no local passado no -l\n" +
-				"O magnet link aparece do lado da legenda,  use-o em seu cliente de torrent\n" +
-				"ou no próprio browser.\n" +
-				"Se quiser ver as novas legenda adicionas no legendas.tv use\n" +
-				"filmeUtils -n");
-		isDone = true;
+	public boolean extractContents() {
+		return cmd.hasOption(SHOULD_EXTRACT_TOKEN);
 	}
 
 	public File getSubtitlesDestinationFolder() {
+		File file;
 		if(cmd.hasOption(SUBS_DESTINATION_TOKEN)){
-			final File file = new File(cmd.getOptionValue(SUBS_DESTINATION_TOKEN));
+			file = new File(cmd.getOptionValue(SUBS_DESTINATION_TOKEN));
+		}else{
+			try {
+				file = File.createTempFile("FILMEUTILS", ""+System.currentTimeMillis());
+				file.delete();
+				file.mkdir();
+			} catch (final IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		if(extractContents()){
 			System.out.println("Diretório para legendas: "+file.getAbsolutePath());
-			return file;
 		}
-		try {
-			File tempFile;
-			tempFile = File.createTempFile("FILMEUTILS", ""+System.currentTimeMillis());
-			System.out.println("O diretório para legendas não foi informado, usando "+tempFile.getAbsolutePath());
-			tempFile.delete();
-			tempFile.mkdir();
-			return tempFile;
-		} catch (final IOException e) {
-			throw new RuntimeException(e);
-		}
+		return file;
 	}
 
 	public boolean showDirectLinks() {

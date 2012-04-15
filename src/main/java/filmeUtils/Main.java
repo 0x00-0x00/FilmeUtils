@@ -23,11 +23,11 @@ public class Main {
         
         final LegendasTv legendasTv = new LegendasTv(httpclient);
         System.out.println("Autenticando...");
-        legendasTv.login();
+        legendasTv.login(cli.getUser(),cli.getPassword());
         
         final File subtitlesDestinationFolder = cli.getSubtitlesDestinationFolder();
         final boolean showCompressedContents = cli.showCompressedContents();
-        final boolean showDirectLink = cli.showDirectLinks();
+        final boolean showDirectLink = cli.showDirectLinks(); 
 		final SearchListener searchListener = new SearchListenerImplementation(httpclient, showCompressedContents, showDirectLink, subtitlesDestinationFolder);
         
         if(cli.search()){

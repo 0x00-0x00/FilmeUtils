@@ -24,10 +24,6 @@ import filmeUtils.SearchListener;
 
 public class LegendasTv {
 	
-	private static final String USER = "greasemonkey";
-	private static final String PASSWORD = "greasemonkey";
-	
-	
 	private static final String BASE_URL = "http://legendas.tv";
 	private static final String LOGIN_URL = BASE_URL+"/login_verificar.php";
 	private static final String NEW_ADDS_URL = "/destaques.php?start=";
@@ -39,11 +35,11 @@ public class LegendasTv {
 		this.httpclient = httpclient;
 	}
 	
-	public void login(){
+	public void login(final String user, final String password){
 		final HttpPost httpost = new HttpPost(LOGIN_URL);
         final List <NameValuePair> nvps = new ArrayList <NameValuePair>();
-        nvps.add(new BasicNameValuePair("txtLogin", USER));
-        nvps.add(new BasicNameValuePair("txtSenha", PASSWORD));
+        nvps.add(new BasicNameValuePair("txtLogin", user));
+        nvps.add(new BasicNameValuePair("txtSenha", password));
         
         try {
 			httpost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));

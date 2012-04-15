@@ -21,6 +21,10 @@ public class MainCLI {
 	private static final String UNCOMPRESS_TOKEN = "d";
 	private static final String SITE_LINKS_TOKEN = "s";
 	private static final String SUBS_DESTINATION_TOKEN = "l";
+	private static final String CREDENTIALS_TOKEN = "c";
+	
+	private static final String USER = "greasemonkey";
+	private static final String PASSWORD = "greasemonkey";
 	
 	private final Options options;
 	private boolean isDone;
@@ -37,6 +41,7 @@ public class MainCLI {
     	options.addOption(UNCOMPRESS_TOKEN,"descomprimir", false, "mostra o conteúdo dos arquivos de legendas");
     	options.addOption(SUBS_DESTINATION_TOKEN,"local", true, "lugar onde as legendas serão extraídas");
     	options.addOption(SITE_LINKS_TOKEN,"site-links", false, "mostra o link direto para os arquivos de legendas");
+    	options.addOption(CREDENTIALS_TOKEN,"credenciais", true, "usar este usuário e senha (separados por barra) no legendas.tv ex: joao/senha123");
     	options.addOption(HELP_TOKEN,"help", false, "mostra essa ajuda");
     	
     	isDone = false;
@@ -106,7 +111,9 @@ public class MainCLI {
 
 	public File getSubtitlesDestinationFolder() {
 		if(cmd.hasOption(SUBS_DESTINATION_TOKEN)){
-			return new File(cmd.getOptionValue(SUBS_DESTINATION_TOKEN));
+			final File file = new File(cmd.getOptionValue(SUBS_DESTINATION_TOKEN));
+			System.out.println("Diretório para legendas: "+file.getAbsolutePath());
+			return file;
 		}
 		try {
 			File tempFile;
@@ -122,5 +129,23 @@ public class MainCLI {
 
 	public boolean showDirectLinks() {
 		return cmd.hasOption(SITE_LINKS_TOKEN);
+	}
+
+	public String getUser() {
+		if(userAndPasswordNotInformed()){
+			return USER;
+		}
+		return cmd.getOptionValue(CREDENTIALS_TOKEN).split("/")[0];
+	}
+
+	private boolean userAndPasswordNotInformed() {
+		return !cmd.hasOption(CREDENTIALS_TOKEN);
+	}
+
+	public String getPassword() {
+		if(userAndPasswordNotInformed()){
+			return PASSWORD;
+		}
+		return cmd.getOptionValue(CREDENTIALS_TOKEN).split("/")[1];
 	}
 }

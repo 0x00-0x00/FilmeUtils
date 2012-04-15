@@ -49,10 +49,7 @@ final class SearchListenerImplementation implements SearchListener {
 			destFile.createNewFile();
 			
 	    	final HttpGet httpGet = new HttpGet(link);
-	    	httpclient.executeAndSaveResponseToFile(httpGet, destFile);
-			
-			final String contentType = httpclient.getContentType(httpGet);
-			System.out.println(contentType);
+	    	final String contentType = httpclient.executeSaveResponseToFileReturnContentType(httpGet, destFile);
 			
 			if(contentType.contains("rar")){
 				ExtractArchive.extractArchive(destFile, currentSubtitleCollection);

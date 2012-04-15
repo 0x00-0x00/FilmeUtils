@@ -10,6 +10,9 @@ import filmeUtils.subtitleSites.LegendasTv;
 public class Main {
 
 	public static void main(final String[] args) throws ClientProtocolException, IOException{
+		
+		turnJunrarLoggingOff();
+		
     	final MainCLI cli = new MainCLI();
     	cli.parse(args);
     	if(cli.isDone()){
@@ -42,4 +45,8 @@ public class Main {
         }
         httpclient.close();        
     }
+
+	private static void turnJunrarLoggingOff() {
+		System.setProperty("org.apache.commons.logging.Log","org.apache.commons.logging.impl.NoOpLog");
+	}
 }

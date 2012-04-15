@@ -15,7 +15,6 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
-import org.apache.http.util.EntityUtils;
 
 public class FilmeUtilsHttpClient {
 
@@ -37,21 +36,22 @@ public class FilmeUtilsHttpClient {
 		final InputStream contentIS = entity.getContent();
 		final String content = IOUtils.toString(contentIS);
 		contentIS.close();
-		EntityUtils.consume(entity);
 		return content;
 	}
 	
-	public void executeAndSaveResponseToFile(final HttpUriRequest httpost,final File dest)throws IOException, ClientProtocolException {
+	public String executeSaveResponseToFileReturnContentType(final HttpUriRequest httpost,final File dest)throws IOException, ClientProtocolException {
 		final HttpResponse response = execute(httpost);
 	    final HttpEntity entity = response.getEntity();
-		final InputStream contentIS = entity.getContent();
-		final OutputStream os = new FileOutputStream(dest);
-		IOUtils.copy(contentIS, os);
-		contentIS.close();
-		os.close();
-		EntityUtils.consume(entity);
+	    final String contentType = entity.getContentType().getValue();
+		final InputStream in = entity.getContent();
+		final OutputStream out = new FileOutputStream(dest);
+		IOUtils.copy(in, out);
+		out.flush();
+		out.close();
+		in.close();
+		return contentType;
 	}
-
+	
 	public String getContentType(final HttpGet httpGet) throws ClientProtocolException, IOException {
 		final HttpResponse response = execute(httpGet);
 	    final HttpEntity entity = response.getEntity();

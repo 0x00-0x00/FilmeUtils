@@ -12,6 +12,7 @@ import org.apache.commons.cli.PosixParser;
 
 public class MainCLI {
 
+	private static final String VERSION = "1.1";
 	private static final String APPLICATION_NAME = "filmeUtils";
 	private static final String SEARCH_TOKEN = "p";
 	private static final String HELP_TOKEN = "h";
@@ -45,6 +46,9 @@ public class MainCLI {
 	}
 	
 	private void printHelp() {
+		System.out.println("FilmeUtils é uma ferramenta de linha de commando para pegar legendas e torrents\n" +
+				"atualmente usa o legendas.tv e o piratebaySe\n" +
+				"Versão "+VERSION);
 		final HelpFormatter formatter = new HelpFormatter();
 		formatter.printHelp(APPLICATION_NAME, options );
 		System.out.println(

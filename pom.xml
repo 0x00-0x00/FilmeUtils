@@ -4,6 +4,12 @@
 	<artifactId>filmeUtils</artifactId>
 	<version>1.1-SNAPSHOT</version>
 
+	<scm>
+		<connection>scm:git:git@github.com:beothorn/FilmeUtils.git</connection>
+		<url>scm:git:git@github.com:beothorn/FilmeUtils.git</url>
+		<developerConnection>scm:git:git@github.com:beothorn/FilmeUtils.git</developerConnection>
+	</scm>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -58,9 +64,4 @@
 			<version>0.1</version>
 		</dependency>
 	</dependencies>
-	<scm>
-		<connection>scm:git:git@github.com:beothorn/filmeUtils.git</connection>
-		<url>scm:git:git@github.com:beothorn/filmeUtils.git</url>
-		<developerConnection>scm:git:git@github.com:beothorn/filmeUtils.git</developerConnection>
-	</scm>
 </project>

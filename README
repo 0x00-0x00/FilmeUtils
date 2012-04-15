@@ -1,14 +1,23 @@
-usage: filmeUtils
- -d,--descomprimir    mostra o conteúdo dos arquivos
- -h,--help            mostra essa ajuda
- -l,--local <arg>     lugar onde as legendas serão extraídas
- -n,--novos <arg>     mostra novas legendas, o argumento é o número de
-                      legendas
- -p,--procura <arg>   procura legendas
+age: filmeUtils
+ -c,--credenciais <arg>   Informa usuário e senha no legendas.tv ex:
+                          joao/senha123, se não for informado um usuário
+                          padrão é usado.
+ -d,--descomprimir        Extrai e os arquivos de legendas
+ -h,--help                Imprime essa ajuda
+ -l,--local <arg>         Caminho onde as legendas serão extraídas, se não
+                          for informado usará um diretório temporario
+ -n,--novos <arg>         mostra novas legendas, o argumento é o número de
+                          legendas
+ -p,--procura <arg>       procura legendas
+ -s,--site-links          Imprime o link direto para os arquivos de
+                          legendas.
 Por exemplo, se você quiser um episódio de House, use primeiro:
 filmeUtils -p House
-copie o nome do episodio que você quer (digamos House.S01E05) e rode
-filmeUtils -p House.S01E05 -d -l CAMINHO_ONDE_O_SEU_CLIENTE_DE_TORRENT_SALVA_ARQUIVOS
-O -d vai pegar o zip das legendas e deszipar no local passado no -l
-Aí é só copiar o magnet link que aparece do lado da legenda e abri no seu cliente de torren ou no
-próprio browser.
+Para procurar por house no legendas.tv,
+copie o nome do episodio que você quer (digamos House.S01E05) e use o comando:
+filmeUtils -p House.S01E05 -d -l CAMINHO_DAS_LEGENDAS
+O token -d vai extrair as legendas no local passado no -l
+O magnet link aparece do lado da legenda,  use-o em seu cliente de torrent
+ou no próprio browser.
+Se quiser ver as novas legenda adicionas no legendas.tv use
+filmeUtils -n

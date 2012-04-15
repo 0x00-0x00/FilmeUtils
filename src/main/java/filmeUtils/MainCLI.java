@@ -38,11 +38,11 @@ public class MainCLI {
     	newAdditionOption.setOptionalArg(true);
     	
     	options.addOption(newAdditionOption);
-    	options.addOption(UNCOMPRESS_TOKEN,"descomprimir", false, "mostra o conteúdo dos arquivos de legendas");
-    	options.addOption(SUBS_DESTINATION_TOKEN,"local", true, "lugar onde as legendas serão extraídas");
-    	options.addOption(SITE_LINKS_TOKEN,"site-links", false, "mostra o link direto para os arquivos de legendas");
-    	options.addOption(CREDENTIALS_TOKEN,"credenciais", true, "usar este usuário e senha (separados por barra) no legendas.tv ex: joao/senha123");
-    	options.addOption(HELP_TOKEN,"help", false, "mostra essa ajuda");
+    	options.addOption(UNCOMPRESS_TOKEN,"descomprimir", false, "Extrai e os arquivos de legendas");
+    	options.addOption(SUBS_DESTINATION_TOKEN,"local", true, "Caminho onde as legendas serão extraídas, se não for informado usará um diretório temporario");
+    	options.addOption(SITE_LINKS_TOKEN,"site-links", false, "Imprime o link direto para os arquivos de legendas.");
+    	options.addOption(CREDENTIALS_TOKEN,"credenciais", true, "Informa usuário e senha no legendas.tv ex: joao/senha123, se não for informado um usuário padrão é usado.");
+    	options.addOption(HELP_TOKEN,"help", false, "Imprime essa ajuda");
     	
     	isDone = false;
 	}
@@ -98,14 +98,17 @@ public class MainCLI {
 	private void printHelp() {
 		final HelpFormatter formatter = new HelpFormatter();
 		formatter.printHelp(APPLICATION_NAME, options );
-		System.out.println("Por exemplo, se você quiser um episódio de House, use primeiro:\n" +
+		System.out.println(
+				"Por exemplo, se você quiser um episódio de House, use primeiro:\n" +
 				"filmeUtils -p House\n" +
 				"Para procurar por house no legendas.tv,\n" +
 				"copie o nome do episodio que você quer (digamos House.S01E05) e use o comando:\n" +
 				"filmeUtils -p House.S01E05 -d -l CAMINHO_DAS_LEGENDAS\n" +
 				"O token -d vai extrair as legendas no local passado no -l\n" +
 				"O magnet link aparece do lado da legenda,  use-o em seu cliente de torrent\n" +
-				"ou no próprio browser.");
+				"ou no próprio browser.\n" +
+				"Se quiser ver as novas legenda adicionas no legendas.tv use\n" +
+				"filmeUtils -n");
 		isDone = true;
 	}
 

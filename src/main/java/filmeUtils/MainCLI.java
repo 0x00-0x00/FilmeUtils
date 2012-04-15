@@ -96,7 +96,7 @@ public class MainCLI {
 				"copie o nome do episodio que você quer (digamos House.S01E05) e rode\n" +
 				"filmeUtils -p House.S01E05 -d -l CAMINHO_ONDE_O_SEU_CLIENTE_DE_TORRENT_SALVA_ARQUIVOS\n" +
 				"O -d vai pegar o zip das legendas e deszipar no local passado no -l\n" +
-				"Aí é só copiar o magnet link que aparece do lado da legenda e abri no seu cliente de torren ou no\n" +
+				"Aí é só copiar o magnet link que aparece do lado da legenda e abrir no seu cliente de torren ou no\n" +
 				"próprio browser.");
 		isDone = true;
 	}

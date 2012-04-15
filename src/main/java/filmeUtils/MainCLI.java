@@ -29,7 +29,7 @@ public class MainCLI {
 		options = new Options();
     	options.addOption(SEARCH_TOKEN,"procura", true, "procura legendas");
     	
-    	final Option newAdditionOption = new Option(NEW_ADDITIONS_TOKEN,"novos", true, "mostra novas legendas, o argumento é o número de páginas");
+    	final Option newAdditionOption = new Option(NEW_ADDITIONS_TOKEN,"novos", true, "mostra novas legendas, o argumento é o número de legendas");
     	newAdditionOption.setOptionalArg(true);
     	
     	options.addOption(newAdditionOption);
@@ -49,7 +49,7 @@ public class MainCLI {
     		return;
 		}
     	
-    	if(cmd.hasOption(HELP_TOKEN)){
+    	if(cmd.hasOption(HELP_TOKEN) || args.length == 0){
     		printHelp();
     		return;
     	}
@@ -91,6 +91,13 @@ public class MainCLI {
 	private void printHelp() {
 		final HelpFormatter formatter = new HelpFormatter();
 		formatter.printHelp(APPLICATION_NAME, options );
+		System.out.println("Por exemplo, se você quiser um episódio de House, use primeiro:\n" +
+				"filmeUtils -p House\n" +
+				"copie o nome do episodio que você quer (digamos House.S01E05) e rode\n" +
+				"filmeUtils -p House.S01E05 -d -l CAMINHO_ONDE_O_SEU_CLIENTE_DE_TORRENT_SALVA_ARQUIVOS\n" +
+				"O -d vai pegar o zip das legendas e deszipar no local passado no -l\n" +
+				"Aí é só copiar o magnet link que aparece do lado da legenda e abri no seu cliente de torren ou no\n" +
+				"próprio browser.");
 		isDone = true;
 	}
 

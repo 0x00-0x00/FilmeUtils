@@ -24,16 +24,22 @@ final class SearchListenerImplementation implements SearchListener {
 	private final boolean showCompressedContents;
 	private final PirateBaySe pirateBaySe;
 	private final File subtitleDestination;
+	private final boolean showDirectLink;
 
-	SearchListenerImplementation(final FilmeUtilsHttpClient httpclient,final boolean showCompressedContents,final File subtitleDestination) {
+	SearchListenerImplementation(final FilmeUtilsHttpClient httpclient,final boolean showCompressedContents,final boolean showDirectLink, final File subtitleDestination) {
 		this.httpclient = httpclient;
 		this.showCompressedContents = showCompressedContents;
+		this.showDirectLink = showDirectLink;
 		this.subtitleDestination = subtitleDestination;
         pirateBaySe = new PirateBaySe(httpclient);
 	}
 
 	public void found(final String name, final String link) {
-		System.out.println(name+" - "+link);
+		String direct_link = "";
+		if(showDirectLink){
+			direct_link = " - "+link;
+		}
+		System.out.println(name+direct_link);
 		if(!showCompressedContents){
 			return;
 		}

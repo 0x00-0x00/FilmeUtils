@@ -19,6 +19,7 @@ public class MainCLI {
 	private static final String HELP_TOKEN = "h";
 	private static final String NEW_ADDITIONS_TOKEN = "n";
 	private static final String UNCOMPRESS_TOKEN = "d";
+	private static final String SITE_LINKS_TOKEN = "s";
 	private static final String SUBS_DESTINATION_TOKEN = "l";
 	
 	private final Options options;
@@ -33,8 +34,9 @@ public class MainCLI {
     	newAdditionOption.setOptionalArg(true);
     	
     	options.addOption(newAdditionOption);
-    	options.addOption(UNCOMPRESS_TOKEN,"descomprimir", false, "mostra o conteúdo dos arquivos");
+    	options.addOption(UNCOMPRESS_TOKEN,"descomprimir", false, "mostra o conteúdo dos arquivos de legendas");
     	options.addOption(SUBS_DESTINATION_TOKEN,"local", true, "lugar onde as legendas serão extraídas");
+    	options.addOption(SITE_LINKS_TOKEN,"site-links", false, "mostra o link direto para os arquivos de legendas");
     	options.addOption(HELP_TOKEN,"help", false, "mostra essa ajuda");
     	
     	isDone = false;
@@ -93,11 +95,12 @@ public class MainCLI {
 		formatter.printHelp(APPLICATION_NAME, options );
 		System.out.println("Por exemplo, se você quiser um episódio de House, use primeiro:\n" +
 				"filmeUtils -p House\n" +
-				"copie o nome do episodio que você quer (digamos House.S01E05) e rode\n" +
-				"filmeUtils -p House.S01E05 -d -l CAMINHO_ONDE_O_SEU_CLIENTE_DE_TORRENT_SALVA_ARQUIVOS\n" +
-				"O -d vai pegar o zip das legendas e deszipar no local passado no -l\n" +
-				"Aí é só copiar o magnet link que aparece do lado da legenda e abrir no seu cliente de torren ou no\n" +
-				"próprio browser.");
+				"Para procurar por house no legendas.tv,\n" +
+				"copie o nome do episodio que você quer (digamos House.S01E05) e use o comando:\n" +
+				"filmeUtils -p House.S01E05 -d -l CAMINHO_DAS_LEGENDAS\n" +
+				"O token -d vai extrair as legendas no local passado no -l\n" +
+				"O magnet link aparece do lado da legenda,  use-o em seu cliente de torrent\n" +
+				"ou no próprio browser.");
 		isDone = true;
 	}
 
@@ -105,14 +108,19 @@ public class MainCLI {
 		if(cmd.hasOption(SUBS_DESTINATION_TOKEN)){
 			return new File(cmd.getOptionValue(SUBS_DESTINATION_TOKEN));
 		}
-		File createTempFile;
 		try {
-			createTempFile = File.createTempFile("FILMEUTILS", ""+System.currentTimeMillis());
-			createTempFile.delete();
-			createTempFile.mkdir();
+			File tempFile;
+			tempFile = File.createTempFile("FILMEUTILS", ""+System.currentTimeMillis());
+			System.out.println("O diretório para legendas não foi informado, usando "+tempFile.getAbsolutePath());
+			tempFile.delete();
+			tempFile.mkdir();
+			return tempFile;
 		} catch (final IOException e) {
 			throw new RuntimeException(e);
 		}
-		return createTempFile;
+	}
+
+	public boolean showDirectLinks() {
+		return cmd.hasOption(SITE_LINKS_TOKEN);
 	}
 }

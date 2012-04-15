@@ -12,7 +12,6 @@ import org.apache.commons.cli.PosixParser;
 
 public class MainCLI {
 
-	private static final int NEW_ADDS_DEFAUL_SHOW_VALUE = 23;
 	private static final String APPLICATION_NAME = "filmeUtils";
 	private static final String SEARCH_TOKEN = "p";
 	private static final String HELP_TOKEN = "h";
@@ -21,6 +20,7 @@ public class MainCLI {
 	private static final String SITE_LINKS_TOKEN = "s";
 	private static final String CREDENTIALS_TOKEN = "c";
 	
+	private static final int NEW_ADDS_DEFAUL_SHOW_VALUE = 23;
 	private static final String USER = "greasemonkey";
 	private static final String PASSWORD = "greasemonkey";
 	

@@ -12,7 +12,7 @@ import org.apache.commons.cli.PosixParser;
 
 public class MainCLI {
 
-	private static final String VERSION = "1.1";
+	private static final String VERSION = "1.2";
 	private static final String APPLICATION_NAME = "filmeUtils";
 	private static final String SEARCH_TOKEN = "p";
 	private static final String HELP_TOKEN = "h";

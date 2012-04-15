@@ -6,8 +6,8 @@
 
 	<scm>
 		<connection>scm:git:git@github.com:beothorn/FilmeUtils.git</connection>
-		<url>scm:git:git@github.com:beothorn/FilmeUtils.git</url>
 		<developerConnection>scm:git:git@github.com:beothorn/FilmeUtils.git</developerConnection>
+		<url>git@github.com:beothorn/FilmeUtils.git</url>
 	</scm>
 
 	<build>

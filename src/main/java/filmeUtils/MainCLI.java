@@ -1,5 +1,8 @@
 package filmeUtils;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -16,6 +19,7 @@ public class MainCLI {
 	private static final String HELP_TOKEN = "h";
 	private static final String NEW_ADDITIONS_TOKEN = "n";
 	private static final String UNCOMPRESS_TOKEN = "d";
+	private static final String SUBS_DESTINATION_TOKEN = "l";
 	
 	private final Options options;
 	private boolean isDone;
@@ -30,6 +34,7 @@ public class MainCLI {
     	
     	options.addOption(newAdditionOption);
     	options.addOption(UNCOMPRESS_TOKEN,"descomprimir", false, "mostra o conteúdo dos arquivos");
+    	options.addOption(SUBS_DESTINATION_TOKEN,"local", true, "lugar onde as legendas serão extraídas");
     	options.addOption(HELP_TOKEN,"help", false, "mostra essa ajuda");
     	
     	isDone = false;
@@ -48,12 +53,6 @@ public class MainCLI {
     		printHelp();
     		return;
     	}
-	}
-
-	private void printHelp() {
-		final HelpFormatter formatter = new HelpFormatter();
-		formatter.printHelp(APPLICATION_NAME, options );
-		isDone = true;
 	}
 
 	public boolean isDone() {
@@ -87,5 +86,26 @@ public class MainCLI {
 
 	public boolean showCompressedContents() {
 		return cmd.hasOption(UNCOMPRESS_TOKEN);
+	}
+
+	private void printHelp() {
+		final HelpFormatter formatter = new HelpFormatter();
+		formatter.printHelp(APPLICATION_NAME, options );
+		isDone = true;
+	}
+
+	public File getSubtitlesDestinationFolder() {
+		if(cmd.hasOption(SUBS_DESTINATION_TOKEN)){
+			return new File(cmd.getOptionValue(SUBS_DESTINATION_TOKEN));
+		}
+		File createTempFile;
+		try {
+			createTempFile = File.createTempFile("FILMEUTILS", ""+System.currentTimeMillis());
+			createTempFile.delete();
+			createTempFile.mkdir();
+		} catch (final IOException e) {
+			throw new RuntimeException(e);
+		}
+		return createTempFile;
 	}
 }

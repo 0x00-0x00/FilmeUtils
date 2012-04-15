@@ -1,6 +1,5 @@
-package filmeUtils;
+package filmeUtils.subtitleSites;
 
-import httpClientUtils.HttpClientUtils;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -13,7 +12,6 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.jsoup.Jsoup;
@@ -21,21 +19,25 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import filmeUtils.FilmeUtilsHttpClient;
+import filmeUtils.SearchListener;
+
 public class LegendasTv {
 	
-	private static final String BASE_URL = "http://legendas.tv";
 	private static final String USER = "greasemonkey";
 	private static final String PASSWORD = "greasemonkey";
+	
+	
+	private static final String BASE_URL = "http://legendas.tv";
 	private static final String LOGIN_URL = BASE_URL+"/login_verificar.php";
 	private static final String NEW_ADDS_URL = "/destaques.php?start=";
 	private static final String SEARCH_ON_PAGE_URL = "/index.php?opcao=buscarlegenda&pagina=";
 	
-	private final DefaultHttpClient httpclient;
+	private final FilmeUtilsHttpClient httpclient;
 	
-	public LegendasTv(final DefaultHttpClient httpclient) {
+	public LegendasTv(final FilmeUtilsHttpClient httpclient) {
 		this.httpclient = httpclient;
 	}
-	
 	
 	public void login(){
 		final HttpPost httpost = new HttpPost(LOGIN_URL);
@@ -59,27 +61,23 @@ public class LegendasTv {
 		}
 	}
 
-	private void extractSubtitlesLinks(final String searchResult,final SearchListener searchListener) {
-		final Document parsed = Jsoup.parse(searchResult);
-		final Elements subtitleSpans = parsed.select("#conteudodest > div > span");
-		for(final Element subtitleSpan : subtitleSpans) {
-			final String subtitleName = getSubtitleName(subtitleSpan);
-			final String subtitleLink = getSubtitleLink(subtitleSpan);
-			searchListener.found(subtitleName, subtitleLink);
-		}
+	public void getNewer(final int newAddsToShow, final SearchListener searchListener){
+		final int startingIndex = 0;
+		
+		searchNewAdds(startingIndex, newAddsToShow, searchListener);
 	}
 
 	private void searchRecursively(final int page, final SearchListener searchListener, final String searchTerm)
 			throws UnsupportedEncodingException, IOException,ClientProtocolException {
 		final HttpPost httpost = new HttpPost(BASE_URL+SEARCH_ON_PAGE_URL+page);
 		
-	    final List <NameValuePair> nvps = new ArrayList <NameValuePair>();
+		final List <NameValuePair> nvps = new ArrayList <NameValuePair>();
 		nvps.add(new BasicNameValuePair("txtLegenda", searchTerm));
-	    nvps.add(new BasicNameValuePair("selTipo", "1"));
-	    nvps.add(new BasicNameValuePair("int_idioma", "1"));
-	    
-	    httpost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
-	    final String content = HttpClientUtils.executeAndGetResponseContents(httpost, httpclient);
+		nvps.add(new BasicNameValuePair("selTipo", "1"));
+		nvps.add(new BasicNameValuePair("int_idioma", "1"));
+		
+		httpost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
+		final String content = httpclient.executeAndGetResponseContents(httpost);
 		extractSubtitlesLinks(content,searchListener);
 		
 		final int nextPage = page+1;
@@ -87,6 +85,16 @@ public class LegendasTv {
 		final boolean pageLinkExists = pageLinkExists(content, nextPage);
 		if(pageLinkExists){
 			searchRecursively(nextPage, searchListener, searchTerm);
+		}
+	}
+	
+	private void extractSubtitlesLinks(final String searchResult,final SearchListener searchListener) {
+		final Document parsed = Jsoup.parse(searchResult);
+		final Elements subtitleSpans = parsed.select("#conteudodest > div > span");
+		for(final Element subtitleSpan : subtitleSpans) {
+			final String subtitleName = getSubtitleName(subtitleSpan);
+			final String subtitleLink = getSubtitleLink(subtitleSpan);
+			searchListener.found(subtitleName, subtitleLink);
 		}
 	}
 
@@ -120,13 +128,6 @@ public class LegendasTv {
 	}
 
 
-	public void getNewer(final int newAddsToShow, final SearchListener searchListener){
-		final int startingIndex = 0;
-		
-		searchNewAdds(startingIndex, newAddsToShow, searchListener);
-	}
-
-
 	private void searchNewAdds(final int startingIndex, final int howMuchNewAddsToShow, final SearchListener searchListener) {
 		final String content = getNewAddsStartingOnIndex(startingIndex);
 		int currentIndex = startingIndex;
@@ -153,7 +154,7 @@ public class LegendasTv {
 		final HttpGet httpGet = new HttpGet(BASE_URL+NEW_ADDS_URL+startingIndex);
 		String content;
 		try {
-			content = HttpClientUtils.executeAndGetResponseContents(httpGet,httpclient);
+			content = httpclient.executeAndGetResponseContents(httpGet);
 		} catch (final Exception e) {
 			throw new RuntimeException("Ocorreu um erro ao pegar novas legendas: ",e);
 		}

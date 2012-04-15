@@ -56,7 +56,7 @@ public class MainCLI {
 				"O token -d vai extrair as legendas no local passado no -e\n" +
 				"O magnet link aparece do lado da legenda,  use-o em seu cliente de torrent\n" +
 				"ou no próprio browser.\n" +
-				"Se quiser ver as novas legenda adicionas no legendas.tv use\n" +
+				"Se quiser ver as novas legenda adicionadas no legendas.tv use\n" +
 				"filmeUtils -n");
 		isDone = true;
 	}

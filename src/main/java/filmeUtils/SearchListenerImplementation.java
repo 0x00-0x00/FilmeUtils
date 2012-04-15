@@ -79,7 +79,7 @@ final class SearchListenerImplementation implements SearchListener {
 			}
 			
 			@SuppressWarnings("unchecked")
-			final Iterator<File> iterateFiles = FileUtils.iterateFiles(subtitleDestination, new String[]{"srt"}, true);
+			final Iterator<File> iterateFiles = FileUtils.iterateFiles(currentSubtitleCollection, new String[]{"srt"}, true);
 			while(iterateFiles.hasNext()){
 				final File next = iterateFiles.next();
 				String magnetLinkForFile;

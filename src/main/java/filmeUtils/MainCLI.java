@@ -20,6 +20,7 @@ public class MainCLI {
 	private static final String SHOULD_EXTRACT_TOKEN = "e";
 	private static final String SITE_LINKS_TOKEN = "s";
 	private static final String CREDENTIALS_TOKEN = "c";
+	private static final String SHOW_ALL_SUBTITLES_TOKEN = "t";
 	
 	private static final int NEW_ADDS_DEFAUL_SHOW_VALUE = 23;
 	private static final String USER = "greasemonkey";
@@ -40,6 +41,7 @@ public class MainCLI {
     	options.addOption(SHOULD_EXTRACT_TOKEN,"extrair", true, "Extrai e os arquivos de legendas para o diretório informado");
     	options.addOption(SITE_LINKS_TOKEN,"site-links", false, "Imprime o link direto para os arquivos de legendas.");
     	options.addOption(CREDENTIALS_TOKEN,"credenciais", true, "Informa usuário e senha no legendas.tv ex: joao/senha123, se não for informado, um usuário padrão é usado.");
+    	options.addOption(SHOW_ALL_SUBTITLES_TOKEN,"tudo", false, "Mostra o arquivo de legenda extraído, mesmo que o magnet link não seja encontrado.");
     	options.addOption(HELP_TOKEN,"help", false, "Imprime essa ajuda");
     	
     	isDone = false;
@@ -139,5 +141,9 @@ public class MainCLI {
 			return PASSWORD;
 		}
 		return cmd.getOptionValue(CREDENTIALS_TOKEN).split("/")[1];
+	}
+
+	public boolean showSubtitleIfMagnetWasNotFound() {
+		return cmd.hasOption(SHOW_ALL_SUBTITLES_TOKEN);
 	}
 }

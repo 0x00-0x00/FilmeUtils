@@ -1,8 +1,5 @@
 package filmeUtils.torrentSites;
 
-import java.io.IOException;
-
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -22,9 +19,15 @@ public class PirateBaySe {
 		this.httpclient = httpclient;
 	}
 
-	public String getMagnetLinkForFile(final String exactFileName) throws ClientProtocolException, IOException{
+	public String getMagnetLinkForFileOrNull(final String exactFileName){
 		final HttpGet httpGet = new HttpGet(THEPIRATEBAY_SE_SEARCH_URL+exactFileName+MORESEEDS_SEARCH_URL);
-		final String searchResult = httpclient.executeAndGetResponseContents(httpGet);
+		String searchResult;
+		try {
+			searchResult = httpclient.executeAndGetResponseContents(httpGet);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 		final Document parsed = Jsoup.parse(searchResult);
 		final Elements select = parsed.select("#searchResult tbody tr td a");
 		for (final Element element : select) {
@@ -33,7 +36,7 @@ public class PirateBaySe {
 				return href;
 			}
 		}
-		return "magnet link not found";
+		return null;
 	}
 	
 }

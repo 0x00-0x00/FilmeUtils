@@ -25,9 +25,11 @@ final class SearchListenerImplementation implements SearchListener {
 	private final PirateBaySe pirateBaySe;
 	private final File subtitleDestination;
 	private final boolean showDirectLink;
+	private final boolean showSubtitleIfMagnetWasNotFound;
 
-	SearchListenerImplementation(final FilmeUtilsHttpClient httpclient,final boolean showDirectLink, final File subtitleDestination) {
+	SearchListenerImplementation(final FilmeUtilsHttpClient httpclient,final boolean showDirectLink,final boolean showSubtitleIfMagnetWasNotFound, final File subtitleDestination) {
 		this.httpclient = httpclient;
+		this.showSubtitleIfMagnetWasNotFound = showSubtitleIfMagnetWasNotFound;
 		this.extractContents = subtitleDestination!= null;
 		this.showDirectLink = showDirectLink;
 		this.subtitleDestination = subtitleDestination;
@@ -51,6 +53,7 @@ final class SearchListenerImplementation implements SearchListener {
 			final String validNameForFile = name.replaceAll("[/ \\\\?]", "_");
 			final File currentSubtitleCollection = new File(subtitleDestination, validNameForFile);
 			currentSubtitleCollection.mkdir();
+			System.out.println("Extraindo legendas para "+currentSubtitleCollection.getAbsolutePath());
 			final File destFile = new File(currentSubtitleCollection,"compressedSubs");
 			destFile.createNewFile();
 			
@@ -85,14 +88,7 @@ final class SearchListenerImplementation implements SearchListener {
 			final Iterator<File> iterateFiles = FileUtils.iterateFiles(currentSubtitleCollection, new String[]{"srt"}, true);
 			while(iterateFiles.hasNext()){
 				final File next = iterateFiles.next();
-				String magnetLinkForFile;
-				final String subtitleName = next.getName().replaceAll("\\.[Ss][Rr][Tt]", "");
-				try {
-					magnetLinkForFile = pirateBaySe.getMagnetLinkForFile(subtitleName);
-				} catch (final Exception e) {
-					magnetLinkForFile = "error finding magnet";
-				}
-				System.out.println("\t"+subtitleName+" - "+magnetLinkForFile);
+				showFileName(next);
 			}
 			
 		} catch(final ConnectionPoolTimeoutException e){
@@ -100,5 +96,19 @@ final class SearchListenerImplementation implements SearchListener {
 		}catch (final IOException e1) {
 			throw new RuntimeException(e1);
 		}
+	}
+
+	private void showFileName(final File next) {
+		String magnetLinkForFile;
+		final String subtitleName = next.getName().replaceAll("\\.[Ss][Rr][Tt]", "");
+		String subtitleNameFormmated = "\t* "+subtitleName;
+		magnetLinkForFile = pirateBaySe.getMagnetLinkForFileOrNull(subtitleName);
+		if(magnetLinkForFile == null){
+			if(showSubtitleIfMagnetWasNotFound){
+				System.out.println(subtitleNameFormmated + " - magnet não foi encontrado");
+			}
+			return;
+		}
+		System.out.println(subtitleNameFormmated + " - " + magnetLinkForFile);
 	}
 }

@@ -27,7 +27,8 @@ public class Main {
         
         final File subtitlesDestinationFolder = cli.getSubtitlesDestinationFolderOrNull();
         final boolean showDirectLink = cli.showDirectLinks(); 
-		final SearchListener searchListener = new SearchListenerImplementation(httpclient, showDirectLink, subtitlesDestinationFolder);
+		boolean showSubtitleIfMagnetWasNotFound = cli.showSubtitleIfMagnetWasNotFound();
+		final SearchListener searchListener = new SearchListenerImplementation(httpclient, showDirectLink,showSubtitleIfMagnetWasNotFound, subtitlesDestinationFolder);
         
         if(cli.search()){
         	final String searchTerm = cli.searchTerm();

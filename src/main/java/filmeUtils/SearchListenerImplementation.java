@@ -17,12 +17,12 @@ import org.apache.http.conn.ConnectionPoolTimeoutException;
 
 import com.github.junrar.testutil.ExtractArchive;
 
-import filmeUtils.torrentSites.PirateBaySe;
+import filmeUtils.torrentSites.TorrentSearcher;
 
 final class SearchListenerImplementation implements SearchListener {
 	private final FilmeUtilsHttpClient httpclient;
 	private final boolean extractContents;
-	private final PirateBaySe pirateBaySe;
+	private final TorrentSearcher torrentSearcher;
 	private final File subtitleDestination;
 	private final boolean showDirectLink;
 	private final boolean showSubtitleIfMagnetWasNotFound;
@@ -33,7 +33,7 @@ final class SearchListenerImplementation implements SearchListener {
 		this.extractContents = subtitleDestination!= null;
 		this.showDirectLink = showDirectLink;
 		this.subtitleDestination = subtitleDestination;
-        pirateBaySe = new PirateBaySe(httpclient);
+        torrentSearcher = new TorrentSearcher(httpclient);
 	}
 
 	public void found(final String name, final String link) {
@@ -49,6 +49,7 @@ final class SearchListenerImplementation implements SearchListener {
 	}
 
 	private void unzipAndPrint(final String name,final String link){
+		String contentType = "YOU SHOULD NEVER SEE THIS, I'm so embarassed...";
 		try {
 			final String validNameForFile = name.replaceAll("[/ \\\\?]", "_");
 			final File currentSubtitleCollection = new File(subtitleDestination, validNameForFile);
@@ -58,11 +59,12 @@ final class SearchListenerImplementation implements SearchListener {
 			destFile.createNewFile();
 			
 	    	final HttpGet httpGet = new HttpGet(link);
-	    	final String contentType = httpclient.executeSaveResponseToFileReturnContentType(httpGet, destFile);
+	    	contentType = httpclient.executeSaveResponseToFileReturnContentType(httpGet, destFile);
 			
 			if(contentType.contains("rar")){
 				ExtractArchive.extractArchive(destFile, currentSubtitleCollection);
-			}else{
+			}
+			if(contentType.contains("zip")){
 				final ZipFile zipFile = new ZipFile(destFile);
 				
 				final Enumeration<? extends ZipEntry> entries = zipFile.entries();
@@ -84,6 +86,11 @@ final class SearchListenerImplementation implements SearchListener {
 				destFile.delete();
 			}
 			
+			if(contentType.contains("text/html")){
+				final String fileText = FileUtils.readFileToString(destFile);
+				System.out.println(fileText);
+			}
+			
 			@SuppressWarnings("unchecked")
 			final Iterator<File> iterateFiles = FileUtils.iterateFiles(currentSubtitleCollection, new String[]{"srt"}, true);
 			while(iterateFiles.hasNext()){
@@ -93,16 +100,17 @@ final class SearchListenerImplementation implements SearchListener {
 			
 		} catch(final ConnectionPoolTimeoutException e){
 			System.out.println("Tempo máximo de requisição atingido ("+FilmeUtilsHttpClient.TIMEOUT+" segundos)");
-		}catch (final IOException e1) {
-			throw new RuntimeException(e1);
+		}catch (final IOException e) {
+			System.out.println(contentType);
+			e.printStackTrace();//not the end of the world as we know it, and I fell fine
 		}
 	}
 
 	private void showFileName(final File next) {
 		String magnetLinkForFile;
 		final String subtitleName = next.getName().replaceAll("\\.[Ss][Rr][Tt]", "");
-		String subtitleNameFormmated = "\t* "+subtitleName;
-		magnetLinkForFile = pirateBaySe.getMagnetLinkForFileOrNull(subtitleName);
+		final String subtitleNameFormmated = "\t* "+subtitleName;
+		magnetLinkForFile = torrentSearcher.getMagnetLinkForFileOrNull(subtitleName);
 		if(magnetLinkForFile == null){
 			if(showSubtitleIfMagnetWasNotFound){
 				System.out.println(subtitleNameFormmated + " - magnet não foi encontrado");

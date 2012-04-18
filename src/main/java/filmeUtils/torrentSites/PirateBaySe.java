@@ -9,7 +9,7 @@ import org.jsoup.select.Elements;
 import filmeUtils.FilmeUtilsHttpClient;
 
 
-public class PirateBaySe {
+public class PirateBaySe implements TorrentSite {
 
 	private static final String THEPIRATEBAY_SE_SEARCH_URL = "http://thepiratebay.se/search/";
 	private static final String MORESEEDS_SEARCH_URL = "/0/7/0";
@@ -19,7 +19,10 @@ public class PirateBaySe {
 		this.httpclient = httpclient;
 	}
 
-	public String getMagnetLinkForFileOrNull(final String exactFileName){
+	/* (non-Javadoc)
+	 * @see filmeUtils.torrentSites.TorrentSite#getMagnetLinkFirstResultOrNull(java.lang.String)
+	 */
+	public String getMagnetLinkFirstResultOrNull(final String exactFileName){
 		final HttpGet httpGet = new HttpGet(THEPIRATEBAY_SE_SEARCH_URL+exactFileName+MORESEEDS_SEARCH_URL);
 		String searchResult;
 		try {

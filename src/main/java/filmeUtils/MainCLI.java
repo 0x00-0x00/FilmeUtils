@@ -23,8 +23,8 @@ public class MainCLI {
 	private static final String SHOW_ALL_SUBTITLES_TOKEN = "t";
 	
 	private static final int NEW_ADDS_DEFAUL_SHOW_VALUE = 23;
-	private static final String USER = "greasemonkey";
-	private static final String PASSWORD = "greasemonkey";
+	private static final String USER = "filmeutils";
+	private static final String PASSWORD = "filmeutilsfilme";
 	
 	private final Options options;
 	private boolean isDone;

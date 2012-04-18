@@ -43,7 +43,11 @@ public class LegendasTv {
         
         try {
 			httpost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
-			httpclient.execute(httpost);
+			final String executeAndGetResponseContents = httpclient.executeAndGetResponseContents(httpost);
+			if(executeAndGetResponseContents.contains("Dados incorretos")){
+				System.out.println("Login/senha incorretos");
+				throw new RuntimeException();
+			}
 		} catch (final Exception e) {
 			throw new RuntimeException("Ocorreu um erro na autenticação: ",e);
 		}

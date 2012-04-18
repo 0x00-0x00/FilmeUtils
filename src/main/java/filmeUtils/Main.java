@@ -18,17 +18,17 @@ public class Main {
     		return;
     	}
     	
+    	final File subtitlesDestinationFolder = cli.getSubtitlesDestinationFolderOrNull();
+    	final boolean showDirectLink = cli.showDirectLinks(); 
+    	boolean showSubtitleIfMagnetWasNotFound = cli.showSubtitleIfMagnetWasNotFound();
+    	
         final SimpleHttpClient httpclient = new SimpleHttpClient();
+        final SearchListener searchListener = new SearchListenerImplementation(httpclient, showDirectLink,showSubtitleIfMagnetWasNotFound, subtitlesDestinationFolder);
         
         
         final LegendasTv legendasTv = new LegendasTv(httpclient);
         System.out.println("Autenticando...");
         legendasTv.login(cli.getUser(),cli.getPassword());
-        
-        final File subtitlesDestinationFolder = cli.getSubtitlesDestinationFolderOrNull();
-        final boolean showDirectLink = cli.showDirectLinks(); 
-		boolean showSubtitleIfMagnetWasNotFound = cli.showSubtitleIfMagnetWasNotFound();
-		final SearchListener searchListener = new SearchListenerImplementation(httpclient, showDirectLink,showSubtitleIfMagnetWasNotFound, subtitlesDestinationFolder);
         
         if(cli.search()){
         	final String searchTerm = cli.searchTerm();

@@ -11,6 +11,7 @@ public class TorrentSearcher {
 
 	public TorrentSearcher(final SimpleHttpClient httpclient) {
 		sites = new ArrayList<TorrentSite>();
+		sites.add(new BitSnoop(httpclient));
 		sites.add(new PirateBaySe(httpclient));
 	}
 	

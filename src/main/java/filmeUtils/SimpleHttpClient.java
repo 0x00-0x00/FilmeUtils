@@ -40,32 +40,6 @@ public class SimpleHttpClient {
 		HttpConnectionParams.setSoTimeout        (httpParameters, socketTimeoutSec * 1000);
 	}
 	
-	private String executeAndGetResponseContents(final HttpUriRequest httpost)throws IOException, ClientProtocolException {
-		final HttpResponse response = execute(httpost);
-	    final HttpEntity entity = response.getEntity();
-		final InputStream contentIS = entity.getContent();
-		final String content = IOUtils.toString(contentIS);
-		contentIS.close();
-		return content;
-	}
-	
-	private String executeSaveResponseToFileReturnContentType(final HttpUriRequest httpost,final File dest)throws IOException, ClientProtocolException {
-		final HttpResponse response = execute(httpost);
-	    final HttpEntity entity = response.getEntity();
-	    final String contentType = entity.getContentType().getValue();
-		final InputStream in = entity.getContent();
-		final OutputStream out = new FileOutputStream(dest);
-		IOUtils.copy(in, out);
-		out.flush();
-		out.close();
-		in.close();
-		return contentType;
-	}
-
-	public HttpResponse execute(final HttpUriRequest httpost) throws ClientProtocolException, IOException {
-		return httpclient.execute(httpost);
-	}
-
 	public void close() {
 		httpclient.getConnectionManager().shutdown();
 	}
@@ -97,6 +71,32 @@ public class SimpleHttpClient {
 	public String getToFile(final String link, final File destFile) throws ClientProtocolException, IOException {
 		final HttpGet httpGet = new HttpGet(link);
 		return executeSaveResponseToFileReturnContentType(httpGet, destFile);
+	}
+
+	private HttpResponse execute(final HttpUriRequest httpost) throws ClientProtocolException, IOException {
+		return httpclient.execute(httpost);
+	}
+
+	private String executeAndGetResponseContents(final HttpUriRequest httpost)throws IOException, ClientProtocolException {
+		final HttpResponse response = execute(httpost);
+	    final HttpEntity entity = response.getEntity();
+		final InputStream contentIS = entity.getContent();
+		final String content = IOUtils.toString(contentIS);
+		contentIS.close();
+		return content;
+	}
+	
+	private String executeSaveResponseToFileReturnContentType(final HttpUriRequest httpost,final File dest)throws IOException, ClientProtocolException {
+		final HttpResponse response = execute(httpost);
+	    final HttpEntity entity = response.getEntity();
+	    final String contentType = entity.getContentType().getValue();
+		final InputStream in = entity.getContent();
+		final OutputStream out = new FileOutputStream(dest);
+		IOUtils.copy(in, out);
+		out.flush();
+		out.close();
+		in.close();
+		return contentType;
 	}
 
 }

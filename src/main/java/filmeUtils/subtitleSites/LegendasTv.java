@@ -3,23 +3,16 @@ package filmeUtils.subtitleSites;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import filmeUtils.FilmeUtilsHttpClient;
+import filmeUtils.SimpleHttpClient;
 import filmeUtils.SearchListener;
 
 public class LegendasTv {
@@ -29,22 +22,20 @@ public class LegendasTv {
 	private static final String NEW_ADDS_URL = "/destaques.php?start=";
 	private static final String SEARCH_ON_PAGE_URL = "/index.php?opcao=buscarlegenda&pagina=";
 	
-	private final FilmeUtilsHttpClient httpclient;
+	private final SimpleHttpClient httpclient;
 	
-	public LegendasTv(final FilmeUtilsHttpClient httpclient) {
+	public LegendasTv(final SimpleHttpClient httpclient) {
 		this.httpclient = httpclient;
 	}
 	
-	public void login(final String user, final String password){
-		final HttpPost httpost = new HttpPost(LOGIN_URL);
-        final List <NameValuePair> nvps = new ArrayList <NameValuePair>();
-        nvps.add(new BasicNameValuePair("txtLogin", user));
-        nvps.add(new BasicNameValuePair("txtSenha", password));
-        
+	public void login(final String user, final String password){        
         try {
-			httpost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
-			final String executeAndGetResponseContents = httpclient.executeAndGetResponseContents(httpost);
-			if(executeAndGetResponseContents.contains("Dados incorretos")){
+			final HashMap<String, String> params = new HashMap<String, String>();
+			params.put("txtLogin", user);
+			params.put("txtSenha", password);
+			final String postResults = httpclient.post(LOGIN_URL, params);
+			
+			if(postResults.contains("Dados incorretos")){
 				System.out.println("Login/senha incorretos");
 				throw new RuntimeException();
 			}
@@ -69,15 +60,15 @@ public class LegendasTv {
 
 	private void searchRecursively(final int page, final SearchListener searchListener, final String searchTerm)
 			throws UnsupportedEncodingException, IOException,ClientProtocolException {
-		final HttpPost httpost = new HttpPost(BASE_URL+SEARCH_ON_PAGE_URL+page);
+		final String postUrl = BASE_URL+SEARCH_ON_PAGE_URL+page;
 		
-		final List <NameValuePair> nvps = new ArrayList <NameValuePair>();
-		nvps.add(new BasicNameValuePair("txtLegenda", searchTerm));
-		nvps.add(new BasicNameValuePair("selTipo", "1"));
-		nvps.add(new BasicNameValuePair("int_idioma", "1"));
 		
-		httpost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
-		final String content = httpclient.executeAndGetResponseContents(httpost);
+		final HashMap<String, String> params = new HashMap<String, String>();
+		params.put("txtLegenda", searchTerm);
+		params.put("selTipo", "1");
+		params.put("int_idioma", "1");
+		
+		final String content = httpclient.post(postUrl,params);
 		extractSubtitlesLinks(content,searchListener);
 		
 		final int nextPage = page+1;
@@ -151,14 +142,12 @@ public class LegendasTv {
 
 
 	private String getNewAddsStartingOnIndex(final int startingIndex) {
-		final HttpGet httpGet = new HttpGet(BASE_URL+NEW_ADDS_URL+startingIndex);
-		String content;
 		try {
-			content = httpclient.executeAndGetResponseContents(httpGet);
+			final String get = BASE_URL+NEW_ADDS_URL+startingIndex;
+			return httpclient.get(get);
 		} catch (final Exception e) {
 			throw new RuntimeException("Ocorreu um erro ao pegar novas legendas: ",e);
 		}
-		return content;
 	}
 	
 }

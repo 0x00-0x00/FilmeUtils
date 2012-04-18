@@ -18,7 +18,7 @@ public class Main {
     		return;
     	}
     	
-        final FilmeUtilsHttpClient httpclient = new FilmeUtilsHttpClient();
+        final SimpleHttpClient httpclient = new SimpleHttpClient();
         
         
         final LegendasTv legendasTv = new LegendasTv(httpclient);

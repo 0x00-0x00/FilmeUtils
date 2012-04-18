@@ -12,7 +12,6 @@ import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.ConnectionPoolTimeoutException;
 
 import com.github.junrar.testutil.ExtractArchive;
@@ -20,14 +19,14 @@ import com.github.junrar.testutil.ExtractArchive;
 import filmeUtils.torrentSites.TorrentSearcher;
 
 final class SearchListenerImplementation implements SearchListener {
-	private final FilmeUtilsHttpClient httpclient;
+	private final SimpleHttpClient httpclient;
 	private final boolean extractContents;
 	private final TorrentSearcher torrentSearcher;
 	private final File subtitleDestination;
 	private final boolean showDirectLink;
 	private final boolean showSubtitleIfMagnetWasNotFound;
 
-	SearchListenerImplementation(final FilmeUtilsHttpClient httpclient,final boolean showDirectLink,final boolean showSubtitleIfMagnetWasNotFound, final File subtitleDestination) {
+	SearchListenerImplementation(final SimpleHttpClient httpclient,final boolean showDirectLink,final boolean showSubtitleIfMagnetWasNotFound, final File subtitleDestination) {
 		this.httpclient = httpclient;
 		this.showSubtitleIfMagnetWasNotFound = showSubtitleIfMagnetWasNotFound;
 		this.extractContents = subtitleDestination!= null;
@@ -58,8 +57,7 @@ final class SearchListenerImplementation implements SearchListener {
 			final File destFile = new File(currentSubtitleCollection,"compressedSubs");
 			destFile.createNewFile();
 			
-	    	final HttpGet httpGet = new HttpGet(link);
-	    	contentType = httpclient.executeSaveResponseToFileReturnContentType(httpGet, destFile);
+	    	contentType = httpclient.getToFile(link, destFile);
 			
 			if(contentType.contains("rar")){
 				ExtractArchive.extractArchive(destFile, currentSubtitleCollection);
@@ -99,7 +97,7 @@ final class SearchListenerImplementation implements SearchListener {
 			}
 			
 		} catch(final ConnectionPoolTimeoutException e){
-			System.out.println("Tempo máximo de requisição atingido ("+FilmeUtilsHttpClient.TIMEOUT+" segundos)");
+			System.out.println("Tempo máximo de requisição atingido ("+SimpleHttpClient.TIMEOUT+" segundos)");
 		}catch (final IOException e) {
 			System.out.println(contentType);
 			e.printStackTrace();//not the end of the world as we know it, and I fell fine

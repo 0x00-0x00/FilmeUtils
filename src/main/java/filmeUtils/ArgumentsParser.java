@@ -10,7 +10,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 
-public class MainCLI {
+public class ArgumentsParser {
 
 	private static final String VERSION = "1.5";
 	private static final String APPLICATION_NAME = "filmeUtils";
@@ -18,6 +18,7 @@ public class MainCLI {
 	private static final String HELP_TOKEN = "h";
 	private static final String NEW_ADDITIONS_TOKEN = "n";
 	private static final String SHOULD_EXTRACT_TOKEN = "e";
+	private static final String SHOULD_USE_GUI = "g";
 	private static final String SITE_LINKS_TOKEN = "s";
 	private static final String CREDENTIALS_TOKEN = "c";
 	private static final String SHOW_ALL_SUBTITLES_TOKEN = "t";
@@ -30,7 +31,7 @@ public class MainCLI {
 	private boolean isDone;
 	private CommandLine cmd;
 
-	public MainCLI() {
+	public ArgumentsParser() {
 		options = new Options();
     	options.addOption(SEARCH_TOKEN,"procura", true, "procura legendas");
     	
@@ -38,6 +39,7 @@ public class MainCLI {
     	newAdditionOption.setOptionalArg(true);
     	
     	options.addOption(newAdditionOption);
+    	options.addOption(SHOULD_USE_GUI,"gui", false, "Usa interface gráfica");
     	options.addOption(SHOULD_EXTRACT_TOKEN,"extrair", true, "Extrai e os arquivos de legendas para o diretório informado");
     	options.addOption(SITE_LINKS_TOKEN,"site-links", false, "Imprime o link direto para os arquivos de legendas.");
     	options.addOption(CREDENTIALS_TOKEN,"credenciais", true, "Informa usuário e senha no legendas.tv ex: joao/senha123, se não for informado, um usuário padrão é usado.");
@@ -145,5 +147,9 @@ public class MainCLI {
 
 	public boolean showSubtitleIfMagnetWasNotFound() {
 		return cmd.hasOption(SHOW_ALL_SUBTITLES_TOKEN);
+	}
+	
+	public boolean usingGuiMome() {
+		return cmd.hasOption(SHOULD_USE_GUI);
 	}
 }

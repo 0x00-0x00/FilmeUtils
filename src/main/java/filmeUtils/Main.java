@@ -5,11 +5,13 @@ import java.io.IOException;
 
 import org.apache.http.client.ClientProtocolException;
 
+import filmeUtils.http.SimpleHttpClientImpl;
+import filmeUtils.subtitleSites.BadLoginException;
 import filmeUtils.subtitleSites.LegendasTv;
 
 public class Main {
 
-	public static void main(final String[] args) throws ClientProtocolException, IOException{
+	public static void main(final String[] args) throws ClientProtocolException, IOException, BadLoginException{
 		turnJunrarLoggingOff();
 		
     	final MainCLI cli = new MainCLI();
@@ -20,13 +22,17 @@ public class Main {
     	
     	final File subtitlesDestinationFolder = cli.getSubtitlesDestinationFolderOrNull();
     	final boolean showDirectLink = cli.showDirectLinks(); 
-    	boolean showSubtitleIfMagnetWasNotFound = cli.showSubtitleIfMagnetWasNotFound();
+    	final boolean showSubtitleIfMagnetWasNotFound = cli.showSubtitleIfMagnetWasNotFound();
     	
-        final SimpleHttpClient httpclient = new SimpleHttpClient();
+        final SimpleHttpClientImpl httpclient = new SimpleHttpClientImpl();
         final SearchListener searchListener = new SearchListenerImplementation(httpclient, showDirectLink,showSubtitleIfMagnetWasNotFound, subtitlesDestinationFolder);
         
         
-        final LegendasTv legendasTv = new LegendasTv(httpclient);
+        final LegendasTv legendasTv = new LegendasTv(httpclient, new OutputListener() {
+			public void out(final String string) {
+				System.out.println(string);
+			}
+		});
         System.out.println("Autenticando...");
         legendasTv.login(cli.getUser(),cli.getPassword());
         

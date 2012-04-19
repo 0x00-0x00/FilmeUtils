@@ -3,7 +3,7 @@ package filmeUtils.torrentSites;
 import java.util.ArrayList;
 import java.util.List;
 
-import filmeUtils.SimpleHttpClient;
+import filmeUtils.http.SimpleHttpClient;
 
 public class TorrentSearcher {
 

@@ -6,7 +6,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import filmeUtils.SimpleHttpClient;
+import filmeUtils.http.SimpleHttpClient;
 
 
 public class PirateBaySe implements TorrentSite {

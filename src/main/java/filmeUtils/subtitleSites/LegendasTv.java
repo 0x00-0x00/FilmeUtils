@@ -12,8 +12,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import filmeUtils.SimpleHttpClient;
+import filmeUtils.OutputListener;
 import filmeUtils.SearchListener;
+import filmeUtils.http.SimpleHttpClient;
 
 public class LegendasTv {
 	
@@ -23,12 +24,14 @@ public class LegendasTv {
 	private static final String SEARCH_ON_PAGE_URL = "/index.php?opcao=buscarlegenda&pagina=";
 	
 	private final SimpleHttpClient httpclient;
+	private final OutputListener outputListener;
 	
-	public LegendasTv(final SimpleHttpClient httpclient) {
+	public LegendasTv(final SimpleHttpClient httpclient, final OutputListener outputListener) {
 		this.httpclient = httpclient;
+		this.outputListener = outputListener;
 	}
 	
-	public void login(final String user, final String password){        
+	public void login(final String user, final String password) throws BadLoginException{        
         try {
 			final HashMap<String, String> params = new HashMap<String, String>();
 			params.put("txtLogin", user);
@@ -36,11 +39,11 @@ public class LegendasTv {
 			final String postResults = httpclient.post(LOGIN_URL, params);
 			
 			if(postResults.contains("Dados incorretos")){
-				System.out.println("Login/senha incorretos");
-				throw new RuntimeException();
+				outputListener.out("Login/senha incorretos");
+				throw new BadLoginException();
 			}
 		} catch (final Exception e) {
-			throw new RuntimeException("Ocorreu um erro na autenticação: ",e);
+			throw new BadLoginException(e);
 		}
 	}
 

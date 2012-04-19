@@ -1,4 +1,4 @@
-package filmeUtils;
+package filmeUtils.http;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -26,13 +26,13 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 
-public class SimpleHttpClient {
+public class SimpleHttpClientImpl implements SimpleHttpClient {
 
 	public static final int TIMEOUT = 60;
 	private final DefaultHttpClient httpclient;
 	
-	public SimpleHttpClient() {
-		httpclient = new DefaultHttpClient();
+	public SimpleHttpClientImpl() {
+		httpclient = new DefaultHttpClient(); 
 		final HttpParams httpParameters = httpclient.getParams();
 		final int connectionTimeOutSec= TIMEOUT;
 		final int socketTimeoutSec = TIMEOUT;
@@ -40,12 +40,12 @@ public class SimpleHttpClient {
 		HttpConnectionParams.setSoTimeout        (httpParameters, socketTimeoutSec * 1000);
 	}
 	
-	public void close() {
+	public void close() { 
 		httpclient.getConnectionManager().shutdown();
 	}
 
 	public String get(final String get) throws ClientProtocolException, IOException {
-		final HttpGet httpGet = new HttpGet(get);
+		final HttpGet httpGet = new HttpGet(get); 
 		return executeAndGetResponseContents(httpGet);
 	}
 
@@ -71,7 +71,7 @@ public class SimpleHttpClient {
 	public String getToFile(final String link, final File destFile) throws ClientProtocolException, IOException {
 		final HttpGet httpGet = new HttpGet(link);
 		return executeSaveResponseToFileReturnContentType(httpGet, destFile);
-	}
+	} 
 
 	private HttpResponse execute(final HttpUriRequest httpost) throws ClientProtocolException, IOException {
 		return httpclient.execute(httpost);

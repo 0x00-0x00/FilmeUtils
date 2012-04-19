@@ -13,18 +13,21 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+import filmeUtils.OutputListener;
 import filmeUtils.SearchListener;
-import filmeUtils.SimpleHttpClient;
+import filmeUtils.http.SimpleHttpClient;
+import filmeUtils.http.SimpleHttpClientImpl;
+import filmeUtils.subtitleSites.BadLoginException;
 import filmeUtils.subtitleSites.LegendasTv;
 
 public class SearchScreen extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JTextArea resultsArea;
-	private ExecutorService executor;
+	private final ExecutorService executor;
 
-	public static void main(String[] args) {
-		SearchScreen screen = new SearchScreen();
+	public static void main(final String[] args) {
+		final SearchScreen screen = new SearchScreen();
 		screen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
@@ -34,7 +37,7 @@ public class SearchScreen extends JFrame {
 	}
 
 	private void addComponents() {
-		JPanel mainPanel = new JPanel();
+		final JPanel mainPanel = new JPanel();
 		mainPanel.setLayout(new BorderLayout());
 		mainPanel.add(createSearchField(), BorderLayout.NORTH);
 		mainPanel.add(getResultsArea(), BorderLayout.CENTER);
@@ -53,7 +56,7 @@ public class SearchScreen extends JFrame {
 	private JTextField createSearchField() {
 		final JTextField result = new JTextField(40);
 		result.setFont(result.getFont().deriveFont(30f));
-		result.addActionListener(new ActionListener() {  public void actionPerformed(ActionEvent e) {
+		result.addActionListener(new ActionListener() {  public void actionPerformed(final ActionEvent e) {
 			executor.execute(new Runnable() {  public void run() {
 				performQueryWith(result.getText());				
 			}});
@@ -61,14 +64,22 @@ public class SearchScreen extends JFrame {
 		return result;
 	}
 
-	protected void performQueryWith(String text) {
-		SimpleHttpClient simpleHttpClient = new SimpleHttpClient();
-		LegendasTv legendasTv = new LegendasTv(simpleHttpClient);
+	protected void performQueryWith(final String text) {
+		final SimpleHttpClient simpleHttpClient = new SimpleHttpClientImpl();
+		final LegendasTv legendasTv = new LegendasTv(simpleHttpClient, new OutputListener() {
+			public void out(final String string) {
+				resultsArea.append(string);
+			}
+		});
 		resultsArea.setText("Autenticando, aguarde...");
-		legendasTv.login("filmeutils", "filmeutilsfilme");
+		try {
+			legendasTv.login("filmeutils", "filmeutilsfilme");
+		} catch (final BadLoginException e) {
+			resultsArea.setText(e.getMessage());
+		}
 		resultsArea.setText("Pesquisando " + text + " , aguarde...");
 		legendasTv.search(text, new SearchListener() {
-			public void found(String name, String link) {
+			public void found(final String name, final String link) {
 				if(!resultsArea.getText().isEmpty()){
 					resultsArea.append("\n");
 				}

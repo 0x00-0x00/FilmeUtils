@@ -16,17 +16,18 @@ import org.apache.http.conn.ConnectionPoolTimeoutException;
 
 import com.github.junrar.testutil.ExtractArchive;
 
+import filmeUtils.http.SimpleHttpClientImpl;
 import filmeUtils.torrentSites.TorrentSearcher;
 
 final class SearchListenerImplementation implements SearchListener {
-	private final SimpleHttpClient httpclient;
+	private final SimpleHttpClientImpl httpclient;
 	private final boolean extractContents;
 	private final TorrentSearcher torrentSearcher;
 	private final File subtitleDestination;
 	private final boolean showDirectLink;
 	private final boolean showSubtitleIfMagnetWasNotFound;
 
-	SearchListenerImplementation(final SimpleHttpClient httpclient,final boolean showDirectLink,final boolean showSubtitleIfMagnetWasNotFound, final File subtitleDestination) {
+	SearchListenerImplementation(final SimpleHttpClientImpl httpclient,final boolean showDirectLink,final boolean showSubtitleIfMagnetWasNotFound, final File subtitleDestination) {
 		this.httpclient = httpclient;
 		this.showSubtitleIfMagnetWasNotFound = showSubtitleIfMagnetWasNotFound;
 		this.extractContents = subtitleDestination!= null;
@@ -97,7 +98,7 @@ final class SearchListenerImplementation implements SearchListener {
 			}
 			
 		} catch(final ConnectionPoolTimeoutException e){
-			System.out.println("Tempo máximo de requisição atingido ("+SimpleHttpClient.TIMEOUT+" segundos)");
+			System.out.println("Tempo máximo de requisição atingido ("+SimpleHttpClientImpl.TIMEOUT+" segundos)");
 		}catch (final IOException e) {
 			System.out.println(contentType);
 			e.printStackTrace();//not the end of the world as we know it, and I fell fine

@@ -49,4 +49,8 @@ class SimpleHttpClientMock implements SimpleHttpClient {
 		}
 	}
 
+	public boolean requested(String string) {
+		return true;
+	}
+
 }

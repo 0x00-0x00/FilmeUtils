@@ -12,7 +12,7 @@ import org.apache.commons.cli.PosixParser;
 
 public class ArgumentsParser {
 
-	private static final String VERSION = "1.5";
+	private static final String VERSION = "1.6";
 	private static final String APPLICATION_NAME = "filmeUtils";
 	private static final String SEARCH_TOKEN = "p";
 	private static final String HELP_TOKEN = "h";

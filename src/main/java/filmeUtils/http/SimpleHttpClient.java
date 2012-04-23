@@ -13,5 +13,4 @@ public interface SimpleHttpClient {
 	public String post(final String postUrl, final Map<String, String> params)throws ClientProtocolException, IOException;
 	public String get(final String get) throws ClientProtocolException,IOException;
 	public void close();
-
 }

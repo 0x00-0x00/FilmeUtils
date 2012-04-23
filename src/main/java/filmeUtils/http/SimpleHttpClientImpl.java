@@ -1,10 +1,14 @@
 package filmeUtils.http;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +27,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
@@ -33,9 +36,16 @@ public class SimpleHttpClientImpl implements SimpleHttpClient {
 
 	public static final int TIMEOUT = 60;
 	private final DefaultHttpClient httpclient;
+	private final File cookieFile;
 	
-	public SimpleHttpClientImpl() {
+	public SimpleHttpClientImpl(){
+		this(null);
+	}
+	
+	public SimpleHttpClientImpl(final File cookieFile) {
+		this.cookieFile = cookieFile;
 		httpclient = new DefaultHttpClient(); 
+		loadCookies();
 		final HttpParams httpParameters = httpclient.getParams();
 		final int connectionTimeOutSec= TIMEOUT;
 		final int socketTimeoutSec = TIMEOUT;
@@ -49,7 +59,8 @@ public class SimpleHttpClientImpl implements SimpleHttpClient {
 
 	public String get(final String get) throws ClientProtocolException, IOException {
 		final HttpGet httpGet = new HttpGet(get); 
-		return executeAndGetResponseContents(httpGet);
+		final String result = executeAndGetResponseContents(httpGet);
+		return result;
 	}
 
 	public String post(final String postUrl, final Map<String, String> params) throws ClientProtocolException, IOException {
@@ -60,12 +71,14 @@ public class SimpleHttpClientImpl implements SimpleHttpClient {
 			nvps.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
 		}
 		httpost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
-		return executeAndGetResponseContents(httpost);
+		final String result = executeAndGetResponseContents(httpost);
+		return result;
 	}
 
 	public String getOrNull(final String url) {
 		try {
-			return get(url);
+			final String getResult = get(url);
+			return getResult;
 		} catch (final Exception e) {
 			return null;
 		}
@@ -86,15 +99,7 @@ public class SimpleHttpClientImpl implements SimpleHttpClient {
 		final InputStream contentIS = entity.getContent();
 		final String content = IOUtils.toString(contentIS);
 		contentIS.close();
-		CookieStore cookieStore = httpclient.getCookieStore();
-		List<Cookie> cookies = cookieStore.getCookies();
-		for (Cookie cookie : cookies) {
-			if(cookie instanceof BasicClientCookie){
-				System.out.println("Basic cookie add visitor here");
-			}else{
-				System.out.println("Whaaat?");
-			}
-		}
+		storeCookies();
 		return content;
 	}
 	
@@ -108,7 +113,66 @@ public class SimpleHttpClientImpl implements SimpleHttpClient {
 		out.flush();
 		out.close();
 		in.close();
+		storeCookies();
 		return contentType;
+	}
+
+	@SuppressWarnings("unchecked")
+	private void loadCookies(){
+		if(cookieFile == null)return;
+		if(!cookieFile.exists())return;
+		
+		List<Serializable> serializedCookies = null; 
+		FileInputStream fis = null;
+		ObjectInputStream in = null;
+		try{
+			fis = new FileInputStream(cookieFile);
+			in = new ObjectInputStream(fis);
+			serializedCookies = (List<Serializable>)in.readObject();
+			in.close();
+		}catch(final IOException ex){
+			ex.printStackTrace();
+		}catch(final ClassNotFoundException ex){
+			ex.printStackTrace();
+		}
+		final CookieStore cookieStore = httpclient.getCookieStore();
+		for (final Serializable serializable : serializedCookies) {
+			final Cookie cookie = (Cookie) serializable;
+			cookieStore.addCookie(cookie);
+		}
+	}
+	
+	private void storeCookies() throws IOException{
+		if(cookieFile == null)return;
+		
+		if(!cookieFile.exists()){
+			cookieFile.createNewFile(); 
+		}
+		
+		final CookieStore cookieStore = httpclient.getCookieStore();
+		
+		final List<Cookie> cookies = cookieStore.getCookies();
+		final List<Serializable> serializableCookies = new ArrayList<Serializable>();
+		for (final Cookie cookie : cookies) {
+			try{
+				final Serializable serializableCookie = (Serializable) cookie;
+				serializableCookies.add(serializableCookie);
+			}catch (final ClassCastException e) {
+				serializableCookies.add(new SerializableCookie(cookie));
+			}
+		}
+		
+		FileOutputStream fos = null;
+		ObjectOutputStream out = null;
+		try{
+			fos = new FileOutputStream(cookieFile);
+			out = new ObjectOutputStream(fos);
+			out.writeObject(serializableCookies);
+			out.close();
+		}catch(final IOException ex){
+			ex.printStackTrace();
+		}
+		
 	}
 
 }

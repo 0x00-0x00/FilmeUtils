@@ -31,12 +31,15 @@ public class LegendasTv {
 		this.outputListener = outputListener;
 	}
 	
-	public void login(final String user, final String password) throws BadLoginException{        
+	public void login(final String user, final String password) throws BadLoginException{		
         try {
 			final HashMap<String, String> params = new HashMap<String, String>();
 			params.put("txtLogin", user);
 			params.put("txtSenha", password);
+			
+			outputListener.out("Autenticando como '"+user+"' ...");
 			final String postResults = httpclient.post(LOGIN_URL, params);
+			outputListener.out("Autenticado como '"+user+"'");
 			
 			if(postResults.contains("Dados incorretos")){
 				outputListener.out("Login/senha incorretos");

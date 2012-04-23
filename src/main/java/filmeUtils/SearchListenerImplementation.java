@@ -11,18 +11,19 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.conn.ConnectionPoolTimeoutException;
 
 import filmeUtils.extraction.ExtractorImpl;
+import filmeUtils.http.SimpleHttpClient;
 import filmeUtils.http.SimpleHttpClientImpl;
 import filmeUtils.torrentSites.TorrentSearcher;
 
 final class SearchListenerImplementation implements SearchListener {
-	private final SimpleHttpClientImpl httpclient;
+	private final SimpleHttpClient httpclient;
 	private final boolean extractContents;
 	private final TorrentSearcher torrentSearcher;
 	private final File subtitleDestination;
 	private final boolean showDirectLink;
 	private final boolean showSubtitleIfMagnetWasNotFound;
 
-	SearchListenerImplementation(final SimpleHttpClientImpl httpclient,final boolean showDirectLink,final boolean showSubtitleIfMagnetWasNotFound, final File subtitleDestination) {
+	SearchListenerImplementation(final SimpleHttpClient httpclient,final boolean showDirectLink,final boolean showSubtitleIfMagnetWasNotFound, final File subtitleDestination) {
 		this.httpclient = httpclient;
 		this.showSubtitleIfMagnetWasNotFound = showSubtitleIfMagnetWasNotFound;
 		this.extractContents = subtitleDestination!= null;

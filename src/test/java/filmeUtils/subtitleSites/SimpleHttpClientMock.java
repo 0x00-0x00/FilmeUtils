@@ -53,4 +53,7 @@ class SimpleHttpClientMock implements SimpleHttpClient {
 		return true;
 	}
 
+	public void storeCookiesOn(final File storeDir) {
+	}
+
 }

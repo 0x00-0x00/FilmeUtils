@@ -42,7 +42,8 @@ public class ArgumentsParser {
     	options.addOption(SHOULD_USE_GUI,"gui", false, "Usa interface gráfica");
     	options.addOption(SHOULD_EXTRACT_TOKEN,"extrair", true, "Extrai e os arquivos de legendas para o diretório informado");
     	options.addOption(SITE_LINKS_TOKEN,"site-links", false, "Imprime o link direto para os arquivos de legendas.");
-    	options.addOption(CREDENTIALS_TOKEN,"credenciais", true, "Informa usuário e senha no legendas.tv ex: joao/senha123, se não for informado, um usuário padrão é usado.");
+    	options.addOption(CREDENTIALS_TOKEN,"credenciais", false, "Usuário e senha para logar no legendas.tv ex: joao/senha123, se não for informado, um usuário padrão é usado." +
+    			"Se usado sem paramêtro força login");
     	options.addOption(SHOW_ALL_SUBTITLES_TOKEN,"tudo", false, "Mostra o arquivo de legenda extraído, mesmo que o magnet link não seja encontrado.");
     	options.addOption(HELP_TOKEN,"help", false, "Imprime essa ajuda");
     	
@@ -135,7 +136,11 @@ public class ArgumentsParser {
 	}
 
 	private boolean userAndPasswordNotInformed() {
-		return !cmd.hasOption(CREDENTIALS_TOKEN);
+		return !cmd.hasOption(CREDENTIALS_TOKEN) || credentialsTokenUsedWithoutArguments();
+	}
+
+	private boolean credentialsTokenUsedWithoutArguments() {
+		return cmd.getOptionValue(CREDENTIALS_TOKEN)==null;
 	}
 
 	public String getPassword() {
@@ -151,5 +156,9 @@ public class ArgumentsParser {
 	
 	public boolean usingGuiMome() {
 		return cmd.hasOption(SHOULD_USE_GUI);
+	}
+
+	public boolean forceLogin() {
+		return cmd.hasOption(CREDENTIALS_TOKEN) && credentialsTokenUsedWithoutArguments();
 	}
 }

@@ -41,7 +41,7 @@ public class LegendasTvTest {
 	public void badLoginTest(){
 		final String response = "LegendasTvBadLogin.html";
 		final SimpleHttpClientMock mock = getHttpMock(response);
-		final LegendasTv subject = new LegendasTv(mock, dummyOutputListener);
+		final LegendasTv subject = new LegendasTv(mock,dummyOutputListener);
 		try{
 			subject.login("foo", "bar");
 			Assert.fail();
@@ -52,20 +52,6 @@ public class LegendasTvTest {
 		final SimpleHttpClientMock mock = new SimpleHttpClientMock();
 		mock.setResponse(response);
 		return mock;
-	}
-	
-	@Test
-	public void alreadyLogged_ShouldNotTryToLogAgain(){
-		final String response = "LegendasTvAlreadyLogged.html";
-		final SimpleHttpClientMock mock = getHttpMock(response);
-		final LegendasTv subject = new LegendasTv(mock, dummyOutputListener);
-		try{
-			subject.login("filmeutils", "password");
-		}catch(final BadLoginException e){
-			Assert.fail();
-		}
-		boolean triedToLogin = mock.requested("http://legendas.tv/login_verificar.php");
-		Assert.assertFalse(triedToLogin);
 	}
 
 }

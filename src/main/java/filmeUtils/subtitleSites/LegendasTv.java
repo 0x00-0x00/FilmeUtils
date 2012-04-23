@@ -36,8 +36,10 @@ public class LegendasTv {
 			final HashMap<String, String> params = new HashMap<String, String>();
 			params.put("txtLogin", user);
 			params.put("txtSenha", password);
+			params.put("chkLogin", "1");
 			
-			outputListener.out("Autenticando como '"+user+"' ...");
+			
+			outputListener.outVerbose("Autenticando como '"+user+"' ...");
 			final String postResults = httpclient.post(LOGIN_URL, params);
 			outputListener.out("Autenticado como '"+user+"'");
 			
@@ -75,6 +77,9 @@ public class LegendasTv {
 		params.put("int_idioma", "1");
 		
 		final String content = httpclient.post(postUrl,params);
+		if(content.contains(" precisa estar logado para acessar essa ")){
+			outputListener.out("Erro: Não está logado.");
+		}
 		extractSubtitlesLinks(content,searchListener);
 		
 		final int nextPage = page+1;

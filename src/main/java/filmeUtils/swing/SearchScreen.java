@@ -70,6 +70,10 @@ public class SearchScreen extends JFrame {
 			public void out(final String string) {
 				resultsArea.append(string);
 			}
+
+			public void outVerbose(final String string) {
+				resultsArea.append(string);
+			}
 		});
 		resultsArea.setText("Autenticando, aguarde...");
 		try {

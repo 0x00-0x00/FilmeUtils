@@ -23,11 +23,13 @@ final class SearchListenerImplementation implements SearchListener {
 	private final boolean showDirectLink;
 	private final boolean showSubtitleIfMagnetWasNotFound;
 	private final String nameAcceptanceRegex;
+	private final OutputListener outputListener;
 
-	SearchListenerImplementation(final SimpleHttpClient httpclient,final boolean showDirectLink,final boolean showSubtitleIfMagnetWasNotFound, final File subtitleDestination, final String nameAcceptanceRegex) {
+	SearchListenerImplementation(final SimpleHttpClient httpclient,final boolean showDirectLink,final boolean showSubtitleIfMagnetWasNotFound, final File subtitleDestination, final String nameAcceptanceRegex, final OutputListener outputListener) {
 		this.httpclient = httpclient;
 		this.showSubtitleIfMagnetWasNotFound = showSubtitleIfMagnetWasNotFound;
 		this.nameAcceptanceRegex = nameAcceptanceRegex;
+		this.outputListener = outputListener;
 		this.extractContents = subtitleDestination!= null;
 		this.showDirectLink = showDirectLink;
 		this.subtitleDestination = subtitleDestination;
@@ -44,7 +46,7 @@ final class SearchListenerImplementation implements SearchListener {
 		if(showDirectLink){
 			direct_link = " - "+link;
 		}
-		System.out.println(name+direct_link);
+		outputListener.out(name+direct_link);
 		if(!extractContents){
 			return;
 		}
@@ -56,14 +58,14 @@ final class SearchListenerImplementation implements SearchListener {
 			final String validNameForFile = name.replaceAll("[/ \\\\?]", "_");
 			final File currentSubtitleFolder = new File(subtitleDestination, validNameForFile);
 			currentSubtitleFolder.mkdir();
-			System.out.println("Extraindo legendas para "+currentSubtitleFolder.getAbsolutePath());
+			outputListener.out("Extraindo legendas para "+currentSubtitleFolder.getAbsolutePath());
 			
 			downloadLinkToFolder(link, currentSubtitleFolder);
 	    	
 			outputSubtitleFiles(currentSubtitleFolder);
 			
 		} catch(final ConnectionPoolTimeoutException e){
-			System.out.println("Tempo máximo de requisição atingido ("+SimpleHttpClientImpl.TIMEOUT+" segundos)");
+			outputListener.out("Tempo máximo de requisição atingido ("+SimpleHttpClientImpl.TIMEOUT+" segundos)");
 		}catch (final IOException e) {
 			e.printStackTrace();//not the end of the world as we know it, and I fell fine
 		}
@@ -107,7 +109,8 @@ final class SearchListenerImplementation implements SearchListener {
 		}
 		if(contentType.contains("text/html")){
 			final String fileText = FileUtils.readFileToString(compressedFile);
-			System.out.println(fileText);
+			outputListener.out("Erro: Não está logado!");
+			outputListener.outVerbose(fileText);
 		}
 	}
 
@@ -118,10 +121,10 @@ final class SearchListenerImplementation implements SearchListener {
 		magnetLinkForFile = torrentSearcher.getMagnetLinkForFileOrNull(subtitleName);
 		if(magnetLinkForFile == null){
 			if(showSubtitleIfMagnetWasNotFound){
-				System.out.println(subtitleNameFormmated + " - magnet não foi encontrado");
+				outputListener.out(subtitleNameFormmated + " - magnet não foi encontrado");
 			}
 			return;
 		}
-		System.out.println(subtitleNameFormmated + " - " + magnetLinkForFile);
+		outputListener.out(subtitleNameFormmated + " - " + magnetLinkForFile);
 	}
 }

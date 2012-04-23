@@ -18,6 +18,10 @@ public class LegendasTvTest {
 			public void out(final String string) {
 				//do nothing
 			}
+
+			public void outVerbose(final String string) {
+				//do nothing
+			}
 		};
 	}
 	

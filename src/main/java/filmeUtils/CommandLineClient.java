@@ -10,9 +10,17 @@ import filmeUtils.subtitleSites.LegendasTv;
 
 public class CommandLineClient {
 
+	protected boolean verbose = false;
+
 	private final OutputListener output = new OutputListener() {	
 		public void out(final String string) {
 			System.out.println(string);
+		}
+
+		public void outVerbose(final String string) {
+			if(verbose){
+				System.out.println(string);
+			}
 		}
 	};
 	
@@ -27,6 +35,8 @@ public class CommandLineClient {
 
 	private File subtitlesDestinationFolder;
 
+	private boolean search;
+
 	public CommandLineClient(final ArgumentsParser cli, final File filmeUtilsFolder) {
 		this.cli = cli;
 		this.filmeUtilsFolder = filmeUtilsFolder;
@@ -36,19 +46,20 @@ public class CommandLineClient {
 		cookieFile = new File(filmeUtilsFolder,"legendasCookies.serialized");
 		httpclient = new SimpleHttpClientImpl(cookieFile);
 		legendasTv = new LegendasTv(httpclient, output);
+		search = cli.search();
 		
 		subtitlesDestinationFolder = cli.getSubtitlesDestinationFolderOrNull();
     	final boolean showDirectLink = cli.showDirectLinks(); 
     	final boolean showSubtitleIfMagnetWasNotFound = cli.showSubtitleIfMagnetWasNotFound();
-    	
+    	verbose = cli.isVerbose();
         final String acceptanceRegexOrNull = cli.getAcceptanceRegexOrNull();
-		final SearchListener searchListener = new SearchListenerImplementation(httpclient, showDirectLink,showSubtitleIfMagnetWasNotFound, subtitlesDestinationFolder, acceptanceRegexOrNull);
+		final SearchListener searchListener = new SearchListenerImplementation(httpclient, showDirectLink,showSubtitleIfMagnetWasNotFound, subtitlesDestinationFolder, acceptanceRegexOrNull,output);
         
         loginIfNeeded();
         
-        if(cli.search()){
+		if(search){
         	final String searchTerm = cli.searchTerm();
-        	output.out("Procurando '"+searchTerm+"' ...");
+        	output.outVerbose("Procurando '"+searchTerm+"' ...");
         	legendasTv.search(searchTerm,searchListener);
         }
         
@@ -62,7 +73,7 @@ public class CommandLineClient {
 	}
 
 	private void loginIfNeeded() {
-		if(subtitlesDestinationFolder == null)return;
+		if(subtitlesDestinationFolder == null && !search)return;
 		if(cookieFile.exists() && !cli.forceLogin()) return;
 		try {
 			legendasTv.login(cli.getUser(),cli.getPassword());

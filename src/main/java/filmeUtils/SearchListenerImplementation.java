@@ -22,10 +22,12 @@ final class SearchListenerImplementation implements SearchListener {
 	private final File subtitleDestination;
 	private final boolean showDirectLink;
 	private final boolean showSubtitleIfMagnetWasNotFound;
+	private final String nameAcceptanceRegex;
 
-	SearchListenerImplementation(final SimpleHttpClient httpclient,final boolean showDirectLink,final boolean showSubtitleIfMagnetWasNotFound, final File subtitleDestination) {
+	SearchListenerImplementation(final SimpleHttpClient httpclient,final boolean showDirectLink,final boolean showSubtitleIfMagnetWasNotFound, final File subtitleDestination, final String nameAcceptanceRegex) {
 		this.httpclient = httpclient;
 		this.showSubtitleIfMagnetWasNotFound = showSubtitleIfMagnetWasNotFound;
+		this.nameAcceptanceRegex = nameAcceptanceRegex;
 		this.extractContents = subtitleDestination!= null;
 		this.showDirectLink = showDirectLink;
 		this.subtitleDestination = subtitleDestination;
@@ -33,6 +35,11 @@ final class SearchListenerImplementation implements SearchListener {
 	}
 
 	public void found(final String name, final String link) {
+		if(nameAcceptanceRegex != null && !nameAcceptanceRegex.isEmpty()){
+			if(!name.matches(nameAcceptanceRegex)){
+				return;
+			}
+		}
 		String direct_link = "";
 		if(showDirectLink){
 			direct_link = " - "+link;

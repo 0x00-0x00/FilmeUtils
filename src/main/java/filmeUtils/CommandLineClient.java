@@ -41,7 +41,8 @@ public class CommandLineClient {
     	final boolean showDirectLink = cli.showDirectLinks(); 
     	final boolean showSubtitleIfMagnetWasNotFound = cli.showSubtitleIfMagnetWasNotFound();
     	
-        final SearchListener searchListener = new SearchListenerImplementation(httpclient, showDirectLink,showSubtitleIfMagnetWasNotFound, subtitlesDestinationFolder);
+        final String acceptanceRegexOrNull = cli.getAcceptanceRegexOrNull();
+		final SearchListener searchListener = new SearchListenerImplementation(httpclient, showDirectLink,showSubtitleIfMagnetWasNotFound, subtitlesDestinationFolder, acceptanceRegexOrNull);
         
         loginIfNeeded();
         

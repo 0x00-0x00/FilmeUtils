@@ -22,6 +22,7 @@ public class ArgumentsParser {
 	private static final String SITE_LINKS_TOKEN = "s";
 	private static final String CREDENTIALS_TOKEN = "c";
 	private static final String SHOW_ALL_SUBTITLES_TOKEN = "t";
+	private static final String ACCEPT_REGEX_TOKEN_TOKEN = "a";
 	
 	private static final int NEW_ADDS_DEFAUL_SHOW_VALUE = 23;
 	private static final String USER = "filmeutils";
@@ -41,6 +42,7 @@ public class ArgumentsParser {
     	options.addOption(newAdditionOption);
     	options.addOption(SHOULD_USE_GUI,"gui", false, "Usa interface gráfica");
     	options.addOption(SHOULD_EXTRACT_TOKEN,"extrair", true, "Extrai e os arquivos de legendas para o diretório informado");
+    	options.addOption(ACCEPT_REGEX_TOKEN_TOKEN,"aceitar", true, "Aceitar nomes de legendas que batam com a regex.");
     	options.addOption(SITE_LINKS_TOKEN,"site-links", false, "Imprime o link direto para os arquivos de legendas.");
     	options.addOption(CREDENTIALS_TOKEN,"credenciais", false, "Usuário e senha para logar no legendas.tv ex: joao/senha123, se não for informado, um usuário padrão é usado." +
     			"Se usado sem paramêtro força login");
@@ -160,5 +162,9 @@ public class ArgumentsParser {
 
 	public boolean forceLogin() {
 		return cmd.hasOption(CREDENTIALS_TOKEN) && credentialsTokenUsedWithoutArguments();
+	}
+
+	public String getAcceptanceRegexOrNull() {
+		return cmd.getOptionValue(ACCEPT_REGEX_TOKEN_TOKEN);
 	}
 }

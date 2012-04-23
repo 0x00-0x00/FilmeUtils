@@ -49,11 +49,10 @@ public class CommandLineClient {
 		search = cli.search();
 		
 		subtitlesDestinationFolder = cli.getSubtitlesDestinationFolderOrNull();
-    	final boolean showDirectLink = cli.showDirectLinks(); 
     	final boolean showSubtitleIfMagnetWasNotFound = cli.showSubtitleIfMagnetWasNotFound();
     	verbose = cli.isVerbose();
         final String acceptanceRegexOrNull = cli.getAcceptanceRegexOrNull();
-		final SearchListener searchListener = new SearchListenerImplementation(httpclient, showDirectLink,showSubtitleIfMagnetWasNotFound, subtitlesDestinationFolder, acceptanceRegexOrNull,output);
+		final SearchListener searchListener = new SearchListenerImplementation(httpclient, showSubtitleIfMagnetWasNotFound, subtitlesDestinationFolder, acceptanceRegexOrNull,output);
         
         loginIfNeeded();
         

@@ -20,18 +20,16 @@ final class SearchListenerImplementation implements SearchListener {
 	private final boolean extractContents;
 	private final TorrentSearcher torrentSearcher;
 	private final File subtitleDestination;
-	private final boolean showDirectLink;
 	private final boolean showSubtitleIfMagnetWasNotFound;
 	private final String nameAcceptanceRegex;
 	private final OutputListener outputListener;
 
-	SearchListenerImplementation(final SimpleHttpClient httpclient,final boolean showDirectLink,final boolean showSubtitleIfMagnetWasNotFound, final File subtitleDestination, final String nameAcceptanceRegex, final OutputListener outputListener) {
+	SearchListenerImplementation(final SimpleHttpClient httpclient,final boolean showSubtitleIfMagnetWasNotFound, final File subtitleDestination, final String nameAcceptanceRegex, final OutputListener outputListener) {
 		this.httpclient = httpclient;
 		this.showSubtitleIfMagnetWasNotFound = showSubtitleIfMagnetWasNotFound;
 		this.nameAcceptanceRegex = nameAcceptanceRegex;
 		this.outputListener = outputListener;
 		this.extractContents = subtitleDestination!= null;
-		this.showDirectLink = showDirectLink;
 		this.subtitleDestination = subtitleDestination;
         torrentSearcher = new TorrentSearcher(httpclient);
 	}
@@ -42,11 +40,7 @@ final class SearchListenerImplementation implements SearchListener {
 				return;
 			}
 		}
-		String direct_link = "";
-		if(showDirectLink){
-			direct_link = " - "+link;
-		}
-		outputListener.out(name+direct_link);
+		outputListener.out(name);
 		if(!extractContents){
 			return;
 		}
@@ -125,6 +119,9 @@ final class SearchListenerImplementation implements SearchListener {
 			}
 			return;
 		}
+		
+		outputListener.outVerbose("Abrindo no browser: "+magnetLinkForFile);
+		BareBonesBrowserLaunch.openURL(magnetLinkForFile);
 		outputListener.out(subtitleNameFormmated + " - " + magnetLinkForFile);
 	}
 }

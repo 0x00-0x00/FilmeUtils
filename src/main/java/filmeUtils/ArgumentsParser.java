@@ -19,7 +19,6 @@ public class ArgumentsParser {
 	private static final String NEW_ADDITIONS_TOKEN = "n";
 	private static final String SHOULD_EXTRACT_TOKEN = "e";
 	private static final String SHOULD_USE_GUI = "g";
-	private static final String SITE_LINKS_TOKEN = "s";
 	private static final String CREDENTIALS_TOKEN = "c";
 	private static final String SHOW_ALL_SUBTITLES_TOKEN = "t";
 	private static final String ACCEPT_REGEX_TOKEN = "a";
@@ -44,7 +43,6 @@ public class ArgumentsParser {
     	options.addOption(SHOULD_USE_GUI,"gui", false, "Usa interface gráfica");
     	options.addOption(SHOULD_EXTRACT_TOKEN,"extrair", true, "Extrai e os arquivos de legendas para o diretório informado");
     	options.addOption(ACCEPT_REGEX_TOKEN,"aceitar", true, "Aceitar nomes de legendas que batam com a regex.");
-    	options.addOption(SITE_LINKS_TOKEN,"site-links", false, "Imprime o link direto para os arquivos de legendas.");
     	options.addOption(CREDENTIALS_TOKEN,"credenciais", false, "Usuário e senha para logar no legendas.tv ex: joao/senha123, se não for informado, um usuário padrão é usado." +
     			"Se usado sem paramêtro força login");
     	options.addOption(SHOW_ALL_SUBTITLES_TOKEN,"tudo", false, "Mostra o arquivo de legenda extraído, mesmo que o magnet link não seja encontrado.");
@@ -79,6 +77,7 @@ public class ArgumentsParser {
 		try {
 			cmd = parser.parse( options, args);
 		} catch (final ParseException e) {
+			System.out.println(e.getMessage());
 			printHelp();
     		return;
 		}
@@ -126,10 +125,6 @@ public class ArgumentsParser {
 			return null;
 		}
 		return file;
-	}
-
-	public boolean showDirectLinks() {
-		return cmd.hasOption(SITE_LINKS_TOKEN);
 	}
 
 	public String getUser() {

@@ -79,6 +79,11 @@ public class LegendasTv {
 		final String content = httpclient.post(postUrl,params);
 		if(content.contains(" precisa estar logado para acessar essa ")){
 			outputListener.out("Erro: Não está logado.");
+			return;
+		}
+		if(content.contains(" temporariamente offline")){
+			outputListener.out("Legendas tv temporariamente offline.");
+			return;
 		}
 		extractSubtitlesLinks(content,searchListener);
 		

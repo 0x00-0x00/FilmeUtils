@@ -16,7 +16,7 @@ public class Main {
 			filmeUtilsFolder.mkdir();
 		}
 		
-    	final ArgumentsParser cli = new ArgumentsParser();
+    	final ArgumentsParserImpl cli = new ArgumentsParserImpl();
     	cli.parse(args);
     	if(cli.isDone()){
     		return;

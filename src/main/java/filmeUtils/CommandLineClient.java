@@ -3,9 +3,14 @@ package filmeUtils;
 import java.io.File;
 import java.io.IOException;
 
+import filmeUtils.extraction.ExtractorImpl;
+import filmeUtils.http.BareBonesBrowseLauncher;
+import filmeUtils.http.BrowserLauncher;
 import filmeUtils.http.SimpleHttpClient;
 import filmeUtils.http.SimpleHttpClientImpl;
 import filmeUtils.subtitleSites.LegendasTv;
+import filmeUtils.torrentSites.TorrentSearcher;
+import filmeUtils.torrentSites.TorrentSearcherImpl;
 
 public class CommandLineClient {
 
@@ -23,7 +28,7 @@ public class CommandLineClient {
 		}
 	};
 	
-	private final ArgumentsParser cli;
+	private final ArgumentsParserImpl cli;
 	private final File filmeUtilsFolder;
 
 	private File cookieFile;
@@ -32,11 +37,10 @@ public class CommandLineClient {
 
 	private LegendasTv legendasTv;
 
-	private File subtitlesDestinationFolder;
 
 	private boolean search;
 
-	public CommandLineClient(final ArgumentsParser cli, final File filmeUtilsFolder) {
+	public CommandLineClient(final ArgumentsParserImpl cli, final File filmeUtilsFolder) {
 		this.cli = cli;
 		this.filmeUtilsFolder = filmeUtilsFolder;
 	}
@@ -47,11 +51,11 @@ public class CommandLineClient {
 		legendasTv = new LegendasTv(cli.getUser(),cli.getPassword(),httpclient, output);
 		search = cli.search();
 		
-		subtitlesDestinationFolder = cli.getSubtitlesDestinationFolderOrNull();
-    	final boolean showSubtitleIfMagnetWasNotFound = cli.showSubtitleIfMagnetWasNotFound();
     	verbose = cli.isVerbose();
-        final String acceptanceRegexOrNull = cli.getAcceptanceRegexOrNull();
-		final SearchListener searchListener = new SearchListenerImplementation(httpclient,legendasTv ,showSubtitleIfMagnetWasNotFound, subtitlesDestinationFolder, acceptanceRegexOrNull,output);
+        final BrowserLauncher bareBonesBrowserLaunch = new BareBonesBrowseLauncher();
+        final TorrentSearcher torrentSearcher = new TorrentSearcherImpl(httpclient);
+        final ExtractorImpl extract = new ExtractorImpl();
+		final SearchListener searchListener = new SearchListenerImplementation(httpclient,extract,torrentSearcher,bareBonesBrowserLaunch,legendasTv ,cli,output);
         
 		if(search){
         	final String searchTerm = cli.searchTerm();

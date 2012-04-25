@@ -8,7 +8,7 @@ public class ArgumentsParserTest {
 
 	@Test
 	public void testGuiArgument(){
-		final ArgumentsParser subject = new ArgumentsParser();
+		final ArgumentsParserImpl subject = new ArgumentsParserImpl();
 		subject.parse(new String[]{"-g"});
 		Assert.assertTrue(subject.usingGuiMome());
 	}

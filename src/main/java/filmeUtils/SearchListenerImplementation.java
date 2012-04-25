@@ -11,6 +11,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.conn.ConnectionPoolTimeoutException;
 
 import filmeUtils.extraction.ExtractorImpl;
+import filmeUtils.http.BrowserLauncher;
 import filmeUtils.http.SimpleHttpClient;
 import filmeUtils.http.SimpleHttpClientImpl;
 import filmeUtils.subtitleSites.LegendasTv;
@@ -25,16 +26,19 @@ final class SearchListenerImplementation implements SearchListener {
 	private final String nameAcceptanceRegex;
 	private final OutputListener outputListener;
 	private final LegendasTv legendasTv;
+	private BrowserLauncher bareBonesBrowserLaunch;
+	private final ExtractorImpl extract;
 
-	SearchListenerImplementation(final SimpleHttpClient httpclient,final LegendasTv legendasTv, final boolean showSubtitleIfMagnetWasNotFound, final File subtitleDestination, final String nameAcceptanceRegex, final OutputListener outputListener) {
+	SearchListenerImplementation(final SimpleHttpClient httpclient,final ExtractorImpl extract,final TorrentSearcher torrentSearcher,final BrowserLauncher bareBonesBrowserLaunch,final LegendasTv legendasTv, final ArgumentsParser cli, final OutputListener outputListener) {
 		this.httpclient = httpclient;
+		this.extract = extract;
+		this.torrentSearcher = torrentSearcher;
 		this.legendasTv = legendasTv;
-		this.showSubtitleIfMagnetWasNotFound = showSubtitleIfMagnetWasNotFound;
-		this.nameAcceptanceRegex = nameAcceptanceRegex;
+		this.showSubtitleIfMagnetWasNotFound = cli.showSubtitleIfMagnetWasNotFound();
+		this.nameAcceptanceRegex = cli.getAcceptanceRegexOrNull();
 		this.outputListener = outputListener;
+		this.subtitleDestination = cli.getSubtitlesDestinationFolderOrNull();
 		this.extractContents = subtitleDestination!= null;
-		this.subtitleDestination = subtitleDestination;
-        torrentSearcher = new TorrentSearcher(httpclient);
 	}
 
 	public void found(final String name, final String link) {
@@ -98,9 +102,7 @@ final class SearchListenerImplementation implements SearchListener {
 		}
 	}
 
-	private void extract(final File compressedFile,final File destinationFolder, final String contentType)
-			throws ZipException, IOException {
-		final ExtractorImpl extract = new ExtractorImpl();
+	private void extract(final File compressedFile,final File destinationFolder, final String contentType)throws ZipException, IOException {
 		if(contentType.contains("rar")){
 			extract.unrar(compressedFile, destinationFolder);
 			return;
@@ -125,7 +127,8 @@ final class SearchListenerImplementation implements SearchListener {
 		}
 		
 		outputListener.outVerbose("Abrindo no browser: "+magnetLinkForFile);
-		BareBonesBrowserLaunch.openURL(magnetLinkForFile);
+		
+		bareBonesBrowserLaunch.openURL(magnetLinkForFile);
 		outputListener.out(subtitleNameFormmated + " - " + magnetLinkForFile);
 	}
 }

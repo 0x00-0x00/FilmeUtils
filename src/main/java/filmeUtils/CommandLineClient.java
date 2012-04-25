@@ -5,7 +5,6 @@ import java.io.IOException;
 
 import filmeUtils.http.SimpleHttpClient;
 import filmeUtils.http.SimpleHttpClientImpl;
-import filmeUtils.subtitleSites.BadLoginException;
 import filmeUtils.subtitleSites.LegendasTv;
 
 public class CommandLineClient {
@@ -45,16 +44,14 @@ public class CommandLineClient {
 	public void execute() throws IOException {
 		cookieFile = new File(filmeUtilsFolder,"legendasCookies.serialized");
 		httpclient = new SimpleHttpClientImpl(cookieFile);
-		legendasTv = new LegendasTv(httpclient, output);
+		legendasTv = new LegendasTv(cli.getUser(),cli.getPassword(),httpclient, output);
 		search = cli.search();
 		
 		subtitlesDestinationFolder = cli.getSubtitlesDestinationFolderOrNull();
     	final boolean showSubtitleIfMagnetWasNotFound = cli.showSubtitleIfMagnetWasNotFound();
     	verbose = cli.isVerbose();
         final String acceptanceRegexOrNull = cli.getAcceptanceRegexOrNull();
-		final SearchListener searchListener = new SearchListenerImplementation(httpclient, showSubtitleIfMagnetWasNotFound, subtitlesDestinationFolder, acceptanceRegexOrNull,output);
-        
-        loginIfNeeded();
+		final SearchListener searchListener = new SearchListenerImplementation(httpclient,legendasTv ,showSubtitleIfMagnetWasNotFound, subtitlesDestinationFolder, acceptanceRegexOrNull,output);
         
 		if(search){
         	final String searchTerm = cli.searchTerm();
@@ -69,17 +66,6 @@ public class CommandLineClient {
         	
         }
         httpclient.close();
-	}
-
-	private void loginIfNeeded() {
-		if(subtitlesDestinationFolder == null && !search)return;
-		if(cookieFile.exists() && !cli.forceLogin()) return;
-		try {
-			legendasTv.login(cli.getUser(),cli.getPassword());
-		} catch (final BadLoginException e) {
-			output.out(e.getMessage());
-			throw new RuntimeException(e);
-		}
 	}
 
 }

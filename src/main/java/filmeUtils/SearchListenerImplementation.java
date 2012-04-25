@@ -13,6 +13,7 @@ import org.apache.http.conn.ConnectionPoolTimeoutException;
 import filmeUtils.extraction.ExtractorImpl;
 import filmeUtils.http.SimpleHttpClient;
 import filmeUtils.http.SimpleHttpClientImpl;
+import filmeUtils.subtitleSites.LegendasTv;
 import filmeUtils.torrentSites.TorrentSearcher;
 
 final class SearchListenerImplementation implements SearchListener {
@@ -23,9 +24,11 @@ final class SearchListenerImplementation implements SearchListener {
 	private final boolean showSubtitleIfMagnetWasNotFound;
 	private final String nameAcceptanceRegex;
 	private final OutputListener outputListener;
+	private final LegendasTv legendasTv;
 
-	SearchListenerImplementation(final SimpleHttpClient httpclient,final boolean showSubtitleIfMagnetWasNotFound, final File subtitleDestination, final String nameAcceptanceRegex, final OutputListener outputListener) {
+	SearchListenerImplementation(final SimpleHttpClient httpclient,final LegendasTv legendasTv, final boolean showSubtitleIfMagnetWasNotFound, final File subtitleDestination, final String nameAcceptanceRegex, final OutputListener outputListener) {
 		this.httpclient = httpclient;
+		this.legendasTv = legendasTv;
 		this.showSubtitleIfMagnetWasNotFound = showSubtitleIfMagnetWasNotFound;
 		this.nameAcceptanceRegex = nameAcceptanceRegex;
 		this.outputListener = outputListener;
@@ -70,8 +73,12 @@ final class SearchListenerImplementation implements SearchListener {
 		final File destFile = createFileToBeWritten(folder);
 		
 		contentType = httpclient.getToFile(link, destFile);
-		extract(destFile, folder, contentType);
 		
+		if(contentType.contains("text/html")){
+			legendasTv.login(); 
+		}
+		contentType = httpclient.getToFile(link, destFile);
+		extract(destFile, folder, contentType);
 		destFile.delete();
 	}
 
@@ -91,21 +98,18 @@ final class SearchListenerImplementation implements SearchListener {
 		}
 	}
 
-	private void extract(final File compressedFile,
-			final File destinationFolder, final String contentType)
+	private void extract(final File compressedFile,final File destinationFolder, final String contentType)
 			throws ZipException, IOException {
 		final ExtractorImpl extract = new ExtractorImpl();
 		if(contentType.contains("rar")){
 			extract.unrar(compressedFile, destinationFolder);
+			return;
 		}
 		if(contentType.contains("zip")){
 			extract.unzip(compressedFile, destinationFolder);
+			return;
 		}
-		if(contentType.contains("text/html")){
-			final String fileText = FileUtils.readFileToString(compressedFile);
-			outputListener.out("Erro: Não está logado!");
-			outputListener.outVerbose(fileText);
-		}
+		throw new RuntimeException("Tipo desconhecido: "+contentType);
 	}
 
 	private void showFileName(final File next) {

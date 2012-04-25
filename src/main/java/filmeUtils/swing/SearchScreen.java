@@ -17,7 +17,6 @@ import filmeUtils.OutputListener;
 import filmeUtils.SearchListener;
 import filmeUtils.http.SimpleHttpClient;
 import filmeUtils.http.SimpleHttpClientImpl;
-import filmeUtils.subtitleSites.BadLoginException;
 import filmeUtils.subtitleSites.LegendasTv;
 
 public class SearchScreen extends JFrame {
@@ -66,7 +65,7 @@ public class SearchScreen extends JFrame {
 
 	protected void performQueryWith(final String text) {
 		final SimpleHttpClient simpleHttpClient = new SimpleHttpClientImpl();
-		final LegendasTv legendasTv = new LegendasTv(simpleHttpClient, new OutputListener() {
+		final LegendasTv legendasTv = new LegendasTv("","",simpleHttpClient, new OutputListener() {
 			public void out(final String string) {
 				resultsArea.append(string);
 			}
@@ -75,12 +74,6 @@ public class SearchScreen extends JFrame {
 				resultsArea.append(string);
 			}
 		});
-		resultsArea.setText("Autenticando, aguarde...");
-		try {
-			legendasTv.login("filmeutils", "filmeutilsfilme");
-		} catch (final BadLoginException e) {
-			resultsArea.setText(e.getMessage());
-		}
 		resultsArea.setText("Pesquisando " + text + " , aguarde...");
 		legendasTv.search(text, new SearchListener() {
 			public void found(final String name, final String link) {

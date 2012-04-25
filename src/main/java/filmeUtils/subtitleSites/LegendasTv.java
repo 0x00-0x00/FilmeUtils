@@ -25,13 +25,17 @@ public class LegendasTv {
 	
 	private final SimpleHttpClient httpclient;
 	private final OutputListener outputListener;
+	private final String user;
+	private final String password;
 	
-	public LegendasTv(final SimpleHttpClient httpclient, final OutputListener outputListener) {
+	public LegendasTv(final String user, final String password, final SimpleHttpClient httpclient, final OutputListener outputListener) {
+		this.user = user;
+		this.password = password;
 		this.httpclient = httpclient;
 		this.outputListener = outputListener;
 	}
 	
-	public void login(final String user, final String password) throws BadLoginException{		
+	public void login(){		
         try {
 			final HashMap<String, String> params = new HashMap<String, String>();
 			params.put("txtLogin", user);
@@ -45,10 +49,10 @@ public class LegendasTv {
 			
 			if(postResults.contains("Dados incorretos")){
 				outputListener.out("Login/senha incorretos");
-				throw new BadLoginException();
+				throw new RuntimeException();
 			}
 		} catch (final Exception e) {
-			throw new BadLoginException(e);
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -62,24 +66,17 @@ public class LegendasTv {
 
 	public void getNewer(final int newAddsToShow, final SearchListener searchListener){
 		final int startingIndex = 0;
-		
 		searchNewAdds(startingIndex, newAddsToShow, searchListener);
 	}
 
 	private void searchRecursively(final int page, final SearchListener searchListener, final String searchTerm)
 			throws UnsupportedEncodingException, IOException,ClientProtocolException {
-		final String postUrl = BASE_URL+SEARCH_ON_PAGE_URL+page;
 		
+		String content = search(searchTerm, page);
 		
-		final HashMap<String, String> params = new HashMap<String, String>();
-		params.put("txtLegenda", searchTerm);
-		params.put("selTipo", "1");
-		params.put("int_idioma", "1");
-		
-		final String content = httpclient.post(postUrl,params);
 		if(content.contains(" precisa estar logado para acessar essa ")){
-			outputListener.out("Erro: Não está logado.");
-			return;
+			login();
+			content = search(searchTerm, page);
 		}
 		if(content.contains(" temporariamente offline")){
 			outputListener.out("Legendas tv temporariamente offline.");
@@ -93,6 +90,17 @@ public class LegendasTv {
 		if(pageLinkExists){
 			searchRecursively(nextPage, searchListener, searchTerm);
 		}
+	}
+
+	private String search(final String searchTerm, final int page)
+			throws ClientProtocolException, IOException {
+		final String postUrl = BASE_URL+SEARCH_ON_PAGE_URL+page;
+		final HashMap<String, String> params = new HashMap<String, String>();
+		params.put("txtLegenda", searchTerm);
+		params.put("selTipo", "1");
+		params.put("int_idioma", "1");
+		final String content = httpclient.post(postUrl,params);
+		return content;
 	}
 	
 	private void extractSubtitlesLinks(final String searchResult,final SearchListener searchListener) {

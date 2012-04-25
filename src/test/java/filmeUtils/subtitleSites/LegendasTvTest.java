@@ -29,7 +29,7 @@ public class LegendasTvTest {
 	public void searchTest(){
 		final String response = "LegendasTvOneResult.html";
 		final SimpleHttpClientMock mock = getHttpMock(response);
-		final LegendasTv subject = new LegendasTv(mock, dummyOutputListener);
+		final LegendasTv subject = new LegendasTv("","",mock, dummyOutputListener);
 		final AtomicBoolean wasCalled = new AtomicBoolean(false);
 		subject.search("foo", new SearchListener() {
 			public void found(final String name, final String link) {
@@ -39,17 +39,6 @@ public class LegendasTvTest {
 			}
 		});
 		Assert.assertTrue(wasCalled.get());
-	}
-	
-	@Test
-	public void badLoginTest(){
-		final String response = "LegendasTvBadLogin.html";
-		final SimpleHttpClientMock mock = getHttpMock(response);
-		final LegendasTv subject = new LegendasTv(mock,dummyOutputListener);
-		try{
-			subject.login("foo", "bar");
-			Assert.fail();
-		}catch(final BadLoginException e){}
 	}
 
 	private SimpleHttpClientMock getHttpMock(final String response) {

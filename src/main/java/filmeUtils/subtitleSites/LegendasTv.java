@@ -12,6 +12,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import filmeUtils.ArgumentsParser;
 import filmeUtils.OutputListener;
 import filmeUtils.SearchListener;
 import filmeUtils.http.SimpleHttpClient;
@@ -28,9 +29,9 @@ public class LegendasTv {
 	private final String user;
 	private final String password;
 	
-	public LegendasTv(final String user, final String password, final SimpleHttpClient httpclient, final OutputListener outputListener) {
-		this.user = user;
-		this.password = password;
+	public LegendasTv(final ArgumentsParser cli, final SimpleHttpClient httpclient, final OutputListener outputListener) {
+		this.user = cli.getUser();
+		this.password = cli.getPassword();
 		this.httpclient = httpclient;
 		this.outputListener = outputListener;
 	}

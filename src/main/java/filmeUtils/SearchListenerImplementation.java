@@ -10,7 +10,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.conn.ConnectionPoolTimeoutException;
 
-import filmeUtils.extraction.ExtractorImpl;
+import filmeUtils.extraction.Extractor;
 import filmeUtils.http.BrowserLauncher;
 import filmeUtils.http.SimpleHttpClient;
 import filmeUtils.http.SimpleHttpClientImpl;
@@ -27,9 +27,9 @@ final class SearchListenerImplementation implements SearchListener {
 	private final OutputListener outputListener;
 	private final LegendasTv legendasTv;
 	private BrowserLauncher bareBonesBrowserLaunch;
-	private final ExtractorImpl extract;
+	private final Extractor extract;
 
-	SearchListenerImplementation(final SimpleHttpClient httpclient,final ExtractorImpl extract,final TorrentSearcher torrentSearcher,final BrowserLauncher bareBonesBrowserLaunch,final LegendasTv legendasTv, final ArgumentsParser cli, final OutputListener outputListener) {
+	SearchListenerImplementation(final SimpleHttpClient httpclient,final Extractor extract,final TorrentSearcher torrentSearcher,final BrowserLauncher bareBonesBrowserLaunch,final LegendasTv legendasTv, final ArgumentsParser cli, final OutputListener outputListener) {
 		this.httpclient = httpclient;
 		this.extract = extract;
 		this.torrentSearcher = torrentSearcher;

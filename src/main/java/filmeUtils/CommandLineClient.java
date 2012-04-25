@@ -1,60 +1,41 @@
 package filmeUtils;
 
-import java.io.File;
 import java.io.IOException;
 
-import filmeUtils.extraction.ExtractorImpl;
+import filmeUtils.extraction.Extractor;
 import filmeUtils.http.BareBonesBrowseLauncher;
 import filmeUtils.http.BrowserLauncher;
 import filmeUtils.http.SimpleHttpClient;
-import filmeUtils.http.SimpleHttpClientImpl;
 import filmeUtils.subtitleSites.LegendasTv;
 import filmeUtils.torrentSites.TorrentSearcher;
 import filmeUtils.torrentSites.TorrentSearcherImpl;
 
 public class CommandLineClient {
-
-	protected boolean verbose = false;
-
-	private final OutputListener output = new OutputListener() {	
-		public void out(final String string) {
-			System.out.println(string);
-		}
-
-		public void outVerbose(final String string) {
-			if(verbose){
-				System.out.println(string);
-			}
-		}
-	};
 	
 	private final ArgumentsParserImpl cli;
-	private final File filmeUtilsFolder;
 
-	private File cookieFile;
+	private final SimpleHttpClient httpclient;
 
-	private SimpleHttpClient httpclient;
+	private final LegendasTv legendasTv;
+	private final Extractor extract;
 
-	private LegendasTv legendasTv;
+	private final OutputListener output;
 
-
-	private boolean search;
-
-	public CommandLineClient(final ArgumentsParserImpl cli, final File filmeUtilsFolder) {
+	public CommandLineClient(final SimpleHttpClient httpclient,final LegendasTv legendasTv,final Extractor extract,final ArgumentsParserImpl cli, final OutputListener output) {
+		this.httpclient = httpclient;
+		this.legendasTv = legendasTv;
+		this.extract = extract;
 		this.cli = cli;
-		this.filmeUtilsFolder = filmeUtilsFolder;
+		this.output = output;
 	}
 
 	public void execute() throws IOException {
-		cookieFile = new File(filmeUtilsFolder,"legendasCookies.serialized");
-		httpclient = new SimpleHttpClientImpl(cookieFile);
-		legendasTv = new LegendasTv(cli.getUser(),cli.getPassword(),httpclient, output);
-		search = cli.search();
 		
-    	verbose = cli.isVerbose();
+		final boolean search = cli.search();
+		
         final BrowserLauncher bareBonesBrowserLaunch = new BareBonesBrowseLauncher();
         final TorrentSearcher torrentSearcher = new TorrentSearcherImpl(httpclient);
-        final ExtractorImpl extract = new ExtractorImpl();
+        
 		final SearchListener searchListener = new SearchListenerImplementation(httpclient,extract,torrentSearcher,bareBonesBrowserLaunch,legendasTv ,cli,output);
         
 		if(search){

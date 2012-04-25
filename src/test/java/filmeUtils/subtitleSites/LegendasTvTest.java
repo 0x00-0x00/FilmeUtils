@@ -29,7 +29,7 @@ public class LegendasTvTest {
 	public void searchTest(){
 		final String response = "LegendasTvOneResult.html";
 		final SimpleHttpClientMock mock = getHttpMock(response);
-		final LegendasTv subject = new LegendasTv("","",mock, dummyOutputListener);
+		final LegendasTv subject = new LegendasTv(null,mock, dummyOutputListener);
 		final AtomicBoolean wasCalled = new AtomicBoolean(false);
 		subject.search("foo", new SearchListener() {
 			public void found(final String name, final String link) {

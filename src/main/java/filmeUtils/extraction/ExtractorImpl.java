@@ -13,7 +13,8 @@ import org.apache.commons.io.IOUtils;
 
 import com.github.junrar.testutil.ExtractArchive;
 
-public class ExtractorImpl {
+public class ExtractorImpl implements Extractor {
+
 
 	public void unzip(final File zip, final File destinationFolder) throws ZipException, IOException{
 		final ZipFile zipFile = new ZipFile(zip);
@@ -36,6 +37,7 @@ public class ExtractorImpl {
 		zipFile.close();
 		zip.delete();
 	}
+
 
 	public void unrar(final File rar, final File destinationFolder) {
 		ExtractArchive.extractArchive(rar, destinationFolder);

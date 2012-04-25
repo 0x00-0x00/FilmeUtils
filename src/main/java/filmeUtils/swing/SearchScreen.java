@@ -65,7 +65,7 @@ public class SearchScreen extends JFrame {
 
 	protected void performQueryWith(final String text) {
 		final SimpleHttpClient simpleHttpClient = new SimpleHttpClientImpl();
-		final LegendasTv legendasTv = new LegendasTv("","",simpleHttpClient, new OutputListener() {
+		final LegendasTv legendasTv = new LegendasTv(null,simpleHttpClient, new OutputListener() {
 			public void out(final String string) {
 				resultsArea.append(string);
 			}

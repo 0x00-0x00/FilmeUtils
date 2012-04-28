@@ -1,6 +1,6 @@
 package filmeUtils.http;
 
-public interface BrowserLauncher {
+public interface MagnetLinkHandler {
 
 	/**
 	 * Opens the specified web page in the user's default browser

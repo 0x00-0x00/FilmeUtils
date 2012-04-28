@@ -90,5 +90,10 @@
 			<version>1.0</version>
 			<type>pom</type>
 		</dependency>
+		<dependency>
+			<groupId>beothorn.labs</groupId>
+			<artifactId>URLProtocolHandler</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 </project>

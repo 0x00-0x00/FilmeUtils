@@ -3,8 +3,8 @@ package filmeUtils;
 import java.io.IOException;
 
 import filmeUtils.extraction.Extractor;
-import filmeUtils.http.BareBonesBrowseLauncher;
-import filmeUtils.http.BrowserLauncher;
+import filmeUtils.http.OSMagnetLinkHandler;
+import filmeUtils.http.MagnetLinkHandler;
 import filmeUtils.http.SimpleHttpClient;
 import filmeUtils.subtitleSites.LegendasTv;
 import filmeUtils.torrentSites.TorrentSearcher;
@@ -33,10 +33,10 @@ public class CommandLineClient {
 		
 		final boolean search = cli.search();
 		
-        final BrowserLauncher bareBonesBrowserLaunch = new BareBonesBrowseLauncher();
+        final MagnetLinkHandler urlHandler = new OSMagnetLinkHandler();
         final TorrentSearcher torrentSearcher = new TorrentSearcherImpl(httpclient);
         
-		final SearchListener searchListener = new SearchListenerImplementation(httpclient,extract,torrentSearcher,bareBonesBrowserLaunch,legendasTv ,cli,output);
+		final SearchListener searchListener = new SearchListenerImplementation(httpclient,extract,torrentSearcher,urlHandler,legendasTv ,cli,output);
         
 		if(search){
         	final String searchTerm = cli.searchTerm();

@@ -11,7 +11,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.conn.ConnectionPoolTimeoutException;
 
 import filmeUtils.extraction.Extractor;
-import filmeUtils.http.BrowserLauncher;
+import filmeUtils.http.MagnetLinkHandler;
 import filmeUtils.http.SimpleHttpClient;
 import filmeUtils.http.SimpleHttpClientImpl;
 import filmeUtils.subtitleSites.LegendasTv;
@@ -26,13 +26,14 @@ final class SearchListenerImplementation implements SearchListener {
 	private final String nameAcceptanceRegex;
 	private final OutputListener outputListener;
 	private final LegendasTv legendasTv;
-	private BrowserLauncher bareBonesBrowserLaunch;
+	private final MagnetLinkHandler magnetLinkHandler;
 	private final Extractor extract;
 
-	SearchListenerImplementation(final SimpleHttpClient httpclient,final Extractor extract,final TorrentSearcher torrentSearcher,final BrowserLauncher bareBonesBrowserLaunch,final LegendasTv legendasTv, final ArgumentsParser cli, final OutputListener outputListener) {
+	SearchListenerImplementation(final SimpleHttpClient httpclient,final Extractor extract,final TorrentSearcher torrentSearcher,final MagnetLinkHandler magnetLinkHandler,final LegendasTv legendasTv, final ArgumentsParser cli, final OutputListener outputListener) {
 		this.httpclient = httpclient;
 		this.extract = extract;
 		this.torrentSearcher = torrentSearcher;
+		this.magnetLinkHandler = magnetLinkHandler;
 		this.legendasTv = legendasTv;
 		this.showSubtitleIfMagnetWasNotFound = cli.showSubtitleIfMagnetWasNotFound();
 		this.nameAcceptanceRegex = cli.getAcceptanceRegexOrNull();
@@ -128,7 +129,7 @@ final class SearchListenerImplementation implements SearchListener {
 		
 		outputListener.outVerbose("Abrindo no browser: "+magnetLinkForFile);
 		
-		bareBonesBrowserLaunch.openURL(magnetLinkForFile);
+		magnetLinkHandler.openURL(magnetLinkForFile);
 		outputListener.out(subtitleNameFormmated + " - " + magnetLinkForFile);
 	}
 }

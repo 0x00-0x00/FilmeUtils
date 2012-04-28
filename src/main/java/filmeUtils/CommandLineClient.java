@@ -3,8 +3,8 @@ package filmeUtils;
 import java.io.IOException;
 
 import filmeUtils.extraction.Extractor;
-import filmeUtils.http.OSMagnetLinkHandler;
 import filmeUtils.http.MagnetLinkHandler;
+import filmeUtils.http.OSMagnetLinkHandler;
 import filmeUtils.http.SimpleHttpClient;
 import filmeUtils.subtitleSites.LegendasTv;
 import filmeUtils.torrentSites.TorrentSearcher;
@@ -45,7 +45,7 @@ public class CommandLineClient {
         }
         
         if(cli.showNewAdditions()){
-        	output.out("Novas legendas:");
+        	output.outVerbose("Novas legendas:");
         	final int newAdditionsPageCountToShow = cli.newAdditionsPageCountToShow();
         	legendasTv.getNewer(newAdditionsPageCountToShow,searchListener);
         	

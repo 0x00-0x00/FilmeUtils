@@ -56,10 +56,11 @@ final class SearchListenerImplementation implements SearchListener {
 			final String validNameForFile = name.replaceAll("[/ \\\\?]", "_");
 			final File currentSubtitleFolder = new File(subtitleDestination, validNameForFile);
 			currentSubtitleFolder.mkdir();
-			outputListener.out("Extraindo legendas para "+currentSubtitleFolder.getAbsolutePath());
+			outputListener.outVerbose("Extraindo legendas para "+currentSubtitleFolder.getAbsolutePath());
 			
 			downloadLinkToFolder(link, currentSubtitleFolder);
 			openTorrents(currentSubtitleFolder);
+			FileUtils.deleteDirectory(currentSubtitleFolder);
 			
 		} catch(final ConnectionPoolTimeoutException e){
 			outputListener.out("Tempo máximo de requisição atingido ("+SimpleHttpClientImpl.TIMEOUT+" segundos)");
@@ -94,7 +95,7 @@ final class SearchListenerImplementation implements SearchListener {
 		final Iterator<File> iterateFiles = FileUtils.iterateFiles(currentSubtitleFolder, new String[]{"srt"}, true);
 		while(iterateFiles.hasNext()){
 			final File next = iterateFiles.next();
-			showFileName(next);
+			downloadTorrentAndCopySubtitle(next);
 		}
 	}
 
@@ -110,7 +111,7 @@ final class SearchListenerImplementation implements SearchListener {
 		throw new RuntimeException("Tipo desconhecido: "+contentType);
 	}
 
-	private void showFileName(final File next) {
+	private void downloadTorrentAndCopySubtitle(final File next) {
 		String magnetLinkForFile;
 		final String subtitleName = next.getName().replaceAll("\\.[Ss][Rr][Tt]", "");
 		final String subtitleNameFormmated = "\t* "+subtitleName;
@@ -126,6 +127,11 @@ final class SearchListenerImplementation implements SearchListener {
 		outputListener.outVerbose("Abrindo no browser: "+magnetLinkForFile);
 		magnetLinkHandler.openURL(magnetLinkForFile);
 		outputListener.out("Downloading: "+subtitleNameFormmated);
+		try {
+			FileUtils.copyFileToDirectory(next, subtitleDestination);
+		} catch (final IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private boolean shouldRefuse(final String subtitleName) {

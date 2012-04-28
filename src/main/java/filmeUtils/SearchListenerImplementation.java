@@ -95,7 +95,10 @@ final class SearchListenerImplementation implements SearchListener {
 		final Iterator<File> iterateFiles = FileUtils.iterateFiles(currentSubtitleFolder, new String[]{"srt"}, true);
 		while(iterateFiles.hasNext()){
 			final File next = iterateFiles.next();
-			downloadTorrentAndCopySubtitle(next);
+			final boolean success = downloadTorrentAndCopySubtitle(next);
+			if(success){
+				return;
+			}
 		}
 	}
 
@@ -111,18 +114,18 @@ final class SearchListenerImplementation implements SearchListener {
 		throw new RuntimeException("Tipo desconhecido: "+contentType);
 	}
 
-	private void downloadTorrentAndCopySubtitle(final File next) {
+	private boolean downloadTorrentAndCopySubtitle(final File next) {
 		String magnetLinkForFile;
 		final String subtitleName = next.getName().replaceAll("\\.[Ss][Rr][Tt]", "");
 		final String subtitleNameFormmated = "\t* "+subtitleName;
 		final boolean shouldRefuse = shouldRefuse(subtitleName);
 		if(shouldRefuse){
-			return;
+			return false;
 		}
 		
 		magnetLinkForFile = torrentSearcher.getMagnetLinkForFileOrNull(subtitleName);
 		if(magnetLinkForFile == null){
-			return;
+			return false;
 		}
 		outputListener.outVerbose("Abrindo no browser: "+magnetLinkForFile);
 		magnetLinkHandler.openURL(magnetLinkForFile);
@@ -132,6 +135,7 @@ final class SearchListenerImplementation implements SearchListener {
 		} catch (final IOException e) {
 			throw new RuntimeException(e);
 		}
+		return true;
 	}
 
 	private boolean shouldRefuse(final String subtitleName) {

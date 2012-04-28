@@ -6,8 +6,8 @@ public interface ArgumentsParser {
 
 	String getUser();
 	String getPassword();
-	boolean showSubtitleIfMagnetWasNotFound();
-	String getAcceptanceRegexOrNull();
+	boolean shouldRefuseNonHD();
+	boolean shouldRefuseHD();
 	File getSubtitlesDestinationFolderOrNull();
 	boolean isVerbose(); 
 

@@ -9,8 +9,8 @@ public class ArgumentsParserTest {
 	@Test
 	public void testGuiArgument(){
 		final ArgumentsParserImpl subject = new ArgumentsParserImpl();
-		subject.parse(new String[]{"-g"});
-		Assert.assertTrue(subject.usingGuiMome());
+		subject.parse(new String[]{"-a","v"});
+		Assert.assertTrue(subject.shouldRefuseNonHD());
 	}
 	
 }

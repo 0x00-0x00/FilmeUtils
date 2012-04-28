@@ -6,6 +6,7 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
+import filmeUtils.ArgumentsParserImpl;
 import filmeUtils.OutputListener;
 import filmeUtils.SearchListener;
 
@@ -29,7 +30,9 @@ public class LegendasTvTest {
 	public void searchTest(){
 		final String response = "LegendasTvOneResult.html";
 		final SimpleHttpClientMock mock = getHttpMock(response);
-		final LegendasTv subject = new LegendasTv(null,mock, dummyOutputListener);
+		final ArgumentsParserImpl cli = new ArgumentsParserImpl();
+		cli.parse(new String[]{});
+		final LegendasTv subject = new LegendasTv(cli,mock, dummyOutputListener);
 		final AtomicBoolean wasCalled = new AtomicBoolean(false);
 		subject.search("foo", new SearchListener() {
 			public void found(final String name, final String link) {

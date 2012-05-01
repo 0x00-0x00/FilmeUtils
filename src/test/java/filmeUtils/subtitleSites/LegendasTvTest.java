@@ -1,29 +1,31 @@
 package filmeUtils.subtitleSites;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import junit.framework.Assert;
 
 import org.junit.Test;
 
-import filmeUtils.ArgumentsParserImpl;
 import filmeUtils.OutputListener;
 import filmeUtils.SearchListener;
 
 public class LegendasTvTest {
 	
 	private final OutputListener dummyOutputListener;
+	final SimpleHttpClientMock mock = new SimpleHttpClientMock();
 
 	public LegendasTvTest() {
 		dummyOutputListener = new DummyOutputListener();
 	}
 	
 	@Test
-	public void searchTest(){
+	public void simpleSearchWithOneResultTest(){
 		final String response = "LegendasTvOneResult.html";
-		final SimpleHttpClientMock mock = getHttpMock(response);
-		final ArgumentsParserImpl cli = new ArgumentsParserImpl(dummyOutputListener);
-		cli.parse(new String[]{});
+		mock.setResponseForUrl("http://legendas.tv/index.php?opcao=buscarlegenda&pagina=1", response);
+		final ArgumentsParserMock cli = new ArgumentsParserMock();
+		cli.isLazy = true;
 		final LegendasTv subject = new LegendasTv(cli,mock, dummyOutputListener);
 		final AtomicBoolean wasCalled = new AtomicBoolean(false);
 		subject.search("foo", new SearchListener() {
@@ -37,10 +39,25 @@ public class LegendasTvTest {
 		Assert.assertTrue(wasCalled.get());
 	}
 
-	private SimpleHttpClientMock getHttpMock(final String response) {
-		final SimpleHttpClientMock mock = new SimpleHttpClientMock();
-		mock.setResponse(response);
-		return mock;
+	@Test
+	public void simpleSearchWithMoreThanOneResultOnePageGreedyTest(){
+		final String response = "LegendasTvLotsOfResultsOnePage.html";
+		mock.setResponseForUrl("http://legendas.tv/index.php?opcao=buscarlegenda&pagina=1", response);
+		final ArgumentsParserMock cli = new ArgumentsParserMock();
+		cli.isLazy = false;
+		final LegendasTv subject = new LegendasTv(cli,mock, dummyOutputListener);
+		final Map<String, String> expectedResults = new LinkedHashMap<String, String>();
+		expectedResults.put("Community.S01.Complete.HDTV (PACK DE LEGENDAS)", "http://legendas.tv/info.php?c=1&d=ae752094b5a1fc977e933fb619527d1a");
+		expectedResults.put("Community.S01.720p.WEB-DL.DD5.1.H.264-myTV/HoodBag (PACK DE LEGENDAS)","http://legendas.tv/info.php?c=1&d=a7faf31ace51a2110b69b822ff84b434");
+		expectedResults.put("Community.S02.720p.WEB-DL.DD5.1.H.264-HoodBag (PACK DE LEGENDAS)","http://legendas.tv/info.php?c=1&d=fe19c9afc9dbf6a53a74d0782da8861a");
+		subject.search("foo", new SearchListener() {
+			public boolean foundReturnSuccess(final String name, final String link) {
+				final String linkExpected = expectedResults.get(name);
+				Assert.assertEquals("For "+name,linkExpected, link);
+				expectedResults.remove(name);
+				return true;
+			}
+		});
+		Assert.assertEquals(0, expectedResults.size());
 	}
-
 }

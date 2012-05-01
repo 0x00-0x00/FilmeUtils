@@ -3,6 +3,7 @@ package filmeUtils.subtitleSites;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
@@ -12,7 +13,7 @@ import filmeUtils.http.SimpleHttpClient;
 
 class SimpleHttpClientMock implements SimpleHttpClient {
 
-	private String response;
+	private final Map<String, String> responseForUrl = new LinkedHashMap<String, String>();
 
 	public String getToFile(final String link, final File destFile)
 			throws ClientProtocolException, IOException {
@@ -24,6 +25,10 @@ class SimpleHttpClientMock implements SimpleHttpClient {
 	}
 
 	public String post(final String postUrl, final Map<String, String> params) throws ClientProtocolException, IOException {
+		final String response = responseForUrl.get(postUrl);
+		if(response == null){
+			throw new RuntimeException("Response not found for url: "+postUrl);
+		}
 		return response;
 	}
 
@@ -35,10 +40,11 @@ class SimpleHttpClientMock implements SimpleHttpClient {
 		throw new RuntimeException("Method not implemented");
 	}
 
-	public void setResponse(final String string) {
-		final InputStream resourceAsStream = SimpleHttpClientMock.class.getResourceAsStream(string);
+	public void setResponseForUrl(final String url,final String responseResource) {
+		final InputStream resourceAsStream = SimpleHttpClientMock.class.getResourceAsStream(responseResource);
 		try {
-			response = IOUtils.toString(resourceAsStream);
+			final String response = IOUtils.toString(resourceAsStream);
+			responseForUrl.put(url,response);
 		} catch (final IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -49,7 +55,7 @@ class SimpleHttpClientMock implements SimpleHttpClient {
 		}
 	}
 
-	public boolean requested(String string) {
+	public boolean requested(final String string) {
 		return true;
 	}
 

@@ -35,10 +35,11 @@ public class LegendasTvTest {
 		final LegendasTv subject = new LegendasTv(cli,mock, dummyOutputListener);
 		final AtomicBoolean wasCalled = new AtomicBoolean(false);
 		subject.search("foo", new SearchListener() {
-			public void found(final String name, final String link) {
+			public boolean foundReturnSuccess(final String name, final String link) {
 				Assert.assertEquals("Castle.S04E21.720p.WEB-DL.DD5.1.H.264-NFHD",name);
 				Assert.assertEquals("http://legendas.tv/info.php?c=1&d=e613c192c4279ff32db5f3ad0640e8d0",link);
 				wasCalled.set(true);
+				return true;
 			}
 		});
 		Assert.assertTrue(wasCalled.get());

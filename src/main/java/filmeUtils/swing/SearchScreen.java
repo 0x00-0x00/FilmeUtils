@@ -76,11 +76,12 @@ public class SearchScreen extends JFrame {
 		});
 		resultsArea.setText("Pesquisando " + text + " , aguarde...");
 		legendasTv.search(text, new SearchListener() {
-			public void found(final String name, final String link) {
+			public boolean foundReturnSuccess(final String name, final String link) {
 				if(!resultsArea.getText().isEmpty()){
 					resultsArea.append("\n");
 				}
 				resultsArea.append(name);
+				return true;
 			}
 		});
 	}

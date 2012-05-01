@@ -26,12 +26,10 @@ public class LegendasTv {
 	
 	private final SimpleHttpClient httpclient;
 	private final OutputListener outputListener;
-	private final String user;
-	private final String password;
+	private final ArgumentsParser cli;
 	
 	public LegendasTv(final ArgumentsParser cli, final SimpleHttpClient httpclient, final OutputListener outputListener) {
-		this.user = cli.getUser();
-		this.password = cli.getPassword();
+		this.cli = cli;
 		this.httpclient = httpclient;
 		this.outputListener = outputListener;
 	}
@@ -39,14 +37,14 @@ public class LegendasTv {
 	public void login(){		
         try {
 			final HashMap<String, String> params = new HashMap<String, String>();
-			params.put("txtLogin", user);
-			params.put("txtSenha", password);
+			params.put("txtLogin", cli.getUser());
+			params.put("txtSenha", cli.getPassword());
 			params.put("chkLogin", "1");
 			
 			
-			outputListener.outVerbose("Autenticando como '"+user+"' ...");
+			outputListener.outVerbose("Autenticando como '"+cli.getUser()+"' ...");
 			final String postResults = httpclient.post(LOGIN_URL, params);
-			outputListener.out("Autenticado como '"+user+"'");
+			outputListener.out("Autenticado como '"+cli.getUser()+"'");
 			
 			if(postResults.contains("Dados incorretos")){
 				outputListener.out("Login/senha incorretos");
@@ -83,7 +81,14 @@ public class LegendasTv {
 			outputListener.out("Legendas tv temporariamente offline.");
 			return;
 		}
-		extractSubtitlesLinks(content,searchListener);
+		if(content.contains("Estamos realizando manuten")){
+			outputListener.out("Legendas tv em manuntenção.");
+			return;
+		}
+		final boolean success = extractSubtitlesLinksAndReturnSuccess(content,searchListener);
+		if(cli.isLazy() && success){
+			return;
+		}
 		
 		final int nextPage = page+1;
 		
@@ -104,14 +109,20 @@ public class LegendasTv {
 		return content;
 	}
 	
-	private void extractSubtitlesLinks(final String searchResult,final SearchListener searchListener) {
+	private boolean extractSubtitlesLinksAndReturnSuccess(final String searchResult,final SearchListener searchListener) {
 		final Document parsed = Jsoup.parse(searchResult);
 		final Elements subtitleSpans = parsed.select("#conteudodest > div > span");
+		boolean successfull = false;
 		for(final Element subtitleSpan : subtitleSpans) {
 			final String subtitleName = getSubtitleName(subtitleSpan);
 			final String subtitleLink = getSubtitleLink(subtitleSpan);
-			searchListener.found(subtitleName, subtitleLink);
+			final boolean success = searchListener.foundReturnSuccess(subtitleName, subtitleLink);
+			successfull = successfull || success;
+			if(cli.isLazy() && success){
+				return true;
+			}
 		}
+		return successfull;
 	}
 
 	private boolean pageLinkExists(final String content, final int nextPage) {
@@ -158,7 +169,7 @@ public class LegendasTv {
 			final String thirdQuotedWordRegex = "[^']*'[^']*','[^']*','([^']*)'.*";
 			subtitleName = subtitleName.replaceAll(thirdQuotedWordRegex, "$1");
 			final String downloadLink = getDownloadFromOnClick(subtitleDiv);
-			searchListener.found(subtitleName, downloadLink);
+			searchListener.foundReturnSuccess(subtitleName, downloadLink);
 		}
 		if(currentIndex<howMuchNewAddsToShow){
 			searchNewAdds(currentIndex, howMuchNewAddsToShow, searchListener);

@@ -40,18 +40,23 @@ final class SearchListenerImplementation implements SearchListener {
 		this.extractContents = subtitleDestination!= null;
 	}
 
-	public void found(final String name, final String link) {
-		if(!extractContents){
-			final boolean shouldRefuse = shouldRefuse(name);
+	public boolean foundReturnSuccess(final String name, final String link) {
+		if(shouldExtractSubtitles()){
+			return unzipSearchMagnetsAndReturnSuccess(name,link);
+		}else{			
+			final boolean shouldRefuse = shouldRefuseSubtitleFile(name);
 			if (!shouldRefuse) {
 				outputListener.out(name);
 			}
-			return;
+			return true;
 		}
-		unzipAndPrint(name,link);
 	}
 
-	private void unzipAndPrint(final String name,final String link){
+	private boolean shouldExtractSubtitles() {
+		return extractContents;
+	}
+
+	private boolean unzipSearchMagnetsAndReturnSuccess(final String name,final String link){
 		try {
 			final String validNameForFile = name.replaceAll("[/ \\\\?]", "_");
 			final File currentSubtitleFolder = new File(subtitleDestination, validNameForFile);
@@ -59,13 +64,15 @@ final class SearchListenerImplementation implements SearchListener {
 			outputListener.outVerbose("Extraindo legendas para "+currentSubtitleFolder.getAbsolutePath());
 			
 			downloadLinkToFolder(link, currentSubtitleFolder);
-			openTorrents(currentSubtitleFolder);
+			final boolean success = openTorrentsAndReturnSuccess(currentSubtitleFolder);
 			FileUtils.deleteDirectory(currentSubtitleFolder);
-			
+			return success;
 		} catch(final ConnectionPoolTimeoutException e){
 			outputListener.out("Tempo máximo de requisição atingido ("+SimpleHttpClientImpl.TIMEOUT+" segundos)");
+			return false;
 		}catch (final IOException e) {
-			e.printStackTrace();//not the end of the world as we know it, and I fell fine
+			outputListener.outVerbose(e.getStackTrace().toString());
+			return false;
 		}
 	}
 
@@ -90,16 +97,19 @@ final class SearchListenerImplementation implements SearchListener {
 		return destFile;
 	}
 
-	private void openTorrents(final File currentSubtitleFolder) {
+	private boolean openTorrentsAndReturnSuccess(final File currentSubtitleFolder) {
+		boolean successfull = false;
 		@SuppressWarnings("unchecked")
 		final Iterator<File> iterateFiles = FileUtils.iterateFiles(currentSubtitleFolder, new String[]{"srt"}, true);
 		while(iterateFiles.hasNext()){
 			final File next = iterateFiles.next();
 			final boolean success = downloadTorrentAndCopySubtitle(next);
-			if(success){
-				return;
+			if(cli.isLazy() && success){
+				return true;
 			}
+			successfull = successfull || success;
 		}
+		return successfull;
 	}
 
 	private void extract(final File compressedFile,final File destinationFolder, final String contentType)throws ZipException, IOException {
@@ -117,8 +127,7 @@ final class SearchListenerImplementation implements SearchListener {
 	private boolean downloadTorrentAndCopySubtitle(final File next) {
 		String magnetLinkForFile;
 		final String subtitleName = next.getName().replaceAll("\\.[Ss][Rr][Tt]", "");
-		final String subtitleNameFormmated = "\t* "+subtitleName;
-		final boolean shouldRefuse = shouldRefuse(subtitleName);
+		final boolean shouldRefuse = shouldRefuseSubtitleFile(subtitleName);
 		if(shouldRefuse){
 			return false;
 		}
@@ -129,7 +138,7 @@ final class SearchListenerImplementation implements SearchListener {
 		}
 		outputListener.outVerbose("Abrindo no browser: "+magnetLinkForFile);
 		magnetLinkHandler.openURL(magnetLinkForFile);
-		outputListener.out("Downloading: "+subtitleNameFormmated);
+		outputListener.out("Downloading: "+subtitleName);
 		try {
 			FileUtils.copyFileToDirectory(next, subtitleDestination);
 		} catch (final IOException e) {
@@ -138,7 +147,7 @@ final class SearchListenerImplementation implements SearchListener {
 		return true;
 	}
 
-	private boolean shouldRefuse(final String subtitleName) {
+	private boolean shouldRefuseSubtitleFile(final String subtitleName) {
 		boolean shouldRefuse = false;
 		final boolean isHiDef = subtitleName.contains("720") || subtitleName.contains("1080");
 		if(cli.shouldRefuseHD()){

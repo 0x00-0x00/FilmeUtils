@@ -1,5 +1,5 @@
 package filmeUtils;
 
 public interface SearchListener {
-	void found(String name,String link);
+	boolean foundReturnSuccess(String name,String link);
 }

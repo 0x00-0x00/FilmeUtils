@@ -13,14 +13,16 @@ import org.apache.commons.cli.PosixParser;
 public class ArgumentsParserImpl implements ArgumentsParser{
 
 	private static final String APPLICATION_NAME = "filmeUtils";
-	private static final String SEARCH_TOKEN = "p";
-	private static final String HELP_TOKEN = "h";
-	private static final String NEW_ADDITIONS_TOKEN = "n";
+	
+	private static final String HIGH_DEF_TOKEN =       "a";
+	private static final String CREDENTIALS_TOKEN =    "c";
 	private static final String SHOULD_EXTRACT_TOKEN = "e";
-	private static final String SHOULD_USE_GUI = "g";
-	private static final String CREDENTIALS_TOKEN = "c";
-	private static final String HIGH_DEF_TOKEN = "a";
-	private static final String VERBOSE_TOKEN = "v";
+	private static final String SHOULD_USE_GUI =       "g";
+	private static final String HELP_TOKEN =           "h";
+	private static final String NEW_ADDITIONS_TOKEN =  "n";
+	private static final String SEARCH_TOKEN =         "p";
+	private static final String GREED_TOKEN =          "t";
+	private static final String VERBOSE_TOKEN =        "v";
 	
 	private static final int NEW_ADDS_DEFAUL_SHOW_VALUE = 23;
 	private static final String USER = "filmeutils";
@@ -39,13 +41,20 @@ public class ArgumentsParserImpl implements ArgumentsParser{
     	
     	options.addOption(newAdditionOption);
 //    	options.addOption(SHOULD_USE_GUI,"gui", false, "Usa interface gráfica");
-    	options.addOption(SHOULD_EXTRACT_TOKEN,"extrair", true, "Extrai e os arquivos de legendas para o diretório informado");
-    	options.addOption(HIGH_DEF_TOKEN,"alta-definicao", true, "Se argumento for v, pega vídeos 720/1080, se for f rejeita 720/1080. Se não for informado aceita todos.\n" +
+    	options.addOption(SHOULD_EXTRACT_TOKEN,"extrair", true, 
+    			"Extrai e os arquivos de legendas para o diretório informado");
+    	options.addOption(HIGH_DEF_TOKEN,"alta-definicao", true, 
+    			"Se argumento for v, pega vídeos 720/1080, se for f rejeita 720/1080. Se não for informado aceita todos.\n" +
     			"Na procura é aplicado o teste nos nomes dos arquivos e na extração é aplicado nos arquivos.");
-    	options.addOption(CREDENTIALS_TOKEN,"credenciais", false, "Usuário e senha para logar no legendas.tv ex: joao/senha123, se não for informado, um usuário padrão é usado." +
+    	options.addOption(CREDENTIALS_TOKEN,"credenciais", false, 
+    			"Usuário e senha para logar no legendas.tv ex: joao/senha123, se não for informado, um usuário padrão é usado." +
     			"Se usado sem paramêtro força login");
-    	options.addOption(VERBOSE_TOKEN,"verboso", false, "Imprime informações detalhadas.");
-    	options.addOption(HELP_TOKEN,"help", false, "Imprime essa ajuda");
+    	options.addOption(GREED_TOKEN,"tudo", false, 
+    			"Faz download de todos os resultados achados. O padrão é pegar o primeiro resultado com magnet link.");
+    	options.addOption(VERBOSE_TOKEN,"verboso", false, 
+    			"Imprime informações detalhadas.");
+    	options.addOption(HELP_TOKEN,"help", false, 
+    			"Imprime essa ajuda");
     	
     	isDone = false;
 	}
@@ -169,5 +178,13 @@ public class ArgumentsParserImpl implements ArgumentsParser{
 			return false;
 		}
 		return cmd.getOptionValue(HIGH_DEF_TOKEN).toLowerCase().equals("f");
+	}
+
+	public boolean isGeedy() {
+		return cmd.hasOption(GREED_TOKEN);
+	}
+
+	public boolean isLazy() {
+		return !isGeedy();
 	}
 }

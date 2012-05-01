@@ -9,6 +9,8 @@ public interface ArgumentsParser {
 	boolean shouldRefuseNonHD();
 	boolean shouldRefuseHD();
 	File getSubtitlesDestinationFolderOrNull();
-	boolean isVerbose(); 
+	boolean isVerbose();
+	boolean isGeedy();
+	boolean isLazy();
 
 }

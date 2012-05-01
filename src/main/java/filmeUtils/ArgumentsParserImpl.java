@@ -4,7 +4,6 @@ import java.io.File;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
@@ -32,7 +31,10 @@ public class ArgumentsParserImpl implements ArgumentsParser{
 	private boolean isDone;
 	private CommandLine cmd;
 
-	public ArgumentsParserImpl() {
+	private final OutputListener outputListener;
+
+	public ArgumentsParserImpl(final OutputListener outputListener) {
+		this.outputListener = outputListener;
 		options = new Options();
     	options.addOption(SEARCH_TOKEN,"procura", true, "procura legendas");
     	
@@ -60,12 +62,11 @@ public class ArgumentsParserImpl implements ArgumentsParser{
 	}
 	
 	private void printHelp() {
-		System.out.println("FilmeUtils é uma ferramenta de linha de commando para pegar legendas e torrents\n" +
+		outputListener.out("FilmeUtils é uma ferramenta de linha de commando para pegar legendas e torrents\n" +
 				"atualmente usa o legendas.tv e o piratebaySe\n" +
 				"Versão "+Version.VERSION);
-		final HelpFormatter formatter = new HelpFormatter();
-		formatter.printHelp(APPLICATION_NAME, options );
-		System.out.println(
+		outputListener.printHelp(APPLICATION_NAME, options);
+		outputListener.out(
 				"Por exemplo, se você quiser um episódio de House, use primeiro:\n" +
 				"filmeUtils -p House\n" +
 				"Para procurar por house no legendas.tv,\n" +
@@ -82,7 +83,7 @@ public class ArgumentsParserImpl implements ArgumentsParser{
 		try {
 			cmd = parser.parse( options, args);
 		} catch (final ParseException e) {
-			System.out.println(e.getMessage());
+			outputListener.out(e.getMessage());
 			printHelp();
     		return;
 		}

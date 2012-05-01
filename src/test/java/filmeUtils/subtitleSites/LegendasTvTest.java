@@ -15,22 +15,14 @@ public class LegendasTvTest {
 	private final OutputListener dummyOutputListener;
 
 	public LegendasTvTest() {
-		dummyOutputListener = new OutputListener() {
-			public void out(final String string) {
-				//do nothing
-			}
-
-			public void outVerbose(final String string) {
-				//do nothing
-			}
-		};
+		dummyOutputListener = new DummyOutputListener();
 	}
 	
 	@Test
 	public void searchTest(){
 		final String response = "LegendasTvOneResult.html";
 		final SimpleHttpClientMock mock = getHttpMock(response);
-		final ArgumentsParserImpl cli = new ArgumentsParserImpl();
+		final ArgumentsParserImpl cli = new ArgumentsParserImpl(dummyOutputListener);
 		cli.parse(new String[]{});
 		final LegendasTv subject = new LegendasTv(cli,mock, dummyOutputListener);
 		final AtomicBoolean wasCalled = new AtomicBoolean(false);

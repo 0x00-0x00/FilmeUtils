@@ -13,6 +13,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+import org.apache.commons.cli.Options;
+
 import filmeUtils.OutputListener;
 import filmeUtils.SearchListener;
 import filmeUtils.http.SimpleHttpClient;
@@ -72,6 +74,10 @@ public class SearchScreen extends JFrame {
 
 			public void outVerbose(final String string) {
 				resultsArea.append(string);
+			}
+
+			public void printHelp(final String applicationName, final Options options) {
+				throw new RuntimeException("Method not implemented");
 			}
 		});
 		resultsArea.setText("Pesquisando " + text + " , aguarde...");

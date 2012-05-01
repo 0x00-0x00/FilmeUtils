@@ -1,5 +1,8 @@
 package filmeUtils;
 
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+
 public class SysOut implements OutputListener {
 
 	private final boolean verbose;
@@ -16,6 +19,11 @@ public class SysOut implements OutputListener {
 		if(verbose){
 			System.out.println(string);
 		}
+	}
+
+	public void printHelp(final String applicationName, final Options options) {
+		final HelpFormatter formatter = new HelpFormatter();
+		formatter.printHelp(applicationName, options );
 	}
 
 }

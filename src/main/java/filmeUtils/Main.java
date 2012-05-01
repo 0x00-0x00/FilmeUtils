@@ -3,6 +3,9 @@ package filmeUtils;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+
 import filmeUtils.extraction.ExtractorImpl;
 import filmeUtils.http.SimpleHttpClient;
 import filmeUtils.http.SimpleHttpClientImpl;
@@ -20,7 +23,21 @@ public class Main {
 			filmeUtilsFolder.mkdir();
 		}
 		
-    	final ArgumentsParserImpl cli = new ArgumentsParserImpl();
+    	final ArgumentsParserImpl cli = new ArgumentsParserImpl(new OutputListener() {
+			
+			public void outVerbose(final String string) {
+				System.out.println(string);
+			}
+			
+			public void out(final String string) {
+				System.out.println(string);
+			}
+
+			public void printHelp(final String applicationName, final Options options) {
+				final HelpFormatter formatter = new HelpFormatter();
+				formatter.printHelp(applicationName, options );
+			}
+		});
     	cli.parse(args);
     	if(cli.isDone()){
     		return;

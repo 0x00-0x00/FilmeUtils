@@ -1,25 +1,30 @@
 FilmeUtils é uma ferramenta de linha de commando para pegar legendas e torrents
-atualmente usa o legendas.tv e o piratebaySe
-Versão 1.1
-usage: filmeUtils
- -c,--credenciais <arg>   Informa usuário e senha no legendas.tv ex:
-                          joao/senha123, se não for informado, um usuário
-                          padrão é usado.
- -e,--extrair <arg>       Extrai e os arquivos de legendas para o
-                          diretório informado
- -h,--help                Imprime essa ajuda
- -n,--novos <arg>         mostra novas legendas, o argumento é o número de
-                          legendas
- -p,--procura <arg>       procura legendas
- -s,--site-links          Imprime o link direto para os arquivos de
-                          legendas.
-Por exemplo, se você quiser um episódio de House, use primeiro:
-filmeUtils -p House
-Para procurar por house no legendas.tv,
-copie o nome do episodio que você quer (digamos House.S01E05) e use o comando:
-filmeUtils -p House.S01E05 -e CAMINHO_DAS_LEGENDAS
-O token -d vai extrair as legendas no local passado no -e
-O magnet link aparece do lado da legenda,  use-o em seu cliente de torrent
-ou no próprio browser.
-Se quiser ver as novas legenda adicionadas no legendas.tv use
-filmeUtils -n
+atualmente usa:
+
+Legendas:  
+legendas.tv  
+
+Torrents:  
+piratebaySe  
+bitsnoop
+
+Pré-requisitos:
+ Java 1.5 ou maior instalado.
+
+
+Uso:  
+Copie o filmeUtils.jar na área de Downloads.  
+Execute na linha de comando:  
+java - jar filmeUtils.jar -p "House.S01E05" -e "CAMINHO_DAS_LEGENDAS"
+FilmeUtils vai encontrar a primeira legenda que tenha pessoas compartilhando,  
+colocar a legenda em CAMINHO_DAS_LEGENDAS e mandar o torrent  
+para o seu cliente de torrent instalado.  
+
+java - jar filmeUtils.jar -n  
+Vai mostrar as legendas novas adicionadas no legendas.tv, para pegar o arquivo copie  
+o nome e use:  
+java - jar filmeUtils.jar -p "NomeCopiado" -e "CAMINHO_DAS_LEGENDAS"
+
+Você tem opção de escolher entre hd ou normal, pegar todos os arquivos, etc.  
+Para mais opções execute o filmeUtils sem argumentos:  
+java - jar filmeUtils.jar

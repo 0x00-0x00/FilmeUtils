@@ -1,5 +1,6 @@
-FilmeUtils é uma ferramenta de linha de commando para pegar legendas e torrents
-atualmente usa:
+FilmeUtils é uma ferramenta de linha de commando para pegar legendas e torrents.
+
+Atualmente usa:
 
 Legendas:  
 legendas.tv  
@@ -10,7 +11,6 @@ bitsnoop
 
 Pré-requisitos:
  Java 1.5 ou maior instalado.
-
 
 Uso:  
 Copie o filmeUtils.jar na área de Downloads.  
@@ -24,6 +24,9 @@ java - jar filmeUtils.jar -n
 Vai mostrar as legendas novas adicionadas no legendas.tv, para pegar o arquivo copie  
 o nome e use:  
 java - jar filmeUtils.jar -p "NomeCopiado" -e "CAMINHO_DAS_LEGENDAS"
+
+java - jar filmeUtils.jar -p "House.S01E05" -t
+Para somente procurar legendas.
 
 Você tem opção de escolher entre hd ou normal, pegar todos os arquivos, etc.  
 Para mais opções execute o filmeUtils sem argumentos:  

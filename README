@@ -1,5 +1,11 @@
 FilmeUtils é uma ferramenta de linha de commando para pegar legendas e torrents.
 
+TLDR;
+use esse comando 
+java - jar filmeUtils.jar -p "House.S01E05" -e "CAMINHO_PARA_LEGENDAS"
+e vc já tem uma legenda e um torrent com o maior número de seeds.
+
+
 Atualmente usa:
 
 Legendas:  

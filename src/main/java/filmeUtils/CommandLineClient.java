@@ -3,6 +3,8 @@ package filmeUtils;
 import java.io.IOException;
 
 import filmeUtils.extraction.Extractor;
+import filmeUtils.fileSystem.FileSystem;
+import filmeUtils.fileSystem.FileSystemImpl;
 import filmeUtils.http.MagnetLinkHandler;
 import filmeUtils.http.OSMagnetLinkHandler;
 import filmeUtils.http.SimpleHttpClient;
@@ -36,7 +38,8 @@ public class CommandLineClient {
         final MagnetLinkHandler urlHandler = new OSMagnetLinkHandler();
         final TorrentSearcher torrentSearcher = new TorrentSearcherImpl(httpclient);
         
-		final SearchListener searchListener = new SearchListenerImplementation(httpclient,extract,torrentSearcher,urlHandler,legendasTv ,cli,output);
+		final FileSystem fileSystem = new FileSystemImpl();
+		final SearchListener searchListener = new SearchListenerImplementation(fileSystem,httpclient,extract,torrentSearcher,urlHandler,legendasTv ,cli,output);
         
 		if(search){
         	final String searchTerm = cli.searchTerm();

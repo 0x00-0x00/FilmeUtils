@@ -11,6 +11,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.conn.ConnectionPoolTimeoutException;
 
 import filmeUtils.extraction.Extractor;
+import filmeUtils.fileSystem.FileSystem;
 import filmeUtils.http.MagnetLinkHandler;
 import filmeUtils.http.SimpleHttpClient;
 import filmeUtils.http.SimpleHttpClientImpl;
@@ -27,8 +28,10 @@ final class SearchListenerImplementation implements SearchListener {
 	private final MagnetLinkHandler magnetLinkHandler;
 	private final Extractor extract;
 	private final ArgumentsParser cli;
+	private final FileSystem fileSystem;
 
-	SearchListenerImplementation(final SimpleHttpClient httpclient,final Extractor extract,final TorrentSearcher torrentSearcher,final MagnetLinkHandler magnetLinkHandler,final LegendasTv legendasTv, final ArgumentsParser cli, final OutputListener outputListener) {
+	SearchListenerImplementation(final FileSystem fileSystem,final SimpleHttpClient httpclient,final Extractor extract,final TorrentSearcher torrentSearcher,final MagnetLinkHandler magnetLinkHandler,final LegendasTv legendasTv, final ArgumentsParser cli, final OutputListener outputListener) {
+		this.fileSystem = fileSystem;
 		this.httpclient = httpclient;
 		this.extract = extract;
 		this.torrentSearcher = torrentSearcher;
@@ -60,7 +63,8 @@ final class SearchListenerImplementation implements SearchListener {
 		try {
 			final String validNameForFile = name.replaceAll("[/ \\\\?]", "_");
 			final File currentSubtitleFolder = new File(subtitleDestination, validNameForFile);
-			currentSubtitleFolder.mkdir();
+			
+			fileSystem.mkdir(currentSubtitleFolder);
 			outputListener.outVerbose("Extraindo legendas para "+currentSubtitleFolder.getAbsolutePath());
 			
 			downloadLinkToFolder(link, currentSubtitleFolder);
@@ -90,9 +94,9 @@ final class SearchListenerImplementation implements SearchListener {
 		destFile.delete();
 	}
 
-	private File createFileToBeWritten(final File currentSubtitleCollection)
-			throws IOException {
+	private File createFileToBeWritten(final File currentSubtitleCollection) throws IOException {
 		final File destFile = new File(currentSubtitleCollection,"compressedSubs");
+		fileSystem.createNewFile(destFile);
 		destFile.createNewFile();
 		return destFile;
 	}

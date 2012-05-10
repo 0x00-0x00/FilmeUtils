@@ -42,7 +42,7 @@ public class ArgumentsParserImpl implements ArgumentsParser{
     	newAdditionOption.setOptionalArg(true);
     	
     	options.addOption(newAdditionOption);
-//    	options.addOption(SHOULD_USE_GUI,"gui", false, "Usa interface gráfica");
+    	options.addOption(SHOULD_USE_GUI,"gui", false, "Usa interface gráfica");
     	options.addOption(SHOULD_EXTRACT_TOKEN,"extrair", true, 
     			"Extrai e os arquivos de legendas para o diretório informado");
     	options.addOption(HIGH_DEF_TOKEN,"alta-definicao", true, 

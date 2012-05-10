@@ -43,7 +43,7 @@ final class SearchListenerImplementation implements SearchListener {
 		this.extractContents = subtitleDestination!= null;
 	}
 
-	public boolean foundReturnSuccess(final String name, final String link) {
+	public boolean foundReturnIfShouldStopLooking(final String name, final String link) {
 		if(shouldExtractSubtitles()){
 			return unzipSearchMagnetsAndReturnSuccess(name,link);
 		}else{			

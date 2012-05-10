@@ -24,7 +24,7 @@ public class SearchListenerImplementationTest {
 		final ArgumentsParser cli = null;
 		final OutputListener outputListener = null;
 		final SearchListenerImplementation subject = new SearchListenerImplementation(fileSystem, httpclient, extract, torrentSearcher, magnetLinkHandler, legendasTv, cli, outputListener);
-		subject.foundReturnSuccess("fooSubs", "fooLink");
+		subject.foundReturnIfShouldStopLooking("fooSubs", "fooLink");
 	}
 	
 }

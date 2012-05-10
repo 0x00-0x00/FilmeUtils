@@ -50,7 +50,7 @@ public class Main {
     	final SysOut output = new SysOut(cli);
     	final LegendasTv legendasTv = new LegendasTv(cli,httpclient, output);
     	if(cli.usingGuiMome()){
-    		final SearchScreenNeeds searchScreenNeeds = new SearchScreenNeeds(httpclient, legendasTv, extract);
+    		final SearchScreenNeeds searchScreenNeeds = new SearchScreenNeeds(legendasTv);
     		new SearchScreen(searchScreenNeeds);
     	}else{			
 			final CommandLineClient commandLineClient = new CommandLineClient(httpclient,legendasTv,extract,cli, output);

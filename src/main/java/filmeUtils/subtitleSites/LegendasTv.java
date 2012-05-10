@@ -116,7 +116,7 @@ public class LegendasTv {
 		for(final Element subtitleSpan : subtitleSpans) {
 			final String subtitleName = getSubtitleName(subtitleSpan);
 			final String subtitleLink = getSubtitleLink(subtitleSpan);
-			final boolean success = searchListener.foundReturnSuccess(subtitleName, subtitleLink);
+			final boolean success = searchListener.foundReturnIfShouldStopLooking(subtitleName, subtitleLink);
 			successfull = successfull || success;
 			if(cli.isLazy() && success){
 				return true;
@@ -169,7 +169,7 @@ public class LegendasTv {
 			final String thirdQuotedWordRegex = "[^']*'[^']*','[^']*','([^']*)'.*";
 			subtitleName = subtitleName.replaceAll(thirdQuotedWordRegex, "$1");
 			final String downloadLink = getDownloadFromOnClick(subtitleDiv);
-			searchListener.foundReturnSuccess(subtitleName, downloadLink);
+			searchListener.foundReturnIfShouldStopLooking(subtitleName, downloadLink);
 		}
 		if(currentIndex<howMuchNewAddsToShow){
 			searchNewAdds(currentIndex, howMuchNewAddsToShow, searchListener);

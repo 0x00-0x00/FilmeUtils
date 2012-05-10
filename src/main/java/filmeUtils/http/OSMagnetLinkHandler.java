@@ -11,11 +11,11 @@ public class OSMagnetLinkHandler implements MagnetLinkHandler {
 	}
 	
 	public void openURL(final String url) {
-		new Thread(){
-			public void run() {
-				urlProtocolHandler.open(url);				
-			};
-		}.start();
+		try {
+			urlProtocolHandler.open(url);
+		} catch (final Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }

@@ -44,7 +44,7 @@ public class Main {
     	}
     	
     	if(cli.usingGuiMome()){
-    		SearchScreen.main(args);
+    		new SearchScreen();
     	}else{    		
     		final File cookieFile = new File(filmeUtilsFolder,"cookies.serialized");
     		final SimpleHttpClient httpclient = new SimpleHttpClientImpl(cookieFile);

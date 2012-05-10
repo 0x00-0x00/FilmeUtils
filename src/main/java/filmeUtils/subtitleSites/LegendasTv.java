@@ -12,7 +12,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import filmeUtils.ArgumentsParser;
+import filmeUtils.FilmeUtilsOptions;
 import filmeUtils.OutputListener;
 import filmeUtils.SearchListener;
 import filmeUtils.http.SimpleHttpClient;
@@ -26,9 +26,9 @@ public class LegendasTv {
 	
 	private final SimpleHttpClient httpclient;
 	private final OutputListener outputListener;
-	private final ArgumentsParser cli;
+	private final FilmeUtilsOptions cli;
 	
-	public LegendasTv(final ArgumentsParser cli, final SimpleHttpClient httpclient, final OutputListener outputListener) {
+	public LegendasTv(final FilmeUtilsOptions cli, final SimpleHttpClient httpclient, final OutputListener outputListener) {
 		this.cli = cli;
 		this.httpclient = httpclient;
 		this.outputListener = outputListener;

@@ -2,9 +2,9 @@ package filmeUtils.subtitleSites;
 
 import java.io.File;
 
-import filmeUtils.ArgumentsParser;
+import filmeUtils.FilmeUtilsOptions;
 
-class ArgumentsParserMock implements ArgumentsParser {
+class ArgumentsParserMock implements FilmeUtilsOptions {
 
 	public boolean isLazy;
 

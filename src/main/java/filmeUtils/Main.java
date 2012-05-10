@@ -7,11 +7,17 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 
 import filmeUtils.extraction.ExtractorImpl;
+import filmeUtils.fileSystem.FileSystem;
+import filmeUtils.fileSystem.FileSystemImpl;
+import filmeUtils.http.MagnetLinkHandler;
+import filmeUtils.http.OSMagnetLinkHandler;
 import filmeUtils.http.SimpleHttpClient;
 import filmeUtils.http.SimpleHttpClientImpl;
 import filmeUtils.subtitleSites.LegendasTv;
 import filmeUtils.swing.SearchScreen;
 import filmeUtils.swing.SearchScreenNeeds;
+import filmeUtils.torrentSites.TorrentSearcher;
+import filmeUtils.torrentSites.TorrentSearcherImpl;
 
 
 public class Main {
@@ -49,11 +55,17 @@ public class Main {
     	final ExtractorImpl extract = new ExtractorImpl();
     	final SysOut output = new SysOut(cli);
     	final LegendasTv legendasTv = new LegendasTv(cli,httpclient, output);
+    	
+    	final MagnetLinkHandler magnetLinkHandler = new OSMagnetLinkHandler();
+        final TorrentSearcher torrentSearcher = new TorrentSearcherImpl(httpclient);
+		final FileSystem fileSystem = new FileSystemImpl();
+		final Downloader downloader = new Downloader(extract, fileSystem, httpclient, torrentSearcher, magnetLinkHandler, legendasTv, output);
+    	
     	if(cli.usingGuiMome()){
-    		final SearchScreenNeeds searchScreenNeeds = new SearchScreenNeeds(legendasTv);
+    		final SearchScreenNeeds searchScreenNeeds = new SearchScreenNeeds(legendasTv, downloader);
     		new SearchScreen(searchScreenNeeds);
     	}else{			
-			final CommandLineClient commandLineClient = new CommandLineClient(httpclient,legendasTv,extract,cli, output);
+			final CommandLineClient commandLineClient = new CommandLineClient(downloader,httpclient,legendasTv,extract,cli, output);
     		commandLineClient.execute();        
     	}
     	

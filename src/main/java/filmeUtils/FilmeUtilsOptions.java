@@ -2,7 +2,7 @@ package filmeUtils;
 
 import java.io.File;
 
-public interface ArgumentsParser {
+public interface FilmeUtilsOptions {
 
 	String getUser();
 	String getPassword();

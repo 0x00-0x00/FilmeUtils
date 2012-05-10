@@ -22,8 +22,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
+import javax.swing.border.BevelBorder;
 
 @SuppressWarnings("serial")
 public class SearchScreen extends JFrame {
@@ -45,6 +47,7 @@ public class SearchScreen extends JFrame {
 		searchPanel.setLayout(gbl_searchPanel);
 		
 		final JPanel panel = new JPanel();
+		panel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		getContentPane().add(panel, BorderLayout.SOUTH);
 		final GridBagLayout gbl_panel = new GridBagLayout();
 		gbl_panel.columnWidths = new int[]{126, 0, 0};
@@ -146,14 +149,13 @@ public class SearchScreen extends JFrame {
 		gbc_lblPastaDeLegendas.gridx = 0;
 		gbc_lblPastaDeLegendas.gridy = 0;
 		panel.add(lblPastaDeLegendas, gbc_lblPastaDeLegendas);
+		defaultListModel = new DefaultListModel();
+		final String[] defaultList = searchScreenNeeds.getDefaultList();
+		populateList(defaultList);
 		
 		
 		
 		final JList result = new JList();
-		getContentPane().add(result, BorderLayout.CENTER);
-		defaultListModel = new DefaultListModel();
-		final String[] defaultList = searchScreenNeeds.getDefaultList();
-		populateList(defaultList);
 		
 		result.setModel(defaultListModel);
 		
@@ -166,6 +168,11 @@ public class SearchScreen extends JFrame {
 				searchScreenNeeds.download((String) item);
 			}
 		}});
+		
+		final JScrollPane jScrollPane = new JScrollPane();
+		jScrollPane.setViewportView(result);
+		
+		getContentPane().add(jScrollPane, BorderLayout.CENTER);
 		
 		setSize(800,600);
 		setVisible(true);

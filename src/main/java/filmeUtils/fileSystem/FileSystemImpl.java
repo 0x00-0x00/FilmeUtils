@@ -6,7 +6,7 @@ import java.io.IOException;
 public class FileSystemImpl implements FileSystem {
 
 	public void mkdir(final File newFolder) {
-		newFolder.mkdir();
+		newFolder.mkdirs();
 	}
 
 	public void createNewFile(final File file) throws IOException {

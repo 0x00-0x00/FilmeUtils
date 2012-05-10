@@ -75,7 +75,7 @@ final class SearchListenerImplementation implements SearchListener {
 			outputListener.out("Tempo máximo de requisição atingido ("+SimpleHttpClientImpl.TIMEOUT+" segundos)");
 			return false;
 		}catch (final IOException e) {
-			outputListener.outVerbose(e.getStackTrace().toString());
+			outputListener.out(e.getMessage()+"\n"+e.getStackTrace().toString());
 			return false;
 		}
 	}

@@ -3,7 +3,7 @@ FilmeUtils é uma ferramenta para pegar legendas e torrents.
 TLDR;
 java - jar filmeUtils.jar -g
 Você vai ver isso:
-
+https://github.com/beothorn/FilmeUtils/blob/master/gui.png?raw=true
 duplo clique pra fazer o download.
 
 Atualmente usa:

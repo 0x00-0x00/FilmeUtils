@@ -11,6 +11,7 @@ import filmeUtils.http.SimpleHttpClient;
 import filmeUtils.http.SimpleHttpClientImpl;
 import filmeUtils.subtitleSites.LegendasTv;
 import filmeUtils.swing.SearchScreen;
+import filmeUtils.swing.SearchScreenNeeds;
 
 
 public class Main {
@@ -43,16 +44,15 @@ public class Main {
     		return;
     	}
     	
+    	final File cookieFile = new File(filmeUtilsFolder,"cookies.serialized");
+    	final SimpleHttpClient httpclient = new SimpleHttpClientImpl(cookieFile);
+    	final ExtractorImpl extract = new ExtractorImpl();
+    	final SysOut output = new SysOut(cli);
+    	final LegendasTv legendasTv = new LegendasTv(cli,httpclient, output);
     	if(cli.usingGuiMome()){
-    		new SearchScreen();
-    	}else{    		
-    		final File cookieFile = new File(filmeUtilsFolder,"cookies.serialized");
-    		final SimpleHttpClient httpclient = new SimpleHttpClientImpl(cookieFile);
-    		
-    		final ExtractorImpl extract = new ExtractorImpl();
-    		final SysOut output = new SysOut(cli);
-    		final LegendasTv legendasTv = new LegendasTv(cli,httpclient, output);
-			
+    		final SearchScreenNeeds searchScreenNeeds = new SearchScreenNeeds(httpclient, legendasTv, extract);
+    		new SearchScreen(searchScreenNeeds);
+    	}else{			
 			final CommandLineClient commandLineClient = new CommandLineClient(httpclient,legendasTv,extract,cli, output);
     		commandLineClient.execute();        
     	}

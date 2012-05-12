@@ -1,18 +1,23 @@
 package filmeUtils.http;
 
-import urlProtocolHandler.URLProtocolHandler;
+import java.net.URI;
+
+import uriSchemelHandler.URISchemeHandler;
+
 
 public class OSMagnetLinkHandler implements MagnetLinkHandler {
 	
-	private final URLProtocolHandler urlProtocolHandler;
+	private final URISchemeHandler urlProtocolHandler;
 
 	public OSMagnetLinkHandler() {
-		urlProtocolHandler = new URLProtocolHandler();
+		urlProtocolHandler = new URISchemeHandler();
 	}
 	
-	public void openURL(final String url) {
+	public void openURL(final String uriString) {
+		URI uri;
 		try {
-			urlProtocolHandler.open(url);
+			uri = new URI(uriString);
+			urlProtocolHandler.open(uri);
 		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		}

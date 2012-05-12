@@ -1,10 +1,12 @@
 package filmeUtils.swing;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+
+import org.apache.commons.io.FileUtils;
 
 import filmeUtils.Downloader;
+import filmeUtils.FilmeUtilsConstants;
 import filmeUtils.SearchListener;
 import filmeUtils.subtitleSites.LegendasTv;
 
@@ -23,18 +25,43 @@ public class SearchScreenNeeds {
 		this.legendasTv = legendasTv;
 		this.downloader = downloader;
 		filmeUtilsOptions = new MutableFilmeUtilsOptions();
-		setSubtitleFolder(new File(System.getProperty("user.home")));
+		final File filmeUtilsFolder = FilmeUtilsConstants.filmeUtilsFolder();
+		final File file = new File(filmeUtilsFolder,"subtitlefolder");
+		if(file.exists()){
+				try {
+					final String readFileToString = FileUtils.readFileToString(file);
+					setSubtitleFolder(new File(readFileToString));
+				} catch (final IOException e) {
+					setSubtitleFolder(new File(System.getProperty("user.home")));
+				}
+		}else{			
+			setSubtitleFolder(new File(System.getProperty("user.home")));
+		}
 	}
 	
-	public void download(final String item) {
-		legendasTv.search(item, new SearchListener() {
-			public boolean foundReturnIfShouldStopLooking(final String name, final String link) {
-				return downloader.download(name, link, filmeUtilsOptions);
+	public void download(final String item, final DownloadCallback callback) {
+		new Thread(){
+			@Override
+			public void run() {
+				legendasTv.search(item, new SearchListener() {
+					public boolean foundReturnIfShouldStopLooking(final String name, final String link) {
+						return downloader.download(name, link, filmeUtilsOptions);
+					}
+				});
+				callback.done();
 			}
-		});
+		}.start();
 	}
 
 	public void setSubtitleFolder(final File folder) {
+		final File filmeUtilsFolder = FilmeUtilsConstants.filmeUtilsFolder();
+		final File file = new File(filmeUtilsFolder,"subtitlefolder");
+		try {
+			file.createNewFile();
+			FileUtils.writeStringToFile(file, folder.getAbsolutePath());
+		} catch (final IOException e) {
+			//don't care
+		}
 		subtitleFolder = folder;
 		filmeUtilsOptions.setSubtitlesDestinationFolder(folder);
 	}
@@ -43,32 +70,38 @@ public class SearchScreenNeeds {
 		return subtitleFolder.getAbsolutePath();
 	}
 
-	public String[] getDefaultList() {
-		final List<String> subtitles = new ArrayList<String>();
+	public void getNewAddsList(final SearchCallback callback) {
 		
-		legendasTv.getNewer(50, new SearchListener(){
-			public boolean foundReturnIfShouldStopLooking(final String name,final String link) {
-				subtitles.add(name);
-				return false;
-			}
-			
-		});
-		final String[] array = subtitles.toArray(new String[subtitles.size()]);
-		return array;
+		new Thread(){
+			@Override
+			public void run() {				
+				legendasTv.getNewer(50, new SearchListener(){
+					public boolean foundReturnIfShouldStopLooking(final String name,final String link) {
+						callback.found(name);
+						return false;
+					}
+					
+				});
+				callback.done();
+			};
+		}.start();
 	}
 
-	public String[] getResultsFor(final String text) {
-		final List<String> subtitles = new ArrayList<String>();
+	public void getResultsFor(final String text, final SearchCallback callback) {
 		
-		legendasTv.search(text, new SearchListener(){
-			public boolean foundReturnIfShouldStopLooking(final String name,final String link) {
-				subtitles.add(name);
-				return false;
+		new Thread(){
+			@Override
+			public void run() {				
+				legendasTv.search(text, new SearchListener(){
+					public boolean foundReturnIfShouldStopLooking(final String name,final String link) {
+						callback.found(name);
+						return false;
+					}
+					
+				});
+				callback.done();
 			}
-			
-		});
-		final String[] array = subtitles.toArray(new String[subtitles.size()]);
-		return array;
+		}.start();
 	}
 
 	public void setResolution(final String resolution) {

@@ -156,7 +156,7 @@ public class ArgumentsParserImpl implements FilmeUtilsOptions{
 	}
 	
 	public boolean usingGuiMome() {
-		return cmd.hasOption(SHOULD_USE_GUI);
+		return cmd.hasOption(SHOULD_USE_GUI) || cmd.getArgs().length == 0;
 	}
 
 	public boolean forceLogin() {

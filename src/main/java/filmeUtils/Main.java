@@ -25,11 +25,6 @@ public class Main {
 	public static void main(final String[] args) throws IOException{
 		turnJunrarLoggingOff();
 		
-		final File filmeUtilsFolder = new File(System.getProperty("user.home"),".filmeUtils");
-		if(!filmeUtilsFolder.exists()){
-			filmeUtilsFolder.mkdir();
-		}
-		
     	final ArgumentsParserImpl cli = new ArgumentsParserImpl(new OutputListener() {
 			
 			public void outVerbose(final String string) {
@@ -50,7 +45,7 @@ public class Main {
     		return;
     	}
     	
-    	final File cookieFile = new File(filmeUtilsFolder,"cookies.serialized");
+    	final File cookieFile = new File(FilmeUtilsConstants.filmeUtilsFolder(),"cookies.serialized");
     	final SimpleHttpClient httpclient = new SimpleHttpClientImpl(cookieFile);
     	final ExtractorImpl extract = new ExtractorImpl();
     	final SysOut output = new SysOut(cli);

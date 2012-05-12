@@ -1,10 +1,13 @@
 FilmeUtils é uma ferramenta para pegar legendas e torrents.
 
-TLDR;
-java - jar filmeUtils.jar -g
-Você vai ver isso:
+Screenshot
 https://github.com/beothorn/FilmeUtils/blob/master/gui.png?raw=true
-duplo clique pra fazer o download.
+
+O jar está na sessão de downloads
+
+Como usar  
+Escolha a pasta para as legendas, escolha a resolução , digite a procura  
+duplo clique pra fazer o download da legenda  
 
 Atualmente usa:
 
@@ -18,22 +21,20 @@ bitsnoop
 Pré-requisitos:
  Java 1.5 ou maior instalado.
 
-Uso:  
-Copie o filmeUtils.jar na área de Downloads.  
-Execute na linha de comando:  
-java - jar filmeUtils.jar -p "House.S01E05" -e "CAMINHO_DAS_LEGENDAS"
+Linha de comando:      
+java - jar filmeUtils.jar -l -p "House.S01E05" -e "CAMINHO_DAS_LEGENDAS"
 FilmeUtils vai encontrar a primeira legenda que tenha pessoas compartilhando,  
 colocar a legenda em CAMINHO_DAS_LEGENDAS e mandar o torrent  
 para o seu cliente de torrent instalado.  
 
-java - jar filmeUtils.jar -n  
+java - jar filmeUtils.jar -l -n  
 Vai mostrar as legendas novas adicionadas no legendas.tv, para pegar o arquivo copie  
 o nome e use:  
-java - jar filmeUtils.jar -p "NomeCopiado" -e "CAMINHO_DAS_LEGENDAS"
+java - jar filmeUtils.jar -l -p "NomeCopiado" -e "CAMINHO_DAS_LEGENDAS"
 
-java - jar filmeUtils.jar -p "House.S01E05" -t
+java - jar filmeUtils.jar -l -p "House.S01E05" -t
 Para somente procurar legendas.
 
 Você tem opção de escolher entre hd ou normal, pegar todos os arquivos, etc.  
-Para mais opções execute o filmeUtils sem argumentos:  
-java - jar filmeUtils.jar
+Para mais opções execute o filmeUtils com a flag l e h:  
+java - jar filmeUtils.jar -l -h

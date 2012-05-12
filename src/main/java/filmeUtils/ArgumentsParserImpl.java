@@ -66,10 +66,10 @@ public class ArgumentsParserImpl implements FilmeUtilsOptions{
 		outputListener.printHelp(APPLICATION_NAME, options);
 		outputListener.out(
 				"Por exemplo, se você quiser um episódio de House, use primeiro:\n" +
-				"filmeUtils -p House\n" +
+				"filmeUtils -l -p House\n" +
 				"Para procurar por house no legendas.tv,\n" +
 				"copie o nome do episodio que você quer (digamos House.S01E05) e use o comando:\n" +
-				"filmeUtils -p House.S01E05 -e CAMINHO_DAS_LEGENDAS\n" +
+				"filmeUtils -l -p House.S01E05 -e CAMINHO_DAS_LEGENDAS\n" +
 				"O token -e vai extrair as legendas no caminho passado e pegar os torrents no seu programa de torrent\n" +
 				"Se quiser ver as novas legenda adicionadas no legendas.tv use\n" +
 				"filmeUtils -n");

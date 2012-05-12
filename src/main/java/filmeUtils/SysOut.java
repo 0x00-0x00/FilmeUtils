@@ -8,6 +8,10 @@ public class SysOut implements OutputListener {
 	private final boolean verbose;
 
 	public SysOut(final FilmeUtilsOptions cli) {
+		if(cli == null){
+			verbose = true;
+			return;
+		}
 		verbose = cli.isVerbose(); 
 	}
 	

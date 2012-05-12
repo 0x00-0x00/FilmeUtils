@@ -13,22 +13,21 @@ public class ArgumentsParserImpl implements FilmeUtilsOptions{
 
 	private static final String APPLICATION_NAME = "filmeUtils";
 	
-	private static final String HIGH_DEF_TOKEN =       "a";
-	private static final String CREDENTIALS_TOKEN =    "c";
-	private static final String SHOULD_EXTRACT_TOKEN = "e";
-	private static final String SHOULD_USE_GUI =       "g";
-	private static final String HELP_TOKEN =           "h";
-	private static final String NEW_ADDITIONS_TOKEN =  "n";
-	private static final String SEARCH_TOKEN =         "p";
-	private static final String GREED_TOKEN =          "t";
-	private static final String VERBOSE_TOKEN =        "v";
+	private static final String HIGH_DEF_TOKEN =                      "a";
+	private static final String CREDENTIALS_TOKEN =                   "c";
+	private static final String SHOULD_EXTRACT_TOKEN =                "e";
+	private static final String HELP_TOKEN =                          "h";
+	private static final String SHOULD_USE_COMMAND_LINE_TOKEN =       "l";
+	private static final String NEW_ADDITIONS_TOKEN =                 "n";
+	private static final String SEARCH_TOKEN =                        "p";
+	private static final String GREED_TOKEN =                         "t";
+	private static final String VERBOSE_TOKEN =                       "v";
 	
 	private static final int NEW_ADDS_DEFAUL_SHOW_VALUE = 23;
 	private static final String USER = "filmeutils";
 	private static final String PASSWORD = "filmeutilsfilme";
 	
 	private final Options options;
-	private boolean isDone;
 	private CommandLine cmd;
 
 	private final OutputListener outputListener;
@@ -42,7 +41,7 @@ public class ArgumentsParserImpl implements FilmeUtilsOptions{
     	newAdditionOption.setOptionalArg(true);
     	
     	options.addOption(newAdditionOption);
-    	options.addOption(SHOULD_USE_GUI,"gui", false, "Usa interface gráfica");
+    	options.addOption(SHOULD_USE_COMMAND_LINE_TOKEN,"linhadecomando", false, "Usa linha de comando");
     	options.addOption(SHOULD_EXTRACT_TOKEN,"extrair", true, 
     			"Extrai e os arquivos de legendas para o diretório informado");
     	options.addOption(HIGH_DEF_TOKEN,"alta-definicao", true, 
@@ -58,7 +57,6 @@ public class ArgumentsParserImpl implements FilmeUtilsOptions{
     	options.addOption(HELP_TOKEN,"help", false, 
     			"Imprime essa ajuda");
     	
-    	isDone = false;
 	}
 	
 	private void printHelp() {
@@ -75,7 +73,6 @@ public class ArgumentsParserImpl implements FilmeUtilsOptions{
 				"O token -e vai extrair as legendas no caminho passado e pegar os torrents no seu programa de torrent\n" +
 				"Se quiser ver as novas legenda adicionadas no legendas.tv use\n" +
 				"filmeUtils -n");
-		isDone = true;
 	}
 
 	public void parse(final String[] args) {
@@ -92,10 +89,6 @@ public class ArgumentsParserImpl implements FilmeUtilsOptions{
     		printHelp();
     		return;
     	}
-	}
-
-	public boolean isDone() {
-		return isDone;
 	}
 
 	public boolean search() {
@@ -156,14 +149,16 @@ public class ArgumentsParserImpl implements FilmeUtilsOptions{
 	}
 	
 	public boolean usingGuiMome() {
-		return cmd.hasOption(SHOULD_USE_GUI) || cmd.getArgs().length == 0;
+		return cmd == null || !cmd.hasOption(SHOULD_USE_COMMAND_LINE_TOKEN);
 	}
 
 	public boolean forceLogin() {
 		return cmd.hasOption(CREDENTIALS_TOKEN) && credentialsTokenUsedWithoutArguments();
 	}
 
-	public boolean isVerbose() { 
+	public boolean isVerbose() {
+		if(cmd == null)
+			return true;
 		return cmd.hasOption(VERBOSE_TOKEN);
 	}
 

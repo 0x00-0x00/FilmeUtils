@@ -41,9 +41,6 @@ public class Main {
 			}
 		});
     	cli.parse(args);
-    	if(cli.isDone()){
-    		return;
-    	}
     	
     	final File cookieFile = new File(FilmeUtilsConstants.filmeUtilsFolder(),"cookies.serialized");
     	final SimpleHttpClient httpclient = new SimpleHttpClientImpl(cookieFile);
@@ -54,12 +51,13 @@ public class Main {
     	final MagnetLinkHandler magnetLinkHandler = new OSMagnetLinkHandler();
         final TorrentSearcher torrentSearcher = new TorrentSearcherImpl(httpclient);
 		final FileSystem fileSystem = new FileSystemImpl();
-		final Downloader downloader = new Downloader(extract, fileSystem, httpclient, torrentSearcher, magnetLinkHandler, legendasTv, output);
     	
     	if(cli.usingGuiMome()){
+    		final Downloader downloader = new Downloader(extract, fileSystem, httpclient, torrentSearcher, magnetLinkHandler, legendasTv, output);
     		final SearchScreenNeeds searchScreenNeeds = new SearchScreenNeeds(legendasTv, downloader);
     		new SearchScreen(searchScreenNeeds);
-    	}else{			
+    	}else{
+    		final Downloader downloader = new Downloader(extract, fileSystem, httpclient, torrentSearcher, magnetLinkHandler, legendasTv, output);
 			final CommandLineClient commandLineClient = new CommandLineClient(downloader,httpclient,legendasTv,extract,cli, output);
     		commandLineClient.execute();        
     	}

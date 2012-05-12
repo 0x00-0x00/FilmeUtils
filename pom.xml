@@ -92,8 +92,8 @@
 		</dependency>
 		<dependency>
 			<groupId>beothorn.labs</groupId>
-			<artifactId>URLProtocolHandler</artifactId>
-			<version>1.1</version>
+			<artifactId>URISchemelHandler</artifactId>
+			<version>1.2-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>

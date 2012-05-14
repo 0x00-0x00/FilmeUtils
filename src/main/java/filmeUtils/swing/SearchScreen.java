@@ -8,6 +8,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -27,6 +30,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -63,24 +67,30 @@ public class SearchScreen extends JFrame {
 		searchString = new JTextField();
 		final GridBagConstraints gbc_searchString = new GridBagConstraints();
 		final JButton searchButton = new JButton("Procurar");
+		searchButton.setFocusable(false);
 		final GridBagConstraints gbc_searchButton = new GridBagConstraints();
 		gbc_searchButton.fill = GridBagConstraints.HORIZONTAL;
 		final JPanel optionsPane = new JPanel();
 		final JButton btnNovasLegendas = new JButton("Novas legendas");
+		btnNovasLegendas.setFocusable(false);
 		final GridBagConstraints gbc_btnNovasLegendas = new GridBagConstraints();
 		final JComboBox resolution = new JComboBox();
+		resolution.setFocusable(false);
 		final GridBagConstraints gbc_resolution = new GridBagConstraints();
 		final JLabel subtitlesFolder = new JLabel("...");
 		final GridBagConstraints gbc_subtitlesFolder = new GridBagConstraints();
 		final JLabel lblPastaDeLegendas = new JLabel("Pasta de legendas: ");
 		final GridBagConstraints gbc_lblPastaDeLegendas = new GridBagConstraints();
 		final JButton subtitlesDest = new JButton("...");
+		subtitlesDest.setFocusable(false);
 		final GridBagConstraints gbc_subtitlesDest = new GridBagConstraints();
 		final JPanel searchResultsPane = new JPanel();
 		final JList result = new JList();
+		result.setFocusable(false);
 		final JScrollPane jScrollPane = new JScrollPane();
 		final JScrollPane jScrollPane2 = new JScrollPane();
 		final JTextArea warnings = new JTextArea();
+		warnings.setFocusable(false);
 		warnings.setRows(3);
 		jScrollPane2.setViewportView(warnings);
 		
@@ -94,7 +104,15 @@ public class SearchScreen extends JFrame {
 			}
 
 			public void found(final String name) {
-				defaultListModel.addElement(name);
+				addSubtitleToList(name);
+			}
+
+			private void addSubtitleToList(final String name) {
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						defaultListModel.addElement(name);
+					}
+				});
 			}
 		};
 		final ActionListener searchForSearchTerm = new ActionListener() {
@@ -102,9 +120,11 @@ public class SearchScreen extends JFrame {
 				final String searchTerm = searchString.getText();
 				warnings.append("\nProcurando "+searchTerm);
 				warnings.setCaretPosition(warnings.getDocument().getLength());
-				defaultListModel.clear();
+				clearList();
 				searchScreenNeeds.getResultsFor(searchTerm, endSearch);
 			}
+
+			
 		};
 		defaultListModel = new DefaultListModel();
 		
@@ -163,7 +183,7 @@ public class SearchScreen extends JFrame {
 				}
 				warnings.append("Procurando novas legendas...");
 				warnings.setCaretPosition(warnings.getDocument().getLength());
-				defaultListModel.clear();
+				clearList();
 				searchScreenNeeds.getNewAddsList(endSearch);
 			}
 		};
@@ -227,6 +247,16 @@ public class SearchScreen extends JFrame {
 			}
 		}});
 		
+		
+		searchString.addKeyListener(new KeyAdapter(){
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN ||e.getKeyCode() == KeyEvent.VK_PAGE_UP||e.getKeyCode() == KeyEvent.VK_PAGE_DOWN)
+					result.dispatchEvent(e);
+			}
+		});
+		
+		
 		searchResultsPane.add(jScrollPane, BorderLayout.CENTER);
 		jScrollPane.setViewportView(result);
 		
@@ -255,6 +285,14 @@ public class SearchScreen extends JFrame {
 			InstantiationException, IllegalAccessException,
 			UnsupportedLookAndFeelException {
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+	}
+	
+	private void clearList() {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				defaultListModel.clear();
+			}
+		});
 	}
 
 	private void setNimbusLookAndFeel() throws ClassNotFoundException,

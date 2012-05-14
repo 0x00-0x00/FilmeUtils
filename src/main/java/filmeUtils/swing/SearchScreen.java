@@ -52,7 +52,8 @@ public class SearchScreen extends JFrame {
 			} catch (final Exception e1) {
 			}
 		}
-		
+
+		setTitle("FilmeUtils");
 		
 		getContentPane().setLayout(new BorderLayout(0, 0));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

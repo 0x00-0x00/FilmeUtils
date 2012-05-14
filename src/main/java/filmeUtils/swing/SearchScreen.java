@@ -11,9 +11,11 @@ import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.net.URL;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -25,6 +27,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.BevelBorder;
 
 @SuppressWarnings("serial")
@@ -34,6 +39,21 @@ public class SearchScreen extends JFrame {
 	private final DefaultListModel defaultListModel;
 	
 	public SearchScreen(final SearchScreenNeeds searchScreenNeeds) {
+		
+		final URL resource = SearchScreen.class.getResource("filmeUtils.png");
+		final ImageIcon imageIcon = new ImageIcon(resource);
+		setIconImage(imageIcon.getImage());
+		
+		try {
+			setSystemLookAndFeel();
+		} catch (final Exception e) {
+			try {
+				setNimbusLookAndFeel();
+			} catch (final Exception e1) {
+			}
+		}
+		
+		
 		getContentPane().setLayout(new BorderLayout(0, 0));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		final JPanel upperPanel = new JPanel();
@@ -43,6 +63,7 @@ public class SearchScreen extends JFrame {
 		final GridBagConstraints gbc_searchString = new GridBagConstraints();
 		final JButton searchButton = new JButton("Procurar");
 		final GridBagConstraints gbc_searchButton = new GridBagConstraints();
+		gbc_searchButton.fill = GridBagConstraints.HORIZONTAL;
 		final JPanel optionsPane = new JPanel();
 		final JButton btnNovasLegendas = new JButton("Novas legendas");
 		final GridBagConstraints gbc_btnNovasLegendas = new GridBagConstraints();
@@ -119,7 +140,7 @@ public class SearchScreen extends JFrame {
 		searchPanel.add(searchString, gbc_searchString);
 		searchString.setColumns(10);
 		
-		gbc_searchButton.anchor = GridBagConstraints.NORTHWEST;
+		gbc_searchButton.anchor = GridBagConstraints.NORTH;
 		gbc_searchButton.gridx = 1;
 		gbc_searchButton.gridy = 0;
 		searchButton.addActionListener(searchForSearchTerm);
@@ -227,6 +248,24 @@ public class SearchScreen extends JFrame {
 		
 		setSize(800,600);
 		setVisible(true);
+	}
+
+	private void setSystemLookAndFeel() throws ClassNotFoundException,
+			InstantiationException, IllegalAccessException,
+			UnsupportedLookAndFeelException {
+		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+	}
+
+	private void setNimbusLookAndFeel() throws ClassNotFoundException,
+			InstantiationException, IllegalAccessException,
+			UnsupportedLookAndFeelException {
+		final LookAndFeelInfo[] installedLookAndFeels = UIManager.getInstalledLookAndFeels();
+		for (final LookAndFeelInfo info : installedLookAndFeels) {
+			if ("Nimbus".equals(info.getName())) {
+				UIManager.setLookAndFeel(info.getClassName());
+				break;
+			}
+		}
 	}
 	
 }

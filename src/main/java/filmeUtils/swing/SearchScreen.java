@@ -22,6 +22,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
 import javax.swing.border.BevelBorder;
@@ -56,14 +57,18 @@ public class SearchScreen extends JFrame {
 		final JPanel searchResultsPane = new JPanel();
 		final JList result = new JList();
 		final JScrollPane jScrollPane = new JScrollPane();
-		final JLabel warningsLabel = new JLabel("");
+		final JScrollPane jScrollPane2 = new JScrollPane();
+		final JTextArea warnings = new JTextArea();
+		warnings.setRows(3);
+		jScrollPane2.setViewportView(warnings);
 		
 		final String defaultSubtitlesFolder = searchScreenNeeds.getSubtitleFolder();
-		final String defaultSearchString = "Procura...";
+		final String defaultSearchString = "Digite sua procura aqui...";
 		
 		final SearchCallback endSearch = new SearchCallback() {
 			public void done() {
-				warningsLabel.setText("OK");
+				warnings.append("\nProcura completa.");
+				warnings.setCaretPosition(warnings.getDocument().getLength());
 			}
 
 			public void found(final String name) {
@@ -73,7 +78,8 @@ public class SearchScreen extends JFrame {
 		final ActionListener searchForSearchTerm = new ActionListener() {
 			public void actionPerformed(final ActionEvent arg0) {
 				final String searchTerm = searchString.getText();
-				warningsLabel.setText("Procurando "+searchTerm);
+				warnings.append("\nProcurando "+searchTerm);
+				warnings.setCaretPosition(warnings.getDocument().getLength());
 				defaultListModel.clear();
 				searchScreenNeeds.getResultsFor(searchTerm, endSearch);
 			}
@@ -130,7 +136,11 @@ public class SearchScreen extends JFrame {
 		
 		final ActionListener searchNewSubtitles = new ActionListener() {
 			public void actionPerformed(final ActionEvent arg0) {
-				warningsLabel.setText("Procurando novas legendas");
+				if(!warnings.getText().equals("")){
+					warnings.append("\n");
+				}
+				warnings.append("Procurando novas legendas...");
+				warnings.setCaretPosition(warnings.getDocument().getLength());
 				defaultListModel.clear();
 				searchScreenNeeds.getNewAddsList(endSearch);
 			}
@@ -184,10 +194,12 @@ public class SearchScreen extends JFrame {
 				final ListModel dlm = result.getModel();
 				final Object item = dlm.getElementAt(index);
 				result.ensureIndexIsVisible(index);
-				warningsLabel.setText("Downloading "+item);
+				warnings.append("\nFazendo o download de '"+item+"'.");
+				warnings.setCaretPosition(warnings.getDocument().getLength());
 				searchScreenNeeds.download((String) item, new DownloadCallback() {
 					public void done() {
-						warningsLabel.setText("OK");
+						warnings.append("\nDowload de '"+item+"' terminado.");
+						warnings.setCaretPosition(warnings.getDocument().getLength());
 					}
 				});
 			}
@@ -196,7 +208,11 @@ public class SearchScreen extends JFrame {
 		searchResultsPane.add(jScrollPane, BorderLayout.CENTER);
 		jScrollPane.setViewportView(result);
 		
-		jScrollPane.setColumnHeaderView(warningsLabel);
+		final JPanel panel = new JPanel();
+		panel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		searchResultsPane.add(panel, BorderLayout.NORTH);
+		panel.setLayout(new BorderLayout(0, 0));
+		panel.add(jScrollPane2);
 		subtitlesDest.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent e) {
 				final JFileChooser jFileChooser = new JFileChooser();

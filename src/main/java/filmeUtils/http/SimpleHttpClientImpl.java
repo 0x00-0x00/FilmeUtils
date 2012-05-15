@@ -97,7 +97,11 @@ public class SimpleHttpClientImpl implements SimpleHttpClient {
 		final HttpResponse response = execute(httpost);
 	    final HttpEntity entity = response.getEntity();
 		final InputStream contentIS = entity.getContent();
-		final String content = IOUtils.toString(contentIS);
+		String encoding = entity.getContentType().getElements()[0].getParameterByName("charset").getValue();
+		if(encoding.equals("ISO-8859-1")){			
+			encoding = "CP1252";
+		}
+		final String content = IOUtils.toString(contentIS,encoding);
 		contentIS.close();
 		storeCookies();
 		return content;

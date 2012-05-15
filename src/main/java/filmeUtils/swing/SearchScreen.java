@@ -78,6 +78,8 @@ public class SearchScreen extends JFrame {
 		this.searchScreenNeeds = searchScreenNeeds;
 		
 		defaultListModel = new DefaultListModel();
+		progressBar = new JProgressBar();
+		
 		endSearch = new SearchCallback() {
 			public void done() {
 				progressBar.setIndeterminate(false);
@@ -142,8 +144,6 @@ public class SearchScreen extends JFrame {
 			}
 		});
 		
-		progressBar = new JProgressBar();
-		
 		setupUpperPanel();
 		setupSearchResultPanel();
 		
@@ -184,8 +184,6 @@ public class SearchScreen extends JFrame {
 		resultJScrollPane.setViewportView(result);
 		searchResultsPanel.add(resultJScrollPane, BorderLayout.CENTER);
 		
-		searchResultsPanel.add(progressBar, BorderLayout.SOUTH);
-		
 		getContentPane().add(searchResultsPanel, BorderLayout.CENTER);
 		
 		setupWarningsPanel();
@@ -203,6 +201,8 @@ public class SearchScreen extends JFrame {
 		searchResultsPanel.add(warningsPanel, BorderLayout.NORTH);
 		warningsPanel.setLayout(new BorderLayout(0, 0));
 		warningsPanel.add(warningsJScrollPane);
+		
+		warningsPanel.add(progressBar, BorderLayout.SOUTH);
 	}
 
 	private void setupUpperPanel() {

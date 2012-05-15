@@ -7,15 +7,16 @@ import org.apache.commons.io.FileUtils;
 
 import filmeUtils.Downloader;
 import filmeUtils.FilmeUtilsConstants;
+import filmeUtils.OutputListener;
 import filmeUtils.SearchListener;
 import filmeUtils.subtitleSites.LegendasTv;
 
 
 public class SearchScreenNeeds {
 
-	private static final String LOW   = "Resolução normal";
-	private static final String HIGH  = "Alta definição";
-	private static final String ALL   = "Todas as resoluções";
+	private static final String LOW   = "Resoluï¿½ï¿½o normal";
+	private static final String HIGH  = "Alta definiï¿½ï¿½o";
+	private static final String ALL   = "Todas as resoluï¿½ï¿½es";
 	private File subtitleFolder;
 	private final LegendasTv legendasTv;
 	private final Downloader downloader;
@@ -129,6 +130,10 @@ public class SearchScreenNeeds {
 
 	public String lowResolutionString() {
 		return LOW;
+	}
+
+	public void setOutputListener(final OutputListener outputListener) {
+		downloader.setOutputListener(outputListener);
 	}
 
 }

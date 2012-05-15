@@ -36,6 +36,10 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.BevelBorder;
 
+import org.apache.commons.cli.Options;
+
+import filmeUtils.OutputListener;
+
 @SuppressWarnings("serial")
 public class SearchScreen extends JFrame {
 	
@@ -100,8 +104,13 @@ public class SearchScreen extends JFrame {
 			
 			public void actionPerformed(final ActionEvent event) {
 				final String searchTerm = searchString.getText();
-				if(lastSearch.equals(searchTerm)){
-					result.dispatchEvent(event);
+				final boolean noNewSearch = lastSearch.equals(searchTerm);
+				if(noNewSearch){
+					final int selectedIndex = result.getSelectedIndex();
+					if(selectedIndex != -1){
+						downloadSubtitleAtPosition(selectedIndex);
+					}
+					return;
 				}
 				lastSearch = searchTerm;
 				warnings.append("\nProcurando "+searchTerm);
@@ -115,12 +124,46 @@ public class SearchScreen extends JFrame {
 		setupJFrame();
 		
 		warnings = new JTextArea();
+		
+		searchScreenNeeds.setOutputListener(new OutputListener() {
+			
+			@Override
+			public void printHelp(final String applicationName, final Options options) {
+				
+			}
+			
+			@Override
+			public void outVerbose(final String string) {
+			}
+			
+			@Override
+			public void out(final String string) {
+				warnings.append("\n"+string);
+			}
+		});
+		
 		progressBar = new JProgressBar();
 		
 		setupUpperPanel();
 		setupSearchResultPanel();
 		
 		setVisible(true);
+	}
+	
+	private void downloadSubtitleAtPosition(final int index) {
+		final ListModel dlm = result.getModel();
+		final Object item = dlm.getElementAt(index);
+		result.ensureIndexIsVisible(index);
+		progressBar.setIndeterminate(true);
+		warnings.append("\nFazendo o download de '"+item+"'.");
+		warnings.setCaretPosition(warnings.getDocument().getLength());
+		searchScreenNeeds.download((String) item, new DownloadCallback() {
+			public void done() {
+				progressBar.setIndeterminate(false);
+				warnings.append("\nDowload de '"+item+"' terminado.");
+				warnings.setCaretPosition(warnings.getDocument().getLength());
+			}
+		});
 	}
 
 	private void setupSearchResultPanel() {
@@ -134,21 +177,10 @@ public class SearchScreen extends JFrame {
 		result.addMouseListener(new MouseAdapter() { @Override public void mouseClicked(final MouseEvent e) {
 			if (e.getClickCount() == 2) {
 				final int index = result.locationToIndex(e.getPoint());
-				final ListModel dlm = result.getModel();
-				final Object item = dlm.getElementAt(index);
-				result.ensureIndexIsVisible(index);
-				progressBar.setIndeterminate(true);
-				warnings.append("\nFazendo o download de '"+item+"'.");
-				warnings.setCaretPosition(warnings.getDocument().getLength());
-				searchScreenNeeds.download((String) item, new DownloadCallback() {
-					public void done() {
-						progressBar.setIndeterminate(false);
-						warnings.append("\nDowload de '"+item+"' terminado.");
-						warnings.setCaretPosition(warnings.getDocument().getLength());
-					}
-				});
+				downloadSubtitleAtPosition(index);
 			}
 		}});
+
 		resultJScrollPane.setViewportView(result);
 		searchResultsPanel.add(resultJScrollPane, BorderLayout.CENTER);
 		

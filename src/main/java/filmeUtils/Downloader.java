@@ -25,7 +25,7 @@ public class Downloader {
 	private final LegendasTv legendasTv;
 	private final MagnetLinkHandler magnetLinkHandler;
 	private final FileSystem fileSystem;
-	private final OutputListener outputListener;
+	private OutputListener outputListener;
 	private FilmeUtilsOptions options;
 	
 	public Downloader(final Extractor extract,final FileSystem fileSystem,final SimpleHttpClient httpclient,final TorrentSearcher torrentSearcher,final MagnetLinkHandler magnetLinkHandler,final LegendasTv legendasTv, final OutputListener outputListener) {
@@ -35,7 +35,7 @@ public class Downloader {
 		this.magnetLinkHandler = magnetLinkHandler;
 		this.legendasTv = legendasTv;
 		this.extract = extract;
-		this.outputListener = outputListener;
+		this.setOutputListener(outputListener);
 	}
 
 	public boolean download(final String name,final String link, final FilmeUtilsOptions options){
@@ -51,17 +51,17 @@ public class Downloader {
 			final File currentSubtitleFolder = new File(subtitlesDestinationFolderOrNull, validNameForFile);
 			
 			fileSystem.mkdir(currentSubtitleFolder);
-			outputListener.outVerbose("Extraindo legendas para "+currentSubtitleFolder.getAbsolutePath());
+			getOutputListener().outVerbose("Extraindo legendas para "+currentSubtitleFolder.getAbsolutePath());
 			
 			downloadLinkToFolder(link, currentSubtitleFolder);
 			final boolean success = openTorrentsAndReturnSuccess(currentSubtitleFolder);
 			FileUtils.deleteDirectory(currentSubtitleFolder);
 			return success;
 		} catch(final ConnectionPoolTimeoutException e){
-			outputListener.out("Tempo máximo de requisição atingido ("+SimpleHttpClientImpl.TIMEOUT+" segundos)");
+			getOutputListener().out("Tempo máximo de requisição atingido ("+SimpleHttpClientImpl.TIMEOUT+" segundos)");
 			return false;
 		}catch (final IOException e) {
-			outputListener.out(e.getMessage()+"\n"+e.getStackTrace().toString());
+			getOutputListener().out(e.getMessage()+"\n"+e.getStackTrace().toString());
 			return false;
 		}
 	}
@@ -126,9 +126,9 @@ public class Downloader {
 		if(magnetLinkForFile == null){
 			return false;
 		}
-		outputListener.outVerbose("Abrindo no browser: "+magnetLinkForFile);
+		getOutputListener().outVerbose("Abrindo no browser: "+magnetLinkForFile);
 		magnetLinkHandler.openURL(magnetLinkForFile);
-		outputListener.out("Downloading: "+subtitleName);
+		getOutputListener().out("Downloading: "+subtitleName);
 		try {
 			FileUtils.copyFileToDirectory(next, options.getSubtitlesDestinationFolderOrNull());
 		} catch (final IOException e) {
@@ -151,5 +151,13 @@ public class Downloader {
 			}
 		}
 		return shouldRefuse;
+	}
+
+	public OutputListener getOutputListener() {
+		return outputListener;
+	}
+
+	public void setOutputListener(final OutputListener outputListener) {
+		this.outputListener = outputListener;
 	}
 }

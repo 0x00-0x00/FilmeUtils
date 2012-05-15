@@ -38,74 +38,50 @@ import javax.swing.border.BevelBorder;
 @SuppressWarnings("serial")
 public class SearchScreen extends JFrame {
 	
-	private final JTextField searchString;
+	private JTextField searchString;
 	private final DefaultListModel defaultListModel;
+	private JPanel upperPanel;
+	private JPanel searchPanel;
+	private GridBagLayout gbl_searchPanel;
+	private GridBagConstraints gbc_searchString;
+	private JButton searchButton;
+	private GridBagConstraints gbc_searchButton;
+	private JPanel optionsPanel;
+	private JButton newSubtitlesFolder;
+	private GridBagConstraints gbc_btnNovasLegendas;
+	private JComboBox resolution;
+	private GridBagConstraints gbc_resolution;
+	private JLabel subtitlesFolder;
+	private GridBagConstraints gbc_subtitlesFolder;
+	private JLabel subtitleFolderLabel;
+	private GridBagConstraints gbc_lblPastaDeLegendas;
+	private JButton subtitlesDest;
+	private GridBagConstraints gbc_subtitlesDest;
+	private JPanel searchResultsPanel;
+	private JList result;
+	private JScrollPane resultJScrollPane;
+	private JScrollPane warningsJScrollPane;
+	private final JTextArea warnings;
+	private JPanel warningsPanel;
+	private final SearchCallback endSearch;
+	private final ActionListener searchForSearchTerm;
+	private final SearchScreenNeeds searchScreenNeeds;
 	
 	public SearchScreen(final SearchScreenNeeds searchScreenNeeds) {
 		
-		final URL resource = SearchScreen.class.getResource("filmeUtils.png");
-		final ImageIcon imageIcon = new ImageIcon(resource);
-		setIconImage(imageIcon.getImage());
+		this.searchScreenNeeds = searchScreenNeeds;
 		
-		try {
-			setSystemLookAndFeel();
-		} catch (final Exception e) {
-			try {
-				setNimbusLookAndFeel();
-			} catch (final Exception e1) {
-			}
-		}
-
-		setTitle("FilmeUtils");
-		
-		getContentPane().setLayout(new BorderLayout(0, 0));
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		final JPanel upperPanel = new JPanel();
-		final JPanel searchPanel = new JPanel();
-		final GridBagLayout gbl_searchPanel = new GridBagLayout();
-		searchString = new JTextField();
-		final GridBagConstraints gbc_searchString = new GridBagConstraints();
-		final JButton searchButton = new JButton("Procurar");
-		searchButton.setFocusable(false);
-		final GridBagConstraints gbc_searchButton = new GridBagConstraints();
-		gbc_searchButton.fill = GridBagConstraints.HORIZONTAL;
-		final JPanel optionsPane = new JPanel();
-		final JButton btnNovasLegendas = new JButton("Novas legendas");
-		btnNovasLegendas.setFocusable(false);
-		final GridBagConstraints gbc_btnNovasLegendas = new GridBagConstraints();
-		final JComboBox resolution = new JComboBox();
-		resolution.setFocusable(false);
-		final GridBagConstraints gbc_resolution = new GridBagConstraints();
-		final JLabel subtitlesFolder = new JLabel("...");
-		final GridBagConstraints gbc_subtitlesFolder = new GridBagConstraints();
-		final JLabel lblPastaDeLegendas = new JLabel("Pasta de legendas: ");
-		final GridBagConstraints gbc_lblPastaDeLegendas = new GridBagConstraints();
-		final JButton subtitlesDest = new JButton("...");
-		subtitlesDest.setFocusable(false);
-		final GridBagConstraints gbc_subtitlesDest = new GridBagConstraints();
-		final JPanel searchResultsPane = new JPanel();
-		final JList result = new JList();
-		result.setFocusable(false);
-		final JScrollPane jScrollPane = new JScrollPane();
-		final JScrollPane jScrollPane2 = new JScrollPane();
-		final JTextArea warnings = new JTextArea();
-		warnings.setFocusable(false);
-		warnings.setRows(3);
-		jScrollPane2.setViewportView(warnings);
-		
-		final String defaultSubtitlesFolder = searchScreenNeeds.getSubtitleFolder();
-		final String defaultSearchString = "Digite sua procura aqui...";
-		
-		final SearchCallback endSearch = new SearchCallback() {
+		defaultListModel = new DefaultListModel();
+		endSearch = new SearchCallback() {
 			public void done() {
 				warnings.append("\nProcura completa.");
 				warnings.setCaretPosition(warnings.getDocument().getLength());
 			}
-
+			
 			public void found(final String name) {
 				addSubtitleToList(name);
 			}
-
+			
 			private void addSubtitleToList(final String name) {
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
@@ -114,121 +90,35 @@ public class SearchScreen extends JFrame {
 				});
 			}
 		};
-		final ActionListener searchForSearchTerm = new ActionListener() {
+		
+		searchForSearchTerm = new ActionListener() {
 			public void actionPerformed(final ActionEvent arg0) {
 				final String searchTerm = searchString.getText();
 				warnings.append("\nProcurando "+searchTerm);
 				warnings.setCaretPosition(warnings.getDocument().getLength());
 				clearList();
 				searchScreenNeeds.getResultsFor(searchTerm, endSearch);
-			}
+			}			
+		};
+		
+		setupJFrame();
+		
+		warnings = new JTextArea();
+		
+		setupUpperPanel();
+		setupSearchResultPanel();
+		
+		setVisible(true);
+	}
 
-			
-		};
-		defaultListModel = new DefaultListModel();
+	private void setupSearchResultPanel() {
+		searchResultsPanel = new JPanel();
+		searchResultsPanel.setLayout(new BorderLayout(0, 0));		
+		resultJScrollPane = new JScrollPane();	
 		
-		getContentPane().add(upperPanel, BorderLayout.NORTH);
-		upperPanel.setLayout(new BorderLayout(0, 0));
-		
-		upperPanel.add(searchPanel, BorderLayout.CENTER);
-		gbl_searchPanel.columnWidths = new int[]{122, 100, 0};
-		gbl_searchPanel.rowHeights = new int[]{27, 0};
-		gbl_searchPanel.columnWeights = new double[]{1.0, 0.0, Double.MIN_VALUE};
-		gbl_searchPanel.rowWeights = new double[]{0.0, Double.MIN_VALUE};
-		searchPanel.setLayout(gbl_searchPanel);
-		
-		searchString.setText(defaultSearchString);
-		searchString.addFocusListener(new FocusListener() {
-			
-			public void focusLost(final FocusEvent e) {
-				if(searchString.getText().equals("")){
-					searchString.setText(defaultSearchString);
-				}
-			}
-			
-			public void focusGained(final FocusEvent e) {
-				if(searchString.getText().equals(defaultSearchString)){
-					searchString.setText("");
-				}
-			}
-		});
-		searchString.addActionListener(searchForSearchTerm);
-		gbc_searchString.fill = GridBagConstraints.BOTH;
-		gbc_searchString.insets = new Insets(0, 0, 0, 5);
-		gbc_searchString.gridx = 0;
-		gbc_searchString.gridy = 0;
-		searchPanel.add(searchString, gbc_searchString);
-		searchString.setColumns(10);
-		
-		gbc_searchButton.anchor = GridBagConstraints.NORTH;
-		gbc_searchButton.gridx = 1;
-		gbc_searchButton.gridy = 0;
-		searchButton.addActionListener(searchForSearchTerm);
-		searchPanel.add(searchButton, gbc_searchButton);
-		
-		upperPanel.add(optionsPane, BorderLayout.NORTH);
-		optionsPane.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		final GridBagLayout gbl_optionsPane = new GridBagLayout();
-		gbl_optionsPane.columnWidths = new int[]{0, 0, 126, 0, 0, 0};
-		gbl_optionsPane.rowHeights = new int[]{15, 0};
-		gbl_optionsPane.columnWeights = new double[]{0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
-		gbl_optionsPane.rowWeights = new double[]{0.0, Double.MIN_VALUE};
-		optionsPane.setLayout(gbl_optionsPane);
-		
-		final ActionListener searchNewSubtitles = new ActionListener() {
-			public void actionPerformed(final ActionEvent arg0) {
-				if(!warnings.getText().equals("")){
-					warnings.append("\n");
-				}
-				warnings.append("Procurando novas legendas...");
-				warnings.setCaretPosition(warnings.getDocument().getLength());
-				clearList();
-				searchScreenNeeds.getNewAddsList(endSearch);
-			}
-		};
-		searchNewSubtitles.actionPerformed(null);
-		btnNovasLegendas.addActionListener(searchNewSubtitles);
-		gbc_btnNovasLegendas.insets = new Insets(0, 0, 0, 5);
-		gbc_btnNovasLegendas.gridx = 0;
-		gbc_btnNovasLegendas.gridy = 0;
-		optionsPane.add(btnNovasLegendas, gbc_btnNovasLegendas);
-		
-		gbc_resolution.insets = new Insets(0, 0, 0, 5);
-		gbc_resolution.gridx = 1;
-		gbc_resolution.gridy = 0;
-		optionsPane.add(resolution, gbc_resolution);
-		resolution.setModel(new DefaultComboBoxModel(new String[] { searchScreenNeeds.allResolutionsString() , searchScreenNeeds.highResolutionString(), searchScreenNeeds.lowResolutionString()}));
-		resolution.addActionListener(new ActionListener() {
-			
-			public void actionPerformed(final ActionEvent arg0) {
-				searchScreenNeeds.setResolution(resolution.getSelectedItem().toString());
-			}
-		});
-		
-		gbc_subtitlesFolder.fill = GridBagConstraints.HORIZONTAL;
-		gbc_subtitlesFolder.insets = new Insets(0, 0, 0, 5);
-		gbc_subtitlesFolder.gridx = 3;
-		gbc_subtitlesFolder.gridy = 0;
-		subtitlesFolder.setText(defaultSubtitlesFolder);
-		optionsPane.add(subtitlesFolder, gbc_subtitlesFolder);
-		
-		
-		
-		gbc_lblPastaDeLegendas.insets = new Insets(0, 0, 0, 5);
-		gbc_lblPastaDeLegendas.anchor = GridBagConstraints.WEST;
-		gbc_lblPastaDeLegendas.gridx = 2;
-		gbc_lblPastaDeLegendas.gridy = 0;
-		optionsPane.add(lblPastaDeLegendas, gbc_lblPastaDeLegendas);
-		
-		gbc_subtitlesDest.gridx = 4;
-		gbc_subtitlesDest.gridy = 0;
-		optionsPane.add(subtitlesDest, gbc_subtitlesDest);
-		
-		getContentPane().add(searchResultsPane, BorderLayout.CENTER);
-		searchResultsPane.setLayout(new BorderLayout(0, 0));
-		
+		result = new JList();
+		result.setFocusable(false);
 		result.setModel(defaultListModel);
-		
 		result.addMouseListener(new MouseAdapter() { @Override public void mouseClicked(final MouseEvent e) {
 			if (e.getClickCount() == 2) {
 				final int index = result.locationToIndex(e.getPoint());
@@ -245,25 +135,167 @@ public class SearchScreen extends JFrame {
 				});
 			}
 		}});
+		resultJScrollPane.setViewportView(result);
+		searchResultsPanel.add(resultJScrollPane, BorderLayout.CENTER);
 		
+		getContentPane().add(searchResultsPanel, BorderLayout.CENTER);
 		
+		setupWarningsPanel();
+	}
+
+	private void setupWarningsPanel() {
+		warningsPanel = new JPanel();
+		
+		warningsJScrollPane = new JScrollPane();
+		
+		warnings.setFocusable(false);
+		warnings.setRows(3);
+		warningsJScrollPane.setViewportView(warnings);
+		warningsPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		searchResultsPanel.add(warningsPanel, BorderLayout.NORTH);
+		warningsPanel.setLayout(new BorderLayout(0, 0));
+		warningsPanel.add(warningsJScrollPane);
+	}
+
+	private void setupUpperPanel() {
+		upperPanel = new JPanel();
+		upperPanel.setLayout(new BorderLayout(0, 0));
+		searchPanel = new JPanel();
+		gbl_searchPanel = new GridBagLayout();
+		gbl_searchPanel.columnWidths = new int[]{122, 100, 0};
+		gbl_searchPanel.rowHeights = new int[]{27, 0};
+		gbl_searchPanel.columnWeights = new double[]{1.0, 0.0, Double.MIN_VALUE};
+		gbl_searchPanel.rowWeights = new double[]{0.0, Double.MIN_VALUE};
+		searchPanel.setLayout(gbl_searchPanel);
+		upperPanel.add(searchPanel, BorderLayout.CENTER);
+		
+		setupOptionsPanel();
+		setupSearchPanel();
+		
+		getContentPane().add(upperPanel, BorderLayout.NORTH);
+	}
+
+	private void setupSearchPanel() {
+		
+		searchString = new JTextField();
+		gbc_searchString = new GridBagConstraints();
+		gbc_searchString.fill = GridBagConstraints.BOTH;
+		gbc_searchString.insets = new Insets(0, 0, 0, 5);
+		gbc_searchString.gridx = 0;
+		gbc_searchString.gridy = 0;
+		searchString.setColumns(10);
+		final String defaultSearchString = "Digite sua procura aqui...";
+		searchString.setText(defaultSearchString);
+		searchString.addFocusListener(new FocusListener() {
+			
+			public void focusLost(final FocusEvent e) {
+				if(searchString.getText().equals("")){
+					searchString.setText(defaultSearchString);
+				}
+			}
+			
+			public void focusGained(final FocusEvent e) {
+				if(searchString.getText().equals(defaultSearchString)){
+					searchString.setText("");
+				}
+			}
+		});
+		searchString.addActionListener(searchForSearchTerm);
 		searchString.addKeyListener(new KeyAdapter(){
 			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN ||e.getKeyCode() == KeyEvent.VK_PAGE_UP||e.getKeyCode() == KeyEvent.VK_PAGE_DOWN)
+			public void keyPressed(final KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_UP || 
+					e.getKeyCode() == KeyEvent.VK_DOWN ||
+					e.getKeyCode() == KeyEvent.VK_PAGE_UP||
+					e.getKeyCode() == KeyEvent.VK_PAGE_DOWN)
 					result.dispatchEvent(e);
+			}
+		});
+		searchPanel.add(searchString, gbc_searchString);
+		
+		searchButton = new JButton("Procurar");
+		gbc_searchButton = new GridBagConstraints();
+		gbc_searchButton.fill = GridBagConstraints.HORIZONTAL;
+		gbc_searchButton.anchor = GridBagConstraints.NORTH;
+		gbc_searchButton.gridx = 1;
+		gbc_searchButton.gridy = 0;
+		searchButton.addActionListener(searchForSearchTerm);
+		searchButton.setFocusable(false);
+		searchPanel.add(searchButton, gbc_searchButton);
+	}
+
+	private void setupOptionsPanel() {
+		optionsPanel = new JPanel();
+		final GridBagLayout gbl_optionsPanel = new GridBagLayout();
+		gbl_optionsPanel.columnWidths = new int[]{0, 0, 126, 0, 0, 0};
+		gbl_optionsPanel.rowHeights = new int[]{15, 0};
+		gbl_optionsPanel.columnWeights = new double[]{0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
+		gbl_optionsPanel.rowWeights = new double[]{0.0, Double.MIN_VALUE};
+		optionsPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		optionsPanel.setLayout(gbl_optionsPanel);
+		upperPanel.add(optionsPanel, BorderLayout.NORTH);
+		
+		newSubtitlesFolder = new JButton("Novas legendas");
+		gbc_btnNovasLegendas = new GridBagConstraints();
+		gbc_btnNovasLegendas.insets = new Insets(0, 0, 0, 5);
+		gbc_btnNovasLegendas.gridx = 0;
+		gbc_btnNovasLegendas.gridy = 0;
+		newSubtitlesFolder.setFocusable(false);
+		final ActionListener searchNewSubtitles = new ActionListener() {
+			public void actionPerformed(final ActionEvent arg0) {
+				if(!warnings.getText().equals("")){
+					warnings.append("\n");
+				}
+				warnings.append("Procurando novas legendas...");
+				warnings.setCaretPosition(warnings.getDocument().getLength());
+				clearList();
+				searchScreenNeeds.getNewAddsList(endSearch);
+			}
+		};
+		searchNewSubtitles.actionPerformed(null);
+		newSubtitlesFolder.addActionListener(searchNewSubtitles);
+		optionsPanel.add(newSubtitlesFolder, gbc_btnNovasLegendas);
+		
+		resolution = new JComboBox();
+		gbc_resolution = new GridBagConstraints();
+		gbc_resolution.insets = new Insets(0, 0, 0, 5);
+		gbc_resolution.gridx = 1;
+		gbc_resolution.gridy = 0;
+		optionsPanel.add(resolution, gbc_resolution);
+		resolution.setFocusable(false);
+		resolution.setModel(new DefaultComboBoxModel(new String[] { searchScreenNeeds.allResolutionsString() , searchScreenNeeds.highResolutionString(), searchScreenNeeds.lowResolutionString()}));
+		resolution.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(final ActionEvent arg0) {
+				searchScreenNeeds.setResolution(resolution.getSelectedItem().toString());
 			}
 		});
 		
 		
-		searchResultsPane.add(jScrollPane, BorderLayout.CENTER);
-		jScrollPane.setViewportView(result);
+		subtitleFolderLabel = new JLabel("Pasta de legendas: ");
+		gbc_lblPastaDeLegendas = new GridBagConstraints();
+		gbc_lblPastaDeLegendas.insets = new Insets(0, 0, 0, 5);
+		gbc_lblPastaDeLegendas.anchor = GridBagConstraints.WEST;
+		gbc_lblPastaDeLegendas.gridx = 2;
+		gbc_lblPastaDeLegendas.gridy = 0;
+		optionsPanel.add(subtitleFolderLabel, gbc_lblPastaDeLegendas);		
 		
-		final JPanel panel = new JPanel();
-		panel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		searchResultsPane.add(panel, BorderLayout.NORTH);
-		panel.setLayout(new BorderLayout(0, 0));
-		panel.add(jScrollPane2);
+		subtitlesFolder = new JLabel("...");
+		gbc_subtitlesFolder = new GridBagConstraints();
+		gbc_subtitlesFolder.fill = GridBagConstraints.HORIZONTAL;
+		gbc_subtitlesFolder.insets = new Insets(0, 0, 0, 5);
+		gbc_subtitlesFolder.gridx = 3;
+		gbc_subtitlesFolder.gridy = 0;
+		final String defaultSubtitlesFolder = searchScreenNeeds.getSubtitleFolder();
+		subtitlesFolder.setText(defaultSubtitlesFolder);
+		optionsPanel.add(subtitlesFolder, gbc_subtitlesFolder);		
+		
+		subtitlesDest = new JButton("...");
+		gbc_subtitlesDest = new GridBagConstraints();
+		gbc_subtitlesDest.gridx = 4;
+		gbc_subtitlesDest.gridy = 0;
+		optionsPanel.add(subtitlesDest, gbc_subtitlesDest);
+		subtitlesDest.setFocusable(false);
 		subtitlesDest.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent e) {
 				final JFileChooser jFileChooser = new JFileChooser();
@@ -276,8 +308,25 @@ public class SearchScreen extends JFrame {
 			}
 		});
 		
+	}
+
+	private void setupJFrame() {
+		final URL resource = SearchScreen.class.getResource("filmeUtils.png");
+		final ImageIcon imageIcon = new ImageIcon(resource);
+		setIconImage(imageIcon.getImage());
+		
+		try {
+			setSystemLookAndFeel();
+		} catch (final Exception e) {
+			try {
+				setNimbusLookAndFeel();
+			} catch (final Exception e1) {
+			}
+		}
+		setTitle("FilmeUtils");
+		getContentPane().setLayout(new BorderLayout(0, 0));
 		setSize(800,600);
-		setVisible(true);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
 	private void setSystemLookAndFeel() throws ClassNotFoundException,

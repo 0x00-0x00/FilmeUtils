@@ -25,6 +25,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -66,6 +67,7 @@ public class SearchScreen extends JFrame {
 	private final SearchCallback endSearch;
 	private final ActionListener searchForSearchTerm;
 	private final SearchScreenNeeds searchScreenNeeds;
+	private final JProgressBar progressBar;
 	
 	public SearchScreen(final SearchScreenNeeds searchScreenNeeds) {
 		
@@ -74,6 +76,7 @@ public class SearchScreen extends JFrame {
 		defaultListModel = new DefaultListModel();
 		endSearch = new SearchCallback() {
 			public void done() {
+				progressBar.setIndeterminate(false);
 				warnings.append("\nProcura completa.");
 				warnings.setCaretPosition(warnings.getDocument().getLength());
 			}
@@ -92,9 +95,17 @@ public class SearchScreen extends JFrame {
 		};
 		
 		searchForSearchTerm = new ActionListener() {
-			public void actionPerformed(final ActionEvent arg0) {
+			
+			String lastSearch = "";
+			
+			public void actionPerformed(final ActionEvent event) {
 				final String searchTerm = searchString.getText();
+				if(lastSearch.equals(searchTerm)){
+					result.dispatchEvent(event);
+				}
+				lastSearch = searchTerm;
 				warnings.append("\nProcurando "+searchTerm);
+				progressBar.setIndeterminate(true);
 				warnings.setCaretPosition(warnings.getDocument().getLength());
 				clearList();
 				searchScreenNeeds.getResultsFor(searchTerm, endSearch);
@@ -104,6 +115,7 @@ public class SearchScreen extends JFrame {
 		setupJFrame();
 		
 		warnings = new JTextArea();
+		progressBar = new JProgressBar();
 		
 		setupUpperPanel();
 		setupSearchResultPanel();
@@ -125,10 +137,12 @@ public class SearchScreen extends JFrame {
 				final ListModel dlm = result.getModel();
 				final Object item = dlm.getElementAt(index);
 				result.ensureIndexIsVisible(index);
+				progressBar.setIndeterminate(true);
 				warnings.append("\nFazendo o download de '"+item+"'.");
 				warnings.setCaretPosition(warnings.getDocument().getLength());
 				searchScreenNeeds.download((String) item, new DownloadCallback() {
 					public void done() {
+						progressBar.setIndeterminate(false);
 						warnings.append("\nDowload de '"+item+"' terminado.");
 						warnings.setCaretPosition(warnings.getDocument().getLength());
 					}
@@ -137,6 +151,8 @@ public class SearchScreen extends JFrame {
 		}});
 		resultJScrollPane.setViewportView(result);
 		searchResultsPanel.add(resultJScrollPane, BorderLayout.CENTER);
+		
+		searchResultsPanel.add(progressBar, BorderLayout.SOUTH);
 		
 		getContentPane().add(searchResultsPanel, BorderLayout.CENTER);
 		
@@ -247,6 +263,7 @@ public class SearchScreen extends JFrame {
 					warnings.append("\n");
 				}
 				warnings.append("Procurando novas legendas...");
+				progressBar.setIndeterminate(true);
 				warnings.setCaretPosition(warnings.getDocument().getLength());
 				clearList();
 				searchScreenNeeds.getNewAddsList(endSearch);

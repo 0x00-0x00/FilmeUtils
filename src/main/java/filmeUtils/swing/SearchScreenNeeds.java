@@ -14,9 +14,9 @@ import filmeUtils.subtitleSites.LegendasTv;
 
 public class SearchScreenNeeds {
 
-	private static final String LOW   = "Resolu��o normal";
-	private static final String HIGH  = "Alta defini��o";
-	private static final String ALL   = "Todas as resolu��es";
+	private static final String LOW   = "Resolu\u00E7\u00E3o normal";
+	private static final String HIGH  = "Alta defini\u00E7\u00E3o";
+	private static final String ALL   = "Todas as resolu\u00E7\u00F5es";
 	private File subtitleFolder;
 	private final LegendasTv legendasTv;
 	private final Downloader downloader;

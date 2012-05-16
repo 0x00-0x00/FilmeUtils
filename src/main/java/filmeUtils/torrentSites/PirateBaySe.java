@@ -22,6 +22,8 @@ public class PirateBaySe implements TorrentSite {
 	public String getMagnetLinkFirstResultOrNull(final String exactFileName){
 		final String url = TorrentSiteUtils.getUrlFor(THEPIRATEBAY_SE_SEARCH_URL,exactFileName);
 		final String searchResult = httpclient.getOrNull(url);
+		if(searchResult == null)
+			return null;
 		final Document parsed = Jsoup.parse(searchResult);
 		final Elements select = parsed.select("#searchResult tbody tr td a");
 		for (final Element element : select) {

@@ -3,6 +3,7 @@ package filmeUtils.torrentSites;
 import java.util.ArrayList;
 import java.util.List;
 
+import filmeUtils.OutputListener;
 import filmeUtils.http.SimpleHttpClient;
 
 public class TorrentSearcherImpl implements TorrentSearcher {
@@ -15,12 +16,14 @@ public class TorrentSearcherImpl implements TorrentSearcher {
 		sites.add(new PirateBaySe(httpclient));
 	}
 	
-	public String getMagnetLinkForFileOrNull(final String exactFileName){
+	public String getMagnetLinkForFileOrNull(final String exactFileName,OutputListener outputListener) throws SiteOfflineException{
 		for (final TorrentSite site : sites) {
+			outputListener.outVerbose("Procurando magnet link em "+site.getSiteName());
 			final String magnetLinkFirstResultOrNull = site.getMagnetLinkFirstResultOrNull(exactFileName);
 			if(magnetLinkFirstResultOrNull != null){
 				return magnetLinkFirstResultOrNull;
 			}
+			outputListener.outVerbose("Nenhum magnet link em "+site.getSiteName());
 		}
 		return null;
 	}

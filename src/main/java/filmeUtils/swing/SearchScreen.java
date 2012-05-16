@@ -65,9 +65,9 @@ public class SearchScreen extends JFrame {
 	private JPanel searchResultsPanel;
 	private JList result;
 	private JScrollPane resultJScrollPane;
-	private JScrollPane warningsJScrollPane;
-	private final JTextArea warnings;
-	private JPanel warningsPanel;
+	private JScrollPane outputJScrollPane;
+	private final JTextArea outputTextArea;
+	private JPanel outputPanel;
 	private final SearchCallback endSearch;
 	private final ActionListener searchForSearchTerm;
 	private final SearchScreenNeeds searchScreenNeeds;
@@ -83,8 +83,8 @@ public class SearchScreen extends JFrame {
 		endSearch = new SearchCallback() {
 			public void done() {
 				progressBar.setIndeterminate(false);
-				warnings.append("\nProcura completa.");
-				warnings.setCaretPosition(warnings.getDocument().getLength());
+				outputTextArea.append("\nProcura completa.");
+				outputTextArea.setCaretPosition(outputTextArea.getDocument().getLength());
 			}
 			
 			public void found(final String name) {
@@ -115,9 +115,9 @@ public class SearchScreen extends JFrame {
 					return;
 				}
 				lastSearch = searchTerm;
-				warnings.append("\nProcurando "+searchTerm);
+				outputTextArea.append("\nProcurando "+searchTerm);
+				outputTextArea.setCaretPosition(outputTextArea.getDocument().getLength());
 				progressBar.setIndeterminate(true);
-				warnings.setCaretPosition(warnings.getDocument().getLength());
 				clearList();
 				searchScreenNeeds.getResultsFor(searchTerm, endSearch);
 			}			
@@ -125,7 +125,7 @@ public class SearchScreen extends JFrame {
 		
 		setupJFrame();
 		
-		warnings = new JTextArea();
+		outputTextArea = new JTextArea();
 		
 		searchScreenNeeds.setOutputListener(new OutputListener() {
 			
@@ -136,11 +136,12 @@ public class SearchScreen extends JFrame {
 			
 			@Override
 			public void outVerbose(final String string) {
+				output(string);
 			}
 			
 			@Override
 			public void out(final String string) {
-				warnings.append("\n"+string);
+				output(string);
 			}
 		});
 		
@@ -155,13 +156,13 @@ public class SearchScreen extends JFrame {
 		final Object item = dlm.getElementAt(index);
 		result.ensureIndexIsVisible(index);
 		progressBar.setIndeterminate(true);
-		warnings.append("\nFazendo o download de '"+item+"'.");
-		warnings.setCaretPosition(warnings.getDocument().getLength());
+		String text = "Fazendo o download de '"+item+"'.";
+		output(text);
 		searchScreenNeeds.download((String) item, new DownloadCallback() {
 			public void done() {
 				progressBar.setIndeterminate(false);
-				warnings.append("\nDowload de '"+item+"' terminado.");
-				warnings.setCaretPosition(warnings.getDocument().getLength());
+				String text = "Dowload de '"+item+"' terminado.";
+				output(text);
 			}
 		});
 	}
@@ -186,23 +187,21 @@ public class SearchScreen extends JFrame {
 		
 		getContentPane().add(searchResultsPanel, BorderLayout.CENTER);
 		
-		setupWarningsPanel();
+		setupOutputPanel();
 	}
 
-	private void setupWarningsPanel() {
-		warningsPanel = new JPanel();
+	private void setupOutputPanel() {
+		outputPanel = new JPanel();
 		
-		warningsJScrollPane = new JScrollPane();
+		outputJScrollPane = new JScrollPane();
+		outputTextArea.setRows(5);
+		outputJScrollPane.setViewportView(outputTextArea);
+		outputPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		searchResultsPanel.add(outputPanel, BorderLayout.NORTH);
+		outputPanel.setLayout(new BorderLayout(0, 0));
+		outputPanel.add(outputJScrollPane);
 		
-		warnings.setFocusable(false);
-		warnings.setRows(3);
-		warningsJScrollPane.setViewportView(warnings);
-		warningsPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		searchResultsPanel.add(warningsPanel, BorderLayout.NORTH);
-		warningsPanel.setLayout(new BorderLayout(0, 0));
-		warningsPanel.add(warningsJScrollPane);
-		
-		warningsPanel.add(progressBar, BorderLayout.SOUTH);
+		outputPanel.add(progressBar, BorderLayout.SOUTH);
 	}
 
 	private void setupUpperPanel() {
@@ -291,15 +290,14 @@ public class SearchScreen extends JFrame {
 		newSubtitlesFolder.setFocusable(false);
 		final ActionListener searchNewSubtitles = new ActionListener() {
 			public void actionPerformed(final ActionEvent arg0) {
-				if(!warnings.getText().equals("")){
-					warnings.append("\n");
-				}
-				warnings.append("Procurando novas legendas...");
+				
+				String text = "Procurando novas legendas...";
+				output(text);
 				progressBar.setIndeterminate(true);
-				warnings.setCaretPosition(warnings.getDocument().getLength());
 				clearList();
 				searchScreenNeeds.getNewAddsList(endSearch);
 			}
+
 		};
 		searchNewSubtitles.actionPerformed(null);
 		newSubtitlesFolder.addActionListener(searchNewSubtitles);
@@ -359,6 +357,14 @@ public class SearchScreen extends JFrame {
 		
 	}
 
+	private void output(String text) {
+		if(!outputTextArea.getText().equals("")){
+			outputTextArea.append("\n");
+		}
+		outputTextArea.append(text);
+		outputTextArea.setCaretPosition(outputTextArea.getDocument().getLength()-text.length());
+	}
+	
 	private void setupJFrame() {
 		final URL resource = SearchScreen.class.getResource("filmeUtils.png");
 		final ImageIcon imageIcon = new ImageIcon(resource);

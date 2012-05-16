@@ -18,10 +18,9 @@ public class BitSnoop implements TorrentSite {
 		this.httpclient = httpclient;
 	}
 	
-	public String getMagnetLinkFirstResultOrNull(final String exactFileName) {
+	public String getMagnetLinkFirstResultOrNull(final String exactFileName) throws SiteOfflineException {
 		final String url = TorrentSiteUtils.getUrlFor(BITSNOOP_SEARCH_URL,exactFileName);
 		final String searchResult = httpclient.getOrNull(url);
-		if(searchResult == null) return null;
 		final Document parsed = Jsoup.parse(searchResult);
 		final Elements select = parsed.select("#torrents li a");
 		final Element firstLink = select.first();
@@ -29,15 +28,21 @@ public class BitSnoop implements TorrentSite {
 		return magnetFromLink(firstLink.attr("href"));
 	}
 
-	private String magnetFromLink(final String link) {
+	private String magnetFromLink(final String link) throws SiteOfflineException {
 		final String url = BITSNOOP_URL + link;
 		final String searchResult = httpclient.getOrNull(url);
-		if(searchResult == null) return null;
+		if(searchResult == null)
+			throw new SiteOfflineException("BitSnoop");
 		final Document parsed = Jsoup.parse(searchResult);
 		final Elements elementsByClass = parsed.getElementsByClass("dl_mag2");
 		if(elementsByClass.isEmpty()) return null;
 		final String magnetLink = elementsByClass.attr("href");
 		return magnetLink;
+	}
+
+	@Override
+	public String getSiteName() {
+		return "BitSnoop";
 	}
 
 }

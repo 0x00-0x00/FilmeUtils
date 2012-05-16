@@ -15,6 +15,7 @@ import filmeUtils.http.MagnetLinkHandler;
 import filmeUtils.http.SimpleHttpClient;
 import filmeUtils.http.SimpleHttpClientImpl;
 import filmeUtils.subtitleSites.LegendasTv;
+import filmeUtils.torrentSites.SiteOfflineException;
 import filmeUtils.torrentSites.TorrentSearcher;
 
 public class Downloader {
@@ -54,6 +55,7 @@ public class Downloader {
 			getOutputListener().outVerbose("Extraindo legendas para "+currentSubtitleFolder.getAbsolutePath());
 			
 			downloadLinkToFolder(link, currentSubtitleFolder);
+			getOutputListener().outVerbose("Extraido com sucesso para "+currentSubtitleFolder.getAbsolutePath());
 			final boolean success = openTorrentsAndReturnSuccess(currentSubtitleFolder);
 			FileUtils.deleteDirectory(currentSubtitleFolder);
 			return success;
@@ -121,14 +123,20 @@ public class Downloader {
 		if(shouldRefuse){
 			return false;
 		}
-		
-		magnetLinkForFile = torrentSearcher.getMagnetLinkForFileOrNull(subtitleName);
-		if(magnetLinkForFile == null){
+		try {
+			getOutputListener().outVerbose("Procurando melhor torrent para "+subtitleName);
+			magnetLinkForFile = torrentSearcher.getMagnetLinkForFileOrNull(subtitleName,getOutputListener());
+		} catch (SiteOfflineException e1) {
+			getOutputListener().out("Erro procurando torrent para "+next.getName()+" : "+e1.getMessage());
 			return false;
 		}
-		getOutputListener().outVerbose("Abrindo no browser: "+magnetLinkForFile);
+		if(magnetLinkForFile == null){
+			getOutputListener().outVerbose("Nenhum torrent para "+subtitleName);
+			return false;
+		}
+		getOutputListener().outVerbose("Abrindo magnet link no cliente: "+magnetLinkForFile);
 		magnetLinkHandler.openURL(magnetLinkForFile);
-		getOutputListener().out("Downloading: "+subtitleName);
+		getOutputListener().out("MAgnet link '"+magnetLinkForFile+"' de "+subtitleName+" enviado ao client de torrent.");
 		try {
 			FileUtils.copyFileToDirectory(next, options.getSubtitlesDestinationFolderOrNull());
 		} catch (final IOException e) {

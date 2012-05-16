@@ -136,7 +136,7 @@ public class Downloader {
 		}
 		getOutputListener().outVerbose("Abrindo magnet link no cliente: "+magnetLinkForFile);
 		magnetLinkHandler.openURL(magnetLinkForFile);
-		getOutputListener().out("MAgnet link '"+magnetLinkForFile+"' de "+subtitleName+" enviado ao client de torrent.");
+		getOutputListener().out("Magnet link '"+magnetLinkForFile+"' de "+subtitleName+" enviado ao client de torrent.");
 		try {
 			FileUtils.copyFileToDirectory(next, options.getSubtitlesDestinationFolderOrNull());
 		} catch (final IOException e) {

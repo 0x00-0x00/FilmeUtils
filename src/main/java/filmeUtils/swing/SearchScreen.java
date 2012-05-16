@@ -156,13 +156,11 @@ public class SearchScreen extends JFrame {
 		final Object item = dlm.getElementAt(index);
 		result.ensureIndexIsVisible(index);
 		progressBar.setIndeterminate(true);
-		String text = "Fazendo o download de '"+item+"'.";
-		output(text);
+		output("Fazendo o download de '"+item+"'.");
 		searchScreenNeeds.download((String) item, new DownloadCallback() {
 			public void done() {
 				progressBar.setIndeterminate(false);
-				String text = "Dowload de '"+item+"' terminado.";
-				output(text);
+				output("Dowload de '"+item+"' terminado.");
 			}
 		});
 	}

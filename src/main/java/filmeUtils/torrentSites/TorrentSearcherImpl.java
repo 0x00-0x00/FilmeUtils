@@ -12,9 +12,9 @@ public class TorrentSearcherImpl implements TorrentSearcher {
 
 	public TorrentSearcherImpl(final SimpleHttpClient httpclient) {
 		sites = new ArrayList<TorrentSite>();
+		sites.add(new PirateBaySe(httpclient));
 		sites.add(new Rarbg(httpclient));
 		sites.add(new BitSnoop(httpclient));
-		sites.add(new PirateBaySe(httpclient));
 	}
 	
 	public String getMagnetLinkForFileOrNull(final String exactFileName,final OutputListener outputListener) throws SiteOfflineException{

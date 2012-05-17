@@ -22,7 +22,7 @@ public class Rarbg implements TorrentSite {
 		final String url = TorrentSiteUtils.getUrlFor(BITSNOOP_SEARCH_URL,exactFileName);
 		final String searchResult = httpclient.getOrNull(url);
 		final Document parsed = Jsoup.parse(searchResult);
-		final Elements select = parsed.select("a[href^=/torrents/filmi/download]");//href="/torrents/filmi/download/ff09ff348638385bbc092a14357272f762991c99/torrent.html" title="">The.Mentalist.S04E23.HDTV.XviD-AFG</a>
+		final Elements select = parsed.select("a[href^=/torrents/filmi/download]:not(:has(img))");//href="/torrents/filmi/download/ff09ff348638385bbc092a14357272f762991c99/torrent.html" title="">The.Mentalist.S04E23.HDTV.XviD-AFG</a>
 		final Element firstLink = select.first();
 		if(firstLink == null) return null;
 		return magnetFromLink(firstLink.attr("href"));
@@ -34,9 +34,9 @@ public class Rarbg implements TorrentSite {
 		if(searchResult == null)
 			throw new SiteOfflineException("BitSnoop");
 		final Document parsed = Jsoup.parse(searchResult);
-		final Elements elementsByClass = parsed.getElementsByClass("dl_mag2");
-		if(elementsByClass.isEmpty()) return null;
-		final String magnetLink = elementsByClass.attr("href");
+		final Elements select = parsed.select("a[href^=magnet]");
+		if(select.isEmpty()) return null;
+		final String magnetLink = select.attr("href");
 		return magnetLink;
 	}
 

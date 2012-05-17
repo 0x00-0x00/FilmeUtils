@@ -24,6 +24,7 @@ import org.apache.http.client.CookieStore;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -44,7 +45,7 @@ public class SimpleHttpClientImpl implements SimpleHttpClient {
 	
 	public SimpleHttpClientImpl(final File cookieFile) {
 		this.cookieFile = cookieFile;
-		httpclient = new DefaultHttpClient(); 
+		httpclient = new DefaultHttpClient();
 		loadCookies();
 		final HttpParams httpParameters = httpclient.getParams();
 		final int connectionTimeOutSec= TIMEOUT;
@@ -59,12 +60,18 @@ public class SimpleHttpClientImpl implements SimpleHttpClient {
 
 	public String get(final String get) throws ClientProtocolException, IOException {
 		final HttpGet httpGet = new HttpGet(get); 
+		setFirefoxAsAgent(httpGet);
 		final String result = executeAndGetResponseContents(httpGet);
 		return result;
 	}
 
+	private void setFirefoxAsAgent(final HttpRequestBase httpGet) {
+		httpGet.setHeader("User-Agent", "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.13) Gecko/20101206 Ubuntu/10.10 (maverick) Firefox/3.6.13");
+	}
+
 	public String post(final String postUrl, final Map<String, String> params) throws ClientProtocolException, IOException {
 		final HttpPost httpost = new HttpPost(postUrl);
+		setFirefoxAsAgent(httpost);
 		final List <NameValuePair> nvps = new ArrayList <NameValuePair>();
 		final Set<Entry<String, String>> entrySet = params.entrySet();
 		for (final Entry<String, String> entry : entrySet) {

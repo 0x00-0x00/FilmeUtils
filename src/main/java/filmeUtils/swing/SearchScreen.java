@@ -27,6 +27,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
@@ -34,7 +35,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.border.BevelBorder;
 
 import org.apache.commons.cli.Options;
 
@@ -66,19 +66,22 @@ public class SearchScreen extends JFrame {
 	private JList result;
 	private JScrollPane resultJScrollPane;
 	private JScrollPane outputJScrollPane;
-	private final JTextArea outputTextArea;
+	private JTextArea outputTextArea;
 	private JPanel outputPanel;
 	private final SearchCallback endSearch;
 	private final ActionListener searchForSearchTerm;
 	private final SearchScreenNeeds searchScreenNeeds;
-	private final JProgressBar progressBar;
+	private JProgressBar progressBar;
+	private JSplitPane splitPane;
+	private ActionListener searchNewSubtitles;
+	
+	final String defaultSearchString = "Digite sua procura aqui...";
 	
 	public SearchScreen(final SearchScreenNeeds searchScreenNeeds) {
 		
 		this.searchScreenNeeds = searchScreenNeeds;
 		
 		defaultListModel = new DefaultListModel();
-		progressBar = new JProgressBar();
 		
 		endSearch = new SearchCallback() {
 			public void done() {
@@ -125,8 +128,6 @@ public class SearchScreen extends JFrame {
 		
 		setupJFrame();
 		
-		outputTextArea = new JTextArea();
-		
 		searchScreenNeeds.setOutputListener(new OutputListener() {
 			
 			@Override
@@ -149,6 +150,7 @@ public class SearchScreen extends JFrame {
 		setupSearchResultPanel();
 		
 		setVisible(true);
+		searchNewSubtitles.actionPerformed(null);
 	}
 	
 	private void downloadSubtitleAtPosition(final int index) {
@@ -159,7 +161,7 @@ public class SearchScreen extends JFrame {
 		output("Fazendo o download de '"+item+"'.");
 		searchScreenNeeds.download((String) item, new DownloadCallback() {
 			public void done() {
-				progressBar.setIndeterminate(false);
+				progressBar.setIndeterminate(false); 
 				output("Dowload de '"+item+"' terminado.");
 			}
 		});
@@ -168,6 +170,15 @@ public class SearchScreen extends JFrame {
 	private void setupSearchResultPanel() {
 		searchResultsPanel = new JPanel();
 		searchResultsPanel.setLayout(new BorderLayout(0, 0));		
+		
+		getContentPane().add(searchResultsPanel, BorderLayout.CENTER);
+		
+		setupOutputPanel();
+	}
+
+	private void setupOutputPanel() {
+		splitPane = new JSplitPane();
+		splitPane.setContinuousLayout(true);
 		resultJScrollPane = new JScrollPane();	
 		
 		result = new JList();
@@ -179,57 +190,55 @@ public class SearchScreen extends JFrame {
 				downloadSubtitleAtPosition(index);
 			}
 		}});
-
-		resultJScrollPane.setViewportView(result);
-		searchResultsPanel.add(resultJScrollPane, BorderLayout.CENTER);
 		
-		getContentPane().add(searchResultsPanel, BorderLayout.CENTER);
+		progressBar = new JProgressBar();
 		
-		setupOutputPanel();
-	}
-
-	private void setupOutputPanel() {
+		outputTextArea = new JTextArea();
 		outputPanel = new JPanel();
 		
 		outputJScrollPane = new JScrollPane();
 		outputTextArea.setRows(5);
 		outputJScrollPane.setViewportView(outputTextArea);
-		outputPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		searchResultsPanel.add(outputPanel, BorderLayout.NORTH);
 		outputPanel.setLayout(new BorderLayout(0, 0));
 		outputPanel.add(outputJScrollPane);
 		
 		outputPanel.add(progressBar, BorderLayout.SOUTH);
+
+		resultJScrollPane.setViewportView(result);
+		
+		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+		
+		splitPane.setLeftComponent(outputPanel);
+		splitPane.setRightComponent(resultJScrollPane);
+
+		
+		searchResultsPanel.add(splitPane, BorderLayout.CENTER);
+		
 	}
 
 	private void setupUpperPanel() {
 		upperPanel = new JPanel();
 		upperPanel.setLayout(new BorderLayout(0, 0));
+		
+		setupOptionsPanel();
+		
+		getContentPane().add(upperPanel, BorderLayout.NORTH);
 		searchPanel = new JPanel();
 		gbl_searchPanel = new GridBagLayout();
 		gbl_searchPanel.columnWidths = new int[]{122, 100, 0};
 		gbl_searchPanel.rowHeights = new int[]{27, 0};
 		gbl_searchPanel.columnWeights = new double[]{1.0, 0.0, Double.MIN_VALUE};
-		gbl_searchPanel.rowWeights = new double[]{0.0, Double.MIN_VALUE};
+		gbl_searchPanel.rowWeights = new double[]{1.0, Double.MIN_VALUE};
 		searchPanel.setLayout(gbl_searchPanel);
-		upperPanel.add(searchPanel, BorderLayout.CENTER);
-		
-		setupOptionsPanel();
-		setupSearchPanel();
-		
-		getContentPane().add(upperPanel, BorderLayout.NORTH);
-	}
-
-	private void setupSearchPanel() {
+		upperPanel.add(searchPanel, BorderLayout.SOUTH);
 		
 		searchString = new JTextField();
 		gbc_searchString = new GridBagConstraints();
-		gbc_searchString.fill = GridBagConstraints.BOTH;
+		gbc_searchString.fill = GridBagConstraints.HORIZONTAL;
 		gbc_searchString.insets = new Insets(0, 0, 0, 5);
 		gbc_searchString.gridx = 0;
 		gbc_searchString.gridy = 0;
 		searchString.setColumns(10);
-		final String defaultSearchString = "Digite sua procura aqui...";
 		searchString.setText(defaultSearchString);
 		searchString.addFocusListener(new FocusListener() {
 			
@@ -261,7 +270,6 @@ public class SearchScreen extends JFrame {
 		searchButton = new JButton("Procurar");
 		gbc_searchButton = new GridBagConstraints();
 		gbc_searchButton.fill = GridBagConstraints.HORIZONTAL;
-		gbc_searchButton.anchor = GridBagConstraints.NORTH;
 		gbc_searchButton.gridx = 1;
 		gbc_searchButton.gridy = 0;
 		searchButton.addActionListener(searchForSearchTerm);
@@ -272,24 +280,25 @@ public class SearchScreen extends JFrame {
 	private void setupOptionsPanel() {
 		optionsPanel = new JPanel();
 		final GridBagLayout gbl_optionsPanel = new GridBagLayout();
-		gbl_optionsPanel.columnWidths = new int[]{0, 0, 126, 0, 0, 0};
-		gbl_optionsPanel.rowHeights = new int[]{15, 0};
+		gbl_optionsPanel.columnWidths = new int[]{141, 0, 126, 0, 0, 0};
+		gbl_optionsPanel.rowHeights = new int[]{15, 0, 0};
 		gbl_optionsPanel.columnWeights = new double[]{0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
-		gbl_optionsPanel.rowWeights = new double[]{0.0, Double.MIN_VALUE};
-		optionsPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		gbl_optionsPanel.rowWeights = new double[]{1.0, 1.0, Double.MIN_VALUE};
 		optionsPanel.setLayout(gbl_optionsPanel);
-		upperPanel.add(optionsPanel, BorderLayout.NORTH);
+		upperPanel.add(optionsPanel, BorderLayout.CENTER);
 		
 		newSubtitlesFolder = new JButton("Novas legendas");
 		gbc_btnNovasLegendas = new GridBagConstraints();
-		gbc_btnNovasLegendas.insets = new Insets(0, 0, 0, 5);
+		gbc_btnNovasLegendas.fill = GridBagConstraints.VERTICAL;
+		gbc_btnNovasLegendas.anchor = GridBagConstraints.WEST;
+		gbc_btnNovasLegendas.insets = new Insets(0, 0, 5, 5);
 		gbc_btnNovasLegendas.gridx = 0;
 		gbc_btnNovasLegendas.gridy = 0;
 		newSubtitlesFolder.setFocusable(false);
-		final ActionListener searchNewSubtitles = new ActionListener() {
+		searchNewSubtitles = new ActionListener() {
 			public void actionPerformed(final ActionEvent arg0) {
 				
-				String text = "Procurando novas legendas...";
+				final String text = "Procurando novas legendas...";
 				output(text);
 				progressBar.setIndeterminate(true);
 				clearList();
@@ -297,13 +306,15 @@ public class SearchScreen extends JFrame {
 			}
 
 		};
-		searchNewSubtitles.actionPerformed(null);
+		
 		newSubtitlesFolder.addActionListener(searchNewSubtitles);
 		optionsPanel.add(newSubtitlesFolder, gbc_btnNovasLegendas);
 		
 		resolution = new JComboBox();
 		gbc_resolution = new GridBagConstraints();
-		gbc_resolution.insets = new Insets(0, 0, 0, 5);
+		gbc_resolution.fill = GridBagConstraints.VERTICAL;
+		gbc_resolution.anchor = GridBagConstraints.WEST;
+		gbc_resolution.insets = new Insets(0, 0, 5, 5);
 		gbc_resolution.gridx = 1;
 		gbc_resolution.gridy = 0;
 		optionsPanel.add(resolution, gbc_resolution);
@@ -319,16 +330,16 @@ public class SearchScreen extends JFrame {
 		
 		subtitleFolderLabel = new JLabel("Pasta de legendas: ");
 		gbc_lblPastaDeLegendas = new GridBagConstraints();
-		gbc_lblPastaDeLegendas.insets = new Insets(0, 0, 0, 5);
+		gbc_lblPastaDeLegendas.fill = GridBagConstraints.VERTICAL;
 		gbc_lblPastaDeLegendas.anchor = GridBagConstraints.WEST;
+		gbc_lblPastaDeLegendas.insets = new Insets(0, 0, 5, 5);
 		gbc_lblPastaDeLegendas.gridx = 2;
 		gbc_lblPastaDeLegendas.gridy = 0;
 		optionsPanel.add(subtitleFolderLabel, gbc_lblPastaDeLegendas);		
 		
 		subtitlesFolder = new JLabel("...");
 		gbc_subtitlesFolder = new GridBagConstraints();
-		gbc_subtitlesFolder.fill = GridBagConstraints.HORIZONTAL;
-		gbc_subtitlesFolder.insets = new Insets(0, 0, 0, 5);
+		gbc_subtitlesFolder.insets = new Insets(0, 0, 5, 5);
 		gbc_subtitlesFolder.gridx = 3;
 		gbc_subtitlesFolder.gridy = 0;
 		final String defaultSubtitlesFolder = searchScreenNeeds.getSubtitleFolder();
@@ -337,6 +348,9 @@ public class SearchScreen extends JFrame {
 		
 		subtitlesDest = new JButton("...");
 		gbc_subtitlesDest = new GridBagConstraints();
+		gbc_subtitlesDest.fill = GridBagConstraints.VERTICAL;
+		gbc_subtitlesDest.anchor = GridBagConstraints.EAST;
+		gbc_subtitlesDest.insets = new Insets(0, 0, 5, 0);
 		gbc_subtitlesDest.gridx = 4;
 		gbc_subtitlesDest.gridy = 0;
 		optionsPanel.add(subtitlesDest, gbc_subtitlesDest);
@@ -355,7 +369,7 @@ public class SearchScreen extends JFrame {
 		
 	}
 
-	private void output(String text) {
+	private void output(final String text) {
 		if(!outputTextArea.getText().equals("")){
 			outputTextArea.append("\n");
 		}

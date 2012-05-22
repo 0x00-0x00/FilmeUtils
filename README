@@ -1,14 +1,14 @@
-FilmeUtils é uma ferramenta para pegar legendas e torrents.
+FilmeUtils é uma ferramenta para pegar filmes e séries com legendas tendo mínimo de trabalho possível.
 
 Download : https://github.com/downloads/beothorn/FilmeUtils/filmeUtils-2.2.jar
 
 Do que você precisa:
- - Java 1.5 ou maior instalado.
- - Um cliente de torrent como o utorrent ou o qbittorrent.
+ - Java 1.5 ou maior instalado. - www.java.com/
+ - Um cliente de torrent como o o qbittorrent (http://www.qbittorrent.org/).
 
 Como usar  
-Escolha a pasta para as legendas, escolha a resolução , digite a procura  
-duplo clique pra fazer o download da legenda e do torrent  
+Escolha a pasta para as legendas, escolha a resolução, digite a procura  
+duplo clique ou enter pra fazer o download da legenda e do torrent!
 
 Sites onde a procura é feita:
 

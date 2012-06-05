@@ -21,6 +21,9 @@ public class Rarbg implements TorrentSite {
 	public String getMagnetLinkFirstResultOrNull(final String exactFileName) throws SiteOfflineException {
 		final String url = TorrentSiteUtils.getUrlFor(BITSNOOP_SEARCH_URL,exactFileName);
 		final String searchResult = httpclient.getOrNull(url);
+		if(searchResult == null){
+			throw new SiteOfflineException(getSiteName());
+		}
 		final Document parsed = Jsoup.parse(searchResult);
 		final Elements select = parsed.select("a[href^=/torrents/filmi/download]:not(:has(img))");
 		final Element firstLink = select.first();
@@ -31,8 +34,9 @@ public class Rarbg implements TorrentSite {
 	private String magnetFromLink(final String link) throws SiteOfflineException {
 		final String url = RARBG_URL + link;
 		final String searchResult = httpclient.getOrNull(url);
-		if(searchResult == null)
-			throw new SiteOfflineException("BitSnoop");
+		if(searchResult == null){
+			throw new SiteOfflineException(getSiteName());
+		}
 		final Document parsed = Jsoup.parse(searchResult);
 		final Elements select = parsed.select("a[href^=magnet]");
 		if(select.isEmpty()) return null;

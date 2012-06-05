@@ -2,18 +2,17 @@ package filmeUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.zip.ZipException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.conn.ConnectionPoolTimeoutException;
 
 import filmeUtils.extraction.Extractor;
 import filmeUtils.fileSystem.FileSystem;
 import filmeUtils.http.MagnetLinkHandler;
 import filmeUtils.http.SimpleHttpClient;
-import filmeUtils.http.SimpleHttpClientImpl;
 import filmeUtils.subtitleSites.LegendasTv;
 import filmeUtils.torrentSites.SiteOfflineException;
 import filmeUtils.torrentSites.TorrentSearcher;
@@ -44,49 +43,52 @@ public class Downloader {
 		return unzipSearchMagnetsAndReturnSuccess(name,link);
 	}
 	
-	
 	private boolean unzipSearchMagnetsAndReturnSuccess(final String name,final String link){
+		final String validNameForFile = name.replaceAll("[/ \\\\?]", "_");
+		final String tempDir = System.getProperty("java.io.tmpdir");
+		final File currentSubtitleFolder = new File(tempDir,validNameForFile);
+		fileSystem.mkdir(currentSubtitleFolder);
+		getOutputListener().outVerbose("Extraindo legendas para "+currentSubtitleFolder.getAbsolutePath());
 		try {
-			final String validNameForFile = name.replaceAll("[/ \\\\?]", "_");
-			final File subtitlesDestinationFolderOrNull = options.getSubtitlesDestinationFolderOrNull();
-			final File currentSubtitleFolder = new File(subtitlesDestinationFolderOrNull, validNameForFile);
-			
-			fileSystem.mkdir(currentSubtitleFolder);
-			getOutputListener().outVerbose("Extraindo legendas para "+currentSubtitleFolder.getAbsolutePath());
-			
 			downloadLinkToFolder(link, currentSubtitleFolder);
-			getOutputListener().outVerbose("Extraido com sucesso para "+currentSubtitleFolder.getAbsolutePath());
-			final boolean success = openTorrentsAndReturnSuccess(currentSubtitleFolder);
+		} catch (Exception e) {
+			getOutputListener().outVerbose("Erro fazendo download de legenda de "+link);
+			File errorFile = writeErrorFileOrCry(e);
+			getOutputListener().outVerbose("Mais detalhes em "+errorFile);
+		}			
+		getOutputListener().outVerbose("Extraido com sucesso para "+currentSubtitleFolder.getAbsolutePath());
+		final boolean success = openTorrentsAndReturnSuccess(currentSubtitleFolder);
+		try {
 			FileUtils.deleteDirectory(currentSubtitleFolder);
-			return success;
-		} catch(final ConnectionPoolTimeoutException e){
-			getOutputListener().out("Tempo máximo de requisição atingido ("+SimpleHttpClientImpl.TIMEOUT+" segundos)");
-			return false;
-		}catch (final IOException e) {
-			getOutputListener().out(e.getMessage()+"\n"+e.getStackTrace().toString());
-			return false;
+		} catch (IOException e) {
+			//don't care
 		}
+		return success;
+	}
+
+	private File writeErrorFileOrCry(Exception e) {
+		File errorFile = new File(FilmeUtilsConstants.filmeUtilsFolder(), Calendar.getInstance().getTimeInMillis()+".error");
+		try {
+			FileUtils.writeStringToFile(errorFile, e.getMessage()+"\n"+e.getStackTrace());
+		} catch (IOException e1) {
+			throw new RuntimeException(e1);
+		}
+		return errorFile;
 	}
 
 	private void downloadLinkToFolder(final String link, final File folder) throws IOException, ClientProtocolException, ZipException {
 		String contentType;
-		final File destFile = createFileToBeWritten(folder);
+		final File destFile = File.createTempFile("filmeUtils", "filmeUtils");
 		
 		contentType = httpclient.getToFile(link, destFile);
 		
 		if(contentType.contains("text/html")){
 			legendasTv.login(); 
+			destFile.delete();
+			contentType = httpclient.getToFile(link, destFile);
 		}
-		contentType = httpclient.getToFile(link, destFile);
 		extract(destFile, folder, contentType);
 		destFile.delete();
-	}
-	
-	private File createFileToBeWritten(final File currentSubtitleCollection) throws IOException {
-		final File destFile = new File(currentSubtitleCollection,"compressedSubs");
-		fileSystem.createNewFile(destFile);
-		destFile.createNewFile();
-		return destFile;
 	}
 
 	private boolean openTorrentsAndReturnSuccess(final File currentSubtitleFolder) {

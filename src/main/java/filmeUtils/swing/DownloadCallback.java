@@ -2,6 +2,6 @@ package filmeUtils.swing;
 
 public interface DownloadCallback {
 
-	void done();
+	void done(boolean found);
 
 }

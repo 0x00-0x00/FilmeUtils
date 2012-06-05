@@ -160,9 +160,14 @@ public class SearchScreen extends JFrame {
 		progressBar.setIndeterminate(true);
 		output("Fazendo o download de '"+item+"'.");
 		searchScreenNeeds.download((String) item, new DownloadCallback() {
-			public void done() {
+			public void done(boolean found) {
 				progressBar.setIndeterminate(false); 
-				output("Dowload de '"+item+"' terminado.");
+				if(found){
+					output("Dowload de '"+item+"' terminado com sucesso.");
+				}else{
+					output("ERRO!");
+					output("Torrent compatível para '"+item+"' não foi encontrado.");
+				}
 			}
 		});
 	}

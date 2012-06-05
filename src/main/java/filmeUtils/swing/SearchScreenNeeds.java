@@ -2,6 +2,7 @@ package filmeUtils.swing;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.io.FileUtils;
 
@@ -44,12 +45,17 @@ public class SearchScreenNeeds {
 		new Thread(){
 			@Override
 			public void run() {
+				final AtomicBoolean torrentWasFound = new AtomicBoolean(false);
 				legendasTv.search(item, new SearchListener() {
 					public boolean foundReturnIfShouldStopLooking(final String name, final String link) {
-						return downloader.download(name, link, filmeUtilsOptions);
+						final boolean success = downloader.download(name, link, filmeUtilsOptions);
+						if(success){
+							torrentWasFound.set(true);
+						}
+						return success;
 					}
 				});
-				callback.done();
+				callback.done(torrentWasFound.get());
 			}
 		}.start();
 	}

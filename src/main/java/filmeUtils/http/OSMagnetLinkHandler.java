@@ -2,7 +2,7 @@ package filmeUtils.http;
 
 import java.net.URI;
 
-import uriSchemelHandler.URISchemeHandler;
+import uriSchemeHandler.URISchemeHandler;
 
 
 public class OSMagnetLinkHandler implements MagnetLinkHandler {

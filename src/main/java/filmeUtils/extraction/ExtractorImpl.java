@@ -11,7 +11,7 @@ import java.util.zip.ZipFile;
 
 import org.apache.commons.io.IOUtils;
 
-import com.github.junrar.testutil.ExtractArchive;
+import com.github.junrar.extract.ExtractArchive;
 
 public class ExtractorImpl implements Extractor {
 
@@ -40,7 +40,8 @@ public class ExtractorImpl implements Extractor {
 
 
 	public void unrar(final File rar, final File destinationFolder) {
-		ExtractArchive.extractArchive(rar, destinationFolder);
+		ExtractArchive extractArchive = new ExtractArchive();
+		extractArchive.extractArchive(rar, destinationFolder);
 	}
 	
 }

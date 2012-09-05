@@ -22,9 +22,7 @@ import filmeUtils.torrentSites.TorrentSearcherImpl;
 
 public class Main {
 
-	public static void main(final String[] args) throws IOException{
-		turnJunrarLoggingOff();
-		
+	public static void main(final String[] args) throws IOException{		
     	final ArgumentsParserImpl cli = new ArgumentsParserImpl(new OutputListener() {
 			
 			public void outVerbose(final String string) {
@@ -63,8 +61,4 @@ public class Main {
     	}
     	
     }
-
-	private static void turnJunrarLoggingOff() {
-		System.setProperty("org.apache.commons.logging.Log","org.apache.commons.logging.impl.NoOpLog");
-	}
 }

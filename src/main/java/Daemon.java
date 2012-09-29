@@ -100,29 +100,25 @@ public class Daemon {
 		final ArrayList<String> alreadyChecked = new ArrayList<String>();
 		while(true){
 			
-			System.out.println("foo");
-			
-			int checkInterval = 5000;
 			try {
-				legendasTv.getNewer(23, new SearchListener() {
-					
-					@Override
-					public boolean foundReturnIfShouldStopLooking(String name, String link) {
-						if(!alreadyChecked.contains(name)){
-							for (String pattern : readLines) {
-								if(name.toLowerCase().matches(pattern)){								
-									System.out.println(name);
-									downloader.download(name, link, cli);
-								}
+			int checkInterval = 60000 * 10;
+			legendasTv.getNewer(23, new SearchListener() {		
+				@Override
+				public boolean foundReturnIfShouldStopLooking(String name, String link) {
+					if(!alreadyChecked.contains(name)){
+						for (String pattern : readLines) {
+							if(name.toLowerCase().matches(pattern)){								
+								System.out.println(name);
+								downloader.download(name, link, cli);
 							}
-							alreadyChecked.add(name);
 						}
-						return false;
+						alreadyChecked.add(name);
 					}
-				});
+					return false;
+				}});
 				Thread.sleep(checkInterval);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();//ignore and go on
 			}
 		}
 	}

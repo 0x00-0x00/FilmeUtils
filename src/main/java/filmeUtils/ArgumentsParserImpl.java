@@ -148,7 +148,7 @@ public class ArgumentsParserImpl implements FilmeUtilsOptions{
 		return cmd.getOptionValue(CREDENTIALS_TOKEN).split("/")[1];
 	}
 	
-	public boolean usingGuiMome() {
+	public boolean usingGui() {
 		return cmd == null || !cmd.hasOption(SHOULD_USE_COMMAND_LINE_TOKEN);
 	}
 

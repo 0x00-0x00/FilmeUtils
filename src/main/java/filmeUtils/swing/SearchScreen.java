@@ -44,6 +44,7 @@ import filmeUtils.OutputListener;
 public class SearchScreen extends JFrame {
 	
 	private JTextField searchString;
+	@SuppressWarnings("rawtypes")
 	private final DefaultListModel defaultListModel;
 	private JPanel upperPanel;
 	private JPanel searchPanel;
@@ -54,6 +55,7 @@ public class SearchScreen extends JFrame {
 	private JPanel optionsPanel;
 	private JButton newSubtitlesFolder;
 	private GridBagConstraints gbc_btnNovasLegendas;
+	@SuppressWarnings("rawtypes")
 	private JComboBox resolution;
 	private GridBagConstraints gbc_resolution;
 	private JLabel subtitlesFolder;
@@ -63,6 +65,7 @@ public class SearchScreen extends JFrame {
 	private JButton subtitlesDest;
 	private GridBagConstraints gbc_subtitlesDest;
 	private JPanel searchResultsPanel;
+	@SuppressWarnings("rawtypes")
 	private JList result;
 	private JScrollPane resultJScrollPane;
 	private JScrollPane outputJScrollPane;
@@ -77,6 +80,7 @@ public class SearchScreen extends JFrame {
 	
 	final String defaultSearchString = "Digite sua procura aqui...";
 	
+	@SuppressWarnings("rawtypes")
 	public SearchScreen(final SearchScreenNeeds searchScreenNeeds) {
 		
 		this.searchScreenNeeds = searchScreenNeeds;
@@ -96,6 +100,7 @@ public class SearchScreen extends JFrame {
 			
 			private void addSubtitleToList(final String name) {
 				SwingUtilities.invokeLater(new Runnable() {
+					@SuppressWarnings("unchecked")
 					public void run() {
 						defaultListModel.addElement(name);
 					}
@@ -154,6 +159,7 @@ public class SearchScreen extends JFrame {
 	}
 	
 	private void downloadSubtitleAtPosition(final int index) {
+		@SuppressWarnings("rawtypes")
 		final ListModel dlm = result.getModel();
 		final Object item = dlm.getElementAt(index);
 		result.ensureIndexIsVisible(index);
@@ -181,6 +187,7 @@ public class SearchScreen extends JFrame {
 		setupOutputPanel();
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void setupOutputPanel() {
 		splitPane = new JSplitPane();
 		splitPane.setContinuousLayout(true);
@@ -282,6 +289,7 @@ public class SearchScreen extends JFrame {
 		searchPanel.add(searchButton, gbc_searchButton);
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void setupOptionsPanel() {
 		optionsPanel = new JPanel();
 		final GridBagLayout gbl_optionsPanel = new GridBagLayout();

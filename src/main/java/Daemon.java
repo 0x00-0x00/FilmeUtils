@@ -1,0 +1,130 @@
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.io.FileUtils;
+
+import filmeUtils.Downloader;
+import filmeUtils.FilmeUtilsConstants;
+import filmeUtils.FilmeUtilsOptions;
+import filmeUtils.SearchListener;
+import filmeUtils.SysOut;
+import filmeUtils.extraction.ExtractorImpl;
+import filmeUtils.fileSystem.FileSystem;
+import filmeUtils.fileSystem.FileSystemImpl;
+import filmeUtils.http.MagnetLinkHandler;
+import filmeUtils.http.OSMagnetLinkHandler;
+import filmeUtils.http.SimpleHttpClient;
+import filmeUtils.http.SimpleHttpClientImpl;
+import filmeUtils.subtitleSites.LegendasTv;
+import filmeUtils.torrentSites.TorrentSearcher;
+import filmeUtils.torrentSites.TorrentSearcherImpl;
+
+
+public class Daemon {
+
+	public static void main(String[] args) throws IOException {
+		new Daemon();
+	}
+	
+	public Daemon() throws IOException {
+		final FilmeUtilsOptions cli = new FilmeUtilsOptions() {
+			
+			@Override
+			public boolean shouldRefuseNonHD() {
+				return false;
+			}
+			
+			@Override
+			public boolean shouldRefuseHD() {
+				return false;
+			}
+			
+			@Override
+			public boolean isVerbose() {
+				return true;
+			}
+			
+			@Override
+			public boolean isLazy() {
+				return false;
+			}
+			
+			@Override
+			public boolean isGeedy() {
+				return false;
+			}
+			
+			@Override
+			public String getUser() {
+				return "filmeutils"; 
+			}
+			
+			@Override
+			public File getSubtitlesDestinationFolderOrNull() {
+				File filmeUtilsFolder = FilmeUtilsConstants.filmeUtilsFolder();
+				File file = new File(filmeUtilsFolder,"subtitlefolder");
+				try {
+					String readFileToString = FileUtils.readFileToString(file);
+					System.out.println(readFileToString);
+					return new File(readFileToString);
+				} catch (IOException e) {
+					return null;
+				}
+			}
+			
+			@Override
+			public String getPassword() {
+				return "filmeutilsfilme" ;
+			}
+		};
+		final SysOut output = new SysOut(cli);
+		LegendasTv legendasTv = new LegendasTv(cli, new SimpleHttpClientImpl(), output);
+		legendasTv.login();
+		
+		final File cookieFile = new File(FilmeUtilsConstants.filmeUtilsFolder(),"cookies.serialized");
+    	final SimpleHttpClient httpclient = new SimpleHttpClientImpl(cookieFile);
+    	final ExtractorImpl extract = new ExtractorImpl();
+    	
+    	final MagnetLinkHandler magnetLinkHandler = new OSMagnetLinkHandler();
+        final TorrentSearcher torrentSearcher = new TorrentSearcherImpl(httpclient);
+		final FileSystem fileSystem = new FileSystemImpl();
+    	
+		final Downloader downloader = new Downloader(extract, fileSystem, httpclient, torrentSearcher, magnetLinkHandler, legendasTv, output);
+		
+		File filmeUtilsFolder = FilmeUtilsConstants.filmeUtilsFolder();
+		File filesToDownload = new File(filmeUtilsFolder,"downloadThis");
+		final List<String> readLines = FileUtils.readLines(filesToDownload);
+		
+		final ArrayList<String> alreadyChecked = new ArrayList<String>();
+		while(true){
+			
+			System.out.println("foo");
+			
+			int checkInterval = 5000;
+			try {
+				legendasTv.getNewer(23, new SearchListener() {
+					
+					@Override
+					public boolean foundReturnIfShouldStopLooking(String name, String link) {
+						if(!alreadyChecked.contains(name)){
+							for (String pattern : readLines) {
+								if(name.toLowerCase().matches(pattern)){								
+									System.out.println(name);
+									downloader.download(name, link, cli);
+								}
+							}
+							alreadyChecked.add(name);
+						}
+						return false;
+					}
+				});
+				Thread.sleep(checkInterval);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+}

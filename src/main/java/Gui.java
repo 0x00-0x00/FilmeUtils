@@ -2,7 +2,7 @@ import java.io.File;
 import java.io.IOException;
 
 import filmeUtils.Downloader;
-import filmeUtils.FilmeUtilsConstants;
+import filmeUtils.FilmeUtilsFolder;
 import filmeUtils.VerboseSysOut;
 import filmeUtils.extraction.ExtractorImpl;
 import filmeUtils.fileSystem.FileSystem;
@@ -23,7 +23,7 @@ public class Gui {
 	public static void main(String[] args) throws IOException {
 		final ExtractorImpl extract = new ExtractorImpl();
 		final FileSystem fileSystem = new FileSystemImpl();
-		final File cookieFile = new File(FilmeUtilsConstants.filmeUtilsFolder(),"cookies.serialized");
+		final File cookieFile = new File(FilmeUtilsFolder.get(),"cookies.serialized");
     	final SimpleHttpClient httpclient = new SimpleHttpClientImpl(cookieFile);
     	final TorrentSearcher torrentSearcher = new TorrentSearcherImpl(httpclient);
     	final MagnetLinkHandler magnetLinkHandler = new OSMagnetLinkHandler();

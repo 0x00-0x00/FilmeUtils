@@ -76,7 +76,7 @@ public class Downloader {
 	}
 
 	private File writeErrorFileOrCry(Exception e) {
-		File errorFile = new File(FilmeUtilsConstants.filmeUtilsFolder(), Calendar.getInstance().getTimeInMillis()+".error");
+		File errorFile = new File(FilmeUtilsFolder.get(), Calendar.getInstance().getTimeInMillis()+".error");
 		try {
 			FileUtils.writeStringToFile(errorFile, e.getMessage()+"\n"+e.getStackTrace());
 		} catch (IOException e1) {
@@ -149,7 +149,12 @@ public class Downloader {
 		magnetLinkHandler.openURL(magnetLinkForFile);
 		getOutputListener().out("Magnet link '"+magnetLinkForFile+"' de "+subtitleName+" enviado ao client de torrent.");
 		try {
-			FileUtils.copyFileToDirectory(next, subtitlesDestinationFolder);
+			if(subtitlesDestinationFolder == null){
+				subtitlesDestinationFolder = FilmeUtilsFolder.getSubtitlesDestinationOrNull();
+			}
+			if(subtitlesDestinationFolder != null){				
+				FileUtils.copyFileToDirectory(next, subtitlesDestinationFolder);
+			}
 		} catch (final IOException e) {
 			throw new RuntimeException(e);
 		}

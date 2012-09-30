@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 
 import filmeUtils.Downloader;
-import filmeUtils.FilmeUtilsConstants;
+import filmeUtils.FilmeUtilsFolder;
 import filmeUtils.FilmeUtilsOptions;
 import filmeUtils.VerboseSysOut;
 import filmeUtils.extraction.ExtractorImpl;
@@ -64,7 +64,7 @@ public class Daemon {
 			
 			@Override
 			public File getSubtitlesDestinationFolderOrNull() {
-				File filmeUtilsFolder = FilmeUtilsConstants.filmeUtilsFolder();
+				File filmeUtilsFolder = FilmeUtilsFolder.get();
 				File file = new File(filmeUtilsFolder,"subtitlefolder");
 				try {
 					String readFileToString = FileUtils.readFileToString(file);
@@ -84,7 +84,7 @@ public class Daemon {
 		LegendasTv legendasTv = new LegendasTv(new SimpleHttpClientImpl(), output);
 		legendasTv.login();
 		
-		final File cookieFile = new File(FilmeUtilsConstants.filmeUtilsFolder(),"cookies.serialized");
+		final File cookieFile = new File(FilmeUtilsFolder.get(),"cookies.serialized");
     	final SimpleHttpClient httpclient = new SimpleHttpClientImpl(cookieFile);
     	final ExtractorImpl extract = new ExtractorImpl();
     	
@@ -94,7 +94,7 @@ public class Daemon {
     	
 		final Downloader downloader = new Downloader(extract, fileSystem, httpclient, torrentSearcher, magnetLinkHandler, legendasTv, output);
 		downloader.setOptions(cli);
-		File filmeUtilsFolder = FilmeUtilsConstants.filmeUtilsFolder();
+		File filmeUtilsFolder = FilmeUtilsFolder.get();
 		File filesToDownload = new File(filmeUtilsFolder,"downloadThis");
 		@SuppressWarnings("unchecked")
 		final List<String> readLines = FileUtils.readLines(filesToDownload);

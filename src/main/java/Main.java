@@ -9,7 +9,7 @@ import org.apache.commons.cli.Options;
 import filmeUtils.ArgumentsParserImpl;
 import filmeUtils.CommandLineClient;
 import filmeUtils.Downloader;
-import filmeUtils.FilmeUtilsConstants;
+import filmeUtils.FilmeUtilsFolder;
 import filmeUtils.OutputListener;
 import filmeUtils.VerboseSysOut;
 import filmeUtils.extraction.ExtractorImpl;
@@ -52,7 +52,7 @@ public class Main {
 	}
 
 	static void runFilmeUtils(final ArgumentsParserImpl cli) throws IOException {
-		final File cookieFile = new File(FilmeUtilsConstants.filmeUtilsFolder(),"cookies.serialized");
+		final File cookieFile = new File(FilmeUtilsFolder.get(),"cookies.serialized");
     	final SimpleHttpClient httpclient = new SimpleHttpClientImpl(cookieFile);
     	final ExtractorImpl extract = new ExtractorImpl();
     	final VerboseSysOut output = new VerboseSysOut();

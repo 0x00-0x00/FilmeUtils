@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.commons.io.FileUtils;
 
 import filmeUtils.Downloader;
-import filmeUtils.FilmeUtilsConstants;
+import filmeUtils.FilmeUtilsFolder;
 import filmeUtils.OutputListener;
 import filmeUtils.subtitleSites.LegendasTv;
 import filmeUtils.subtitleSites.NewSubtitleLinkFoundCallback;
@@ -29,15 +29,9 @@ public class SearchScreenNeeds {
 		this.legendasTv = legendasTv;
 		this.downloader = downloader;
 		downloader.setOptions(new MutableFilmeUtilsOptions());
-		final File filmeUtilsFolder = FilmeUtilsConstants.filmeUtilsFolder();
-		final File file = new File(filmeUtilsFolder,"subtitlefolder");
-		if(file.exists()){
-				try {
-					final String readFileToString = FileUtils.readFileToString(file);
-					setSubtitleFolder(new File(readFileToString));
-				} catch (final IOException e) {
-					setSubtitleFolder(new File(System.getProperty("user.home")));
-				}
+		final File file = FilmeUtilsFolder.getSubtitlesDestinationOrNull();
+		if(file != null){
+			setSubtitleFolder(file);
 		}else{			
 			setSubtitleFolder(new File(System.getProperty("user.home")));
 		}
@@ -65,7 +59,7 @@ public class SearchScreenNeeds {
 	}
 
 	public void setSubtitleFolder(final File folder) {
-		final File filmeUtilsFolder = FilmeUtilsConstants.filmeUtilsFolder();
+		final File filmeUtilsFolder = FilmeUtilsFolder.get();
 		final File file = new File(filmeUtilsFolder,"subtitlefolder");
 		try {
 			file.createNewFile();

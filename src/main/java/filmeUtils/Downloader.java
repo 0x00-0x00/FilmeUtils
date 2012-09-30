@@ -19,6 +19,8 @@ import filmeUtils.torrentSites.TorrentSearcher;
 
 public class Downloader {
 	
+	private static final String ZIP = "zip";
+	private static final String RAR = "rar";
 	private final Extractor extract;
 	private final SimpleHttpClient httpclient;
 	private final TorrentSearcher torrentSearcher;
@@ -91,13 +93,17 @@ public class Downloader {
 		
 		contentType = httpclient.getToFile(link, destFile);
 		
-		if(contentType.contains("text/html")){
+		if(isNotAFile(contentType)){
 			legendasTv.login(); 
 			destFile.delete();
 			contentType = httpclient.getToFile(link, destFile);
 		}
 		extract(destFile, folder, contentType);
 		destFile.delete();
+	}
+
+	private boolean isNotAFile(String contentType) {
+		return contentType.contains("text/html");
 	}
 
 	private boolean openTorrentsAndReturnSuccess(final File currentSubtitleFolder) {
@@ -116,11 +122,11 @@ public class Downloader {
 	}
 	
 	private void extract(final File compressedFile,final File destinationFolder, final String contentType)throws ZipException, IOException {
-		if(contentType.contains("rar")){
+		if(contentType.contains(RAR)){
 			extract.unrar(compressedFile, destinationFolder);
 			return;
 		}
-		if(contentType.contains("zip")){
+		if(contentType.contains(ZIP)){
 			extract.unzip(compressedFile, destinationFolder);
 			return;
 		}
@@ -136,7 +142,7 @@ public class Downloader {
 		}
 		try {
 			getOutputListener().outVerbose("Procurando melhor torrent para "+subtitleName);
-			magnetLinkForFile = torrentSearcher.getMagnetLinkForFileOrNull(subtitleName,getOutputListener());
+			magnetLinkForFile = torrentSearcher.getMagnetLinkForTermOrNull(subtitleName,getOutputListener());
 		} catch (SiteOfflineException e1) {
 			getOutputListener().out("Erro procurando torrent para "+next.getName()+" : "+e1.getMessage());
 			return false;

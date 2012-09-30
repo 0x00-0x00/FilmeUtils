@@ -4,6 +4,6 @@ import filmeUtils.OutputListener;
 
 public interface TorrentSearcher {
 
-	public abstract String getMagnetLinkForFileOrNull(final String exactFileName,OutputListener outputListener) throws SiteOfflineException;
+	public abstract String getMagnetLinkForTermOrNull(final String term,OutputListener outputListener) throws SiteOfflineException;
 
 }

@@ -17,7 +17,7 @@ public class TorrentSearcherImpl implements TorrentSearcher {
 		sites.add(new BitSnoop(httpclient));
 	}
 	
-	public String getMagnetLinkForFileOrNull(final String exactFileName,final OutputListener outputListener) throws SiteOfflineException{
+	public String getMagnetLinkForTermOrNull(final String exactFileName,final OutputListener outputListener) throws SiteOfflineException{
 		for (final TorrentSite site : sites) {
 			outputListener.outVerbose("Procurando magnet link em "+site.getSiteName());
 			final String magnetLinkFirstResultOrNull = site.getMagnetLinkFirstResultOrNull(exactFileName);

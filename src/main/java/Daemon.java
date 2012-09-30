@@ -95,11 +95,11 @@ public class Daemon {
 		
 		File filmeUtilsFolder = FilmeUtilsConstants.filmeUtilsFolder();
 		File filesToDownload = new File(filmeUtilsFolder,"downloadThis");
+		@SuppressWarnings("unchecked")
 		final List<String> readLines = FileUtils.readLines(filesToDownload);
 		
 		final ArrayList<String> alreadyChecked = new ArrayList<String>();
 		while(true){
-			
 			try {
 				int checkInterval = 60000 * 10;
 				legendasTv.getNewer(23, new SubtitleLinkCallback() {

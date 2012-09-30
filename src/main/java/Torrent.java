@@ -16,7 +16,8 @@ public class Torrent {
 			
 			@Override
 			public void printHelp(String applicationName, Options options) {
-				System.out.println("Nome do termo a ser procurado tem que ser informado");
+				System.out.println("Uso:\n" +
+						"java -cp filmeUtils.jar Torrent TermoParaProcurarMagnetLink");
 			}
 			
 			@Override

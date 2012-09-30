@@ -16,11 +16,11 @@ public class Subtitle {
 		final VerboseSysOut output = new VerboseSysOut();
 		if(args.length < 1 || args.length > 3){
 			output.out("Uso:\n" +
-					"procura legenda\n" +
+					"java -cp filmeUtils.jar Subtitle procura legenda\n" +
 					"ou\n" +
-					"download legenda diretorioDestino\n" +
+					"java -cp filmeUtils.jar Subtitle download legenda diretorioDestino\n" +
 					"ou\n" +
-					"novas");
+					"java -cp filmeUtils.jar Subtitle novas");
 			System.exit(1);
 		}
 			

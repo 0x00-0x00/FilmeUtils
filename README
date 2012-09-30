@@ -8,6 +8,8 @@ Do que você precisa:
 
 Como usar  
 Para abrir a GUI
+java -jar filmeUtils.jar
+ou
 java -cp filmeUtils.jar Gui
 
 Para usar a linha de comando

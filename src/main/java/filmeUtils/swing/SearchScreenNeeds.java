@@ -23,12 +23,12 @@ public class SearchScreenNeeds {
 	private File subtitleFolder;
 	private final LegendasTv legendasTv;
 	private final Downloader downloader;
-	private final MutableFilmeUtilsOptions filmeUtilsOptions;
+	private final MutableFilmeUtilsOptions filmeUtilsOptions = new MutableFilmeUtilsOptions();
 
 	public SearchScreenNeeds(final LegendasTv legendasTv, final Downloader downloader) {
 		this.legendasTv = legendasTv;
 		this.downloader = downloader;
-		filmeUtilsOptions = new MutableFilmeUtilsOptions();
+		downloader.setOptions(new MutableFilmeUtilsOptions());
 		final File filmeUtilsFolder = FilmeUtilsConstants.filmeUtilsFolder();
 		final File file = new File(filmeUtilsFolder,"subtitlefolder");
 		if(file.exists()){
@@ -52,7 +52,7 @@ public class SearchScreenNeeds {
 					public boolean processAndReturnIfMatches(final SubtitleAndLink subAndLink) {
 						String name = subAndLink.name;
 						String link = subAndLink.link;
-						final boolean success = downloader.download(name, link, filmeUtilsOptions);
+						final boolean success = downloader.download(name, link);
 						if(success){
 							torrentWasFound.set(true);
 						}

@@ -93,7 +93,7 @@ public class Daemon {
 		final FileSystem fileSystem = new FileSystemImpl();
     	
 		final Downloader downloader = new Downloader(extract, fileSystem, httpclient, torrentSearcher, magnetLinkHandler, legendasTv, output);
-		
+		downloader.setOptions(cli);
 		File filmeUtilsFolder = FilmeUtilsConstants.filmeUtilsFolder();
 		File filesToDownload = new File(filmeUtilsFolder,"downloadThis");
 		@SuppressWarnings("unchecked")
@@ -112,7 +112,7 @@ public class Daemon {
 							for (String pattern : readLines) {
 								if (name.toLowerCase().matches(pattern)) {
 									System.out.println(name);
-									downloader.download(name, link, cli);
+									downloader.download(name, link);
 								}
 							}
 							alreadyChecked.add(name);

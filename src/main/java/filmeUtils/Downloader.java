@@ -26,7 +26,10 @@ public class Downloader {
 	private final MagnetLinkHandler magnetLinkHandler;
 	private final FileSystem fileSystem;
 	private OutputListener outputListener;
-	private FilmeUtilsOptions options;
+	private boolean isLazy = false;
+	private boolean shouldRefuseHD = false;
+	private File subtitlesDestinationFolder;
+	private boolean shouldRefuseNonHD = false;
 	
 	public Downloader(final Extractor extract,final FileSystem fileSystem,final SimpleHttpClient httpclient,final TorrentSearcher torrentSearcher,final MagnetLinkHandler magnetLinkHandler,final LegendasTv legendasTv, final OutputListener outputListener) {
 		this.fileSystem = fileSystem;
@@ -38,9 +41,15 @@ public class Downloader {
 		this.setOutputListener(outputListener);
 	}
 
-	public boolean download(final String name,final String link, final FilmeUtilsOptions options){
-		this.options = options;
+	public boolean download(final String name,final String link){
 		return unzipSearchMagnetsAndReturnSuccess(name,link);
+	}
+	
+	public void setOptions(final FilmeUtilsOptions options) {
+		isLazy = options.isLazy();
+		shouldRefuseHD = options.shouldRefuseHD();
+		subtitlesDestinationFolder = options.getSubtitlesDestinationFolderOrNull();
+		shouldRefuseNonHD = options.shouldRefuseNonHD();
 	}
 	
 	private boolean unzipSearchMagnetsAndReturnSuccess(final String name,final String link){
@@ -98,7 +107,7 @@ public class Downloader {
 		while(iterateFiles.hasNext()){
 			final File next = iterateFiles.next();
 			final boolean success = downloadTorrentAndCopySubtitle(next);
-			if(options.isLazy() && success){
+			if(isLazy && success){
 				return true;
 			}
 			successfull = successfull || success;
@@ -140,7 +149,7 @@ public class Downloader {
 		magnetLinkHandler.openURL(magnetLinkForFile);
 		getOutputListener().out("Magnet link '"+magnetLinkForFile+"' de "+subtitleName+" enviado ao client de torrent.");
 		try {
-			FileUtils.copyFileToDirectory(next, options.getSubtitlesDestinationFolderOrNull());
+			FileUtils.copyFileToDirectory(next, subtitlesDestinationFolder);
 		} catch (final IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -150,12 +159,12 @@ public class Downloader {
 	private boolean shouldRefuseSubtitleFile(final String subtitleName) {
 		boolean shouldRefuse = false;
 		final boolean isHiDef = subtitleName.contains("720") || subtitleName.contains("1080");
-		if(options.shouldRefuseHD()){
+		if(shouldRefuseHD ){
 			if(isHiDef){
 				shouldRefuse = true;
 			}
 		}
-		if(options.shouldRefuseNonHD()){
+		if(shouldRefuseNonHD ){
 			if(!isHiDef){
 				shouldRefuse = true;
 			}

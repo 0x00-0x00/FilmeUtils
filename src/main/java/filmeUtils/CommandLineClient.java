@@ -5,6 +5,9 @@ import java.io.IOException;
 import filmeUtils.extraction.Extractor;
 import filmeUtils.http.SimpleHttpClient;
 import filmeUtils.subtitleSites.LegendasTv;
+import filmeUtils.subtitleSites.NewSubtitleLinkFoundCallback;
+import filmeUtils.subtitleSites.SubtitleAndLink;
+import filmeUtils.subtitleSites.SubtitleLinkSearchCallback;
 
 public class CommandLineClient {
 	
@@ -27,7 +30,7 @@ public class CommandLineClient {
 	}
 
 	public void execute() throws IOException {
-		final SubtitleLinkCallback searchListener = new SearchListenerImplementation(downloader,cli,output);
+		final SubtitleLinkSearchCallback searchListener = new SearchListenerImplementation(downloader,cli,output);
         
 		final boolean search = cli.search();
 		if(search){
@@ -39,7 +42,13 @@ public class CommandLineClient {
         if(cli.showNewAdditions()){
         	output.outVerbose("Novas legendas:");
         	final int newAdditionsPageCountToShow = cli.newAdditionsPageCountToShow();
-        	legendasTv.getNewer(newAdditionsPageCountToShow,searchListener);
+        	legendasTv.getNewer(newAdditionsPageCountToShow,new NewSubtitleLinkFoundCallback() {
+				
+				@Override
+				public void processAndReturnIfMatches(SubtitleAndLink nameAndlink) {
+					output.out(nameAndlink.name);
+				}
+			});
         	
         }
         httpclient.close();

@@ -8,7 +8,6 @@ import org.apache.commons.io.FileUtils;
 import filmeUtils.Downloader;
 import filmeUtils.FilmeUtilsConstants;
 import filmeUtils.FilmeUtilsOptions;
-import filmeUtils.SubtitleLinkCallback;
 import filmeUtils.VerboseSysOut;
 import filmeUtils.extraction.ExtractorImpl;
 import filmeUtils.fileSystem.FileSystem;
@@ -18,6 +17,8 @@ import filmeUtils.http.OSMagnetLinkHandler;
 import filmeUtils.http.SimpleHttpClient;
 import filmeUtils.http.SimpleHttpClientImpl;
 import filmeUtils.subtitleSites.LegendasTv;
+import filmeUtils.subtitleSites.NewSubtitleLinkFoundCallback;
+import filmeUtils.subtitleSites.SubtitleAndLink;
 import filmeUtils.torrentSites.TorrentSearcher;
 import filmeUtils.torrentSites.TorrentSearcherImpl;
 
@@ -102,9 +103,11 @@ public class Daemon {
 		while(true){
 			try {
 				int checkInterval = 60000 * 10;
-				legendasTv.getNewer(23, new SubtitleLinkCallback() {
+				legendasTv.getNewer(23, new NewSubtitleLinkFoundCallback() {
 					@Override
-					public boolean processAndReturnIfMatches(String name, String link) {
+					public void processAndReturnIfMatches(SubtitleAndLink subAndLink) {
+						String name = subAndLink.name;
+						String link = subAndLink.link;
 						if (!alreadyChecked.contains(name)) {
 							for (String pattern : readLines) {
 								if (name.toLowerCase().matches(pattern)) {
@@ -114,7 +117,6 @@ public class Daemon {
 							}
 							alreadyChecked.add(name);
 						}
-						return false;
 					}
 				});
 				Thread.sleep(checkInterval);

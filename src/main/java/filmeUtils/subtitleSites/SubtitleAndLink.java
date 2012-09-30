@@ -1,6 +1,6 @@
 package filmeUtils.subtitleSites;
 
-class SubtitleAndLink{
+public class SubtitleAndLink{
 	public String name;
 	public String link;
 	public SubtitleAndLink(String name, String link) {

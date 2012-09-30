@@ -1,8 +1,11 @@
 package filmeUtils;
 
+import filmeUtils.subtitleSites.SubtitleAndLink;
+import filmeUtils.subtitleSites.SubtitleLinkSearchCallback;
 
 
-final class SearchListenerImplementation implements SubtitleLinkCallback {
+
+final class SearchListenerImplementation implements SubtitleLinkSearchCallback {
 	
 	private final OutputListener outputListener;
 	private final FilmeUtilsOptions cli;
@@ -16,7 +19,9 @@ final class SearchListenerImplementation implements SubtitleLinkCallback {
 		this.extractContents = cli.getSubtitlesDestinationFolderOrNull()!= null;
 	}
 
-	public boolean processAndReturnIfMatches(final String name, final String link) {
+	public boolean processAndReturnIfMatches(final SubtitleAndLink subAndLink) {
+		String name = subAndLink.name;
+		String link = subAndLink.link;
 		if(shouldExtractSubtitles()){
 			return downloader.download(name, link, cli);
 		}else{			

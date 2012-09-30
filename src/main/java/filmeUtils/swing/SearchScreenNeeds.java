@@ -9,8 +9,10 @@ import org.apache.commons.io.FileUtils;
 import filmeUtils.Downloader;
 import filmeUtils.FilmeUtilsConstants;
 import filmeUtils.OutputListener;
-import filmeUtils.SubtitleLinkCallback;
 import filmeUtils.subtitleSites.LegendasTv;
+import filmeUtils.subtitleSites.NewSubtitleLinkFoundCallback;
+import filmeUtils.subtitleSites.SubtitleAndLink;
+import filmeUtils.subtitleSites.SubtitleLinkSearchCallback;
 
 
 public class SearchScreenNeeds {
@@ -46,8 +48,10 @@ public class SearchScreenNeeds {
 			@Override
 			public void run() {
 				final AtomicBoolean torrentWasFound = new AtomicBoolean(false);
-				legendasTv.search(item, new SubtitleLinkCallback() {
-					public boolean processAndReturnIfMatches(final String name, final String link) {
+				legendasTv.search(item, new SubtitleLinkSearchCallback() {
+					public boolean processAndReturnIfMatches(final SubtitleAndLink subAndLink) {
+						String name = subAndLink.name;
+						String link = subAndLink.link;
 						final boolean success = downloader.download(name, link, filmeUtilsOptions);
 						if(success){
 							torrentWasFound.set(true);
@@ -82,12 +86,11 @@ public class SearchScreenNeeds {
 		new Thread(){
 			@Override
 			public void run() {				
-				legendasTv.getNewer(50, new SubtitleLinkCallback(){
-					public boolean processAndReturnIfMatches(final String name,final String link) {
+				legendasTv.getNewer(50, new NewSubtitleLinkFoundCallback(){
+					public void processAndReturnIfMatches(final SubtitleAndLink subAndLink) {
+						String name = subAndLink.name;
 						callback.found(name);
-						return false;
 					}
-					
 				});
 				callback.done();
 			};
@@ -99,8 +102,9 @@ public class SearchScreenNeeds {
 		new Thread(){
 			@Override
 			public void run() {				
-				legendasTv.search(text, new SubtitleLinkCallback(){
-					public boolean processAndReturnIfMatches(final String name,final String link) {
+				legendasTv.search(text, new SubtitleLinkSearchCallback(){
+					public boolean processAndReturnIfMatches(final SubtitleAndLink subAndLink) {
+						String name = subAndLink.name;
 						callback.found(name);
 						return false;
 					}

@@ -13,7 +13,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import filmeUtils.OutputListener;
-import filmeUtils.SubtitleLinkCallback;
 import filmeUtils.http.SimpleHttpClient;
 
 public class LegendasTv {
@@ -55,7 +54,7 @@ public class LegendasTv {
 		}
 	}
 
-	public void search(final String searchTerm, final SubtitleLinkCallback searchListener){
+	public void search(final String searchTerm, final SubtitleLinkSearchCallback searchListener){
 		try {
 			searchRecursively(1, searchListener, searchTerm);
 		} catch (final Exception e) {
@@ -63,16 +62,16 @@ public class LegendasTv {
 		}
 	}
 
-	public void getNewer(final int newAddsToShow, final SubtitleLinkCallback searchListener){
+	public void getNewer(final int newAddsToShow, final NewSubtitleLinkFoundCallback searchListener){
 		final int startingIndex = 0;
-		searchNewAdds(startingIndex, newAddsToShow, searchListener);
+		searchNewAddsRecursivelly(startingIndex, newAddsToShow, searchListener);
 	}
 
 	public void stopOnFirstMatch(boolean stopOnFirstMatch) {
 		this.stopOnFirstMatch = stopOnFirstMatch;
 	}
 	
-	private void searchRecursively(final int page, final SubtitleLinkCallback searchCallback, final String searchTerm) throws IOException{
+	private void searchRecursively(final int page, final SubtitleLinkSearchCallback searchCallback, final String searchTerm) throws IOException{
 		
 		String content = search(searchTerm, page);
 		
@@ -93,7 +92,7 @@ public class LegendasTv {
 		ArrayList<SubtitleAndLink> subtitleLinks = getSubtitleLinks(content);
 		
 		for (SubtitleAndLink link : subtitleLinks) {
-			final boolean matches = searchCallback.processAndReturnIfMatches(link.name, link.link);
+			final boolean matches = searchCallback.processAndReturnIfMatches(link);
 			if(stopOnFirstMatch() && matches){
 				return;
 			}
@@ -115,7 +114,7 @@ public class LegendasTv {
 		return links;
 	}
 
-	private void searchNextPage(final int page, final SubtitleLinkCallback searchListener, final String searchTerm, String content) throws IOException {
+	private void searchNextPage(final int page, final SubtitleLinkSearchCallback searchListener, final String searchTerm, String content) throws IOException {
 		final int nextPage = page+1;
 		
 		final boolean pageLinkExists = pageLinkExists(content, nextPage);
@@ -181,7 +180,7 @@ public class LegendasTv {
 	}
 
 
-	private void searchNewAdds(final int startingIndex, final int howMuchNewAddsToShow, final SubtitleLinkCallback searchListener) {
+	private void searchNewAddsRecursivelly(final int startingIndex, final int howMuchNewAddsToShow, final NewSubtitleLinkFoundCallback searchListener) {
 		final String content = getNewAddsStartingOnIndex(startingIndex);
 		int currentIndex = startingIndex;
 		final Document parsed = Jsoup.parse(content);
@@ -195,10 +194,11 @@ public class LegendasTv {
 			final String thirdQuotedWordRegex = "[^']*'[^']*','[^']*','([^']*)'.*";
 			subtitleName = subtitleName.replaceAll(thirdQuotedWordRegex, "$1");
 			final String downloadLink = getDownloadFromOnClick(subtitleDiv);
-			searchListener.processAndReturnIfMatches(subtitleName, downloadLink);
+			SubtitleAndLink nameAndlink = new SubtitleAndLink(subtitleName, downloadLink);
+			searchListener.processAndReturnIfMatches(nameAndlink);
 		}
 		if(currentIndex<howMuchNewAddsToShow){
-			searchNewAdds(currentIndex, howMuchNewAddsToShow, searchListener);
+			searchNewAddsRecursivelly(currentIndex, howMuchNewAddsToShow, searchListener);
 		}
 	}
 

@@ -20,8 +20,6 @@ import filmeUtils.http.OSMagnetLinkHandler;
 import filmeUtils.http.SimpleHttpClient;
 import filmeUtils.http.SimpleHttpClientImpl;
 import filmeUtils.subtitleSites.LegendasTv;
-import filmeUtils.swing.SearchScreen;
-import filmeUtils.swing.SearchScreenNeeds;
 import filmeUtils.torrentSites.TorrentSearcher;
 import filmeUtils.torrentSites.TorrentSearcherImpl;
 
@@ -29,11 +27,8 @@ import filmeUtils.torrentSites.TorrentSearcherImpl;
 public class Main {
 
 	public static void main(final String[] args) throws IOException{		
-
 		final ArgumentsParserImpl cli = parseArgs(args);
-    	boolean usingGui = cli.usingGui();
-    	runFilmeUtils(cli, usingGui);
-    	
+    	runFilmeUtils(cli);
     }
 
 	static ArgumentsParserImpl parseArgs(final String[] args) {
@@ -56,7 +51,7 @@ public class Main {
 		return cli;
 	}
 
-	static void runFilmeUtils(final ArgumentsParserImpl cli,boolean usingGui) throws IOException {
+	static void runFilmeUtils(final ArgumentsParserImpl cli) throws IOException {
 		final File cookieFile = new File(FilmeUtilsConstants.filmeUtilsFolder(),"cookies.serialized");
     	final SimpleHttpClient httpclient = new SimpleHttpClientImpl(cookieFile);
     	final ExtractorImpl extract = new ExtractorImpl();
@@ -68,14 +63,8 @@ public class Main {
         final TorrentSearcher torrentSearcher = new TorrentSearcherImpl(httpclient);
 		final FileSystem fileSystem = new FileSystemImpl();
     	
-		if(usingGui){
-    		final Downloader downloader = new Downloader(extract, fileSystem, httpclient, torrentSearcher, magnetLinkHandler, legendasTv, output);
-    		final SearchScreenNeeds searchScreenNeeds = new SearchScreenNeeds(legendasTv, downloader);
-    		new SearchScreen(searchScreenNeeds);
-    	}else{
-    		final Downloader downloader = new Downloader(extract, fileSystem, httpclient, torrentSearcher, magnetLinkHandler, legendasTv, output);
-			final CommandLineClient commandLineClient = new CommandLineClient(downloader,httpclient,legendasTv,extract,cli, output);
-    		commandLineClient.execute();        
-    	}
+    	final Downloader downloader = new Downloader(extract, fileSystem, httpclient, torrentSearcher, magnetLinkHandler, legendasTv, output);
+		final CommandLineClient commandLineClient = new CommandLineClient(downloader,httpclient,legendasTv,extract,cli, output);
+    	commandLineClient.execute();        
 	}
 }

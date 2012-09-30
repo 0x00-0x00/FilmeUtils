@@ -17,7 +17,6 @@ public class ArgumentsParserImpl implements FilmeUtilsOptions{
 	private static final String CREDENTIALS_TOKEN =                   "c";
 	private static final String SHOULD_EXTRACT_TOKEN =                "e";
 	private static final String HELP_TOKEN =                          "h";
-	private static final String SHOULD_USE_COMMAND_LINE_TOKEN =       "l";
 	private static final String NEW_ADDITIONS_TOKEN =                 "n";
 	private static final String SEARCH_TOKEN =                        "p";
 	private static final String GREED_TOKEN =                         "t";
@@ -41,7 +40,6 @@ public class ArgumentsParserImpl implements FilmeUtilsOptions{
     	newAdditionOption.setOptionalArg(true);
     	
     	options.addOption(newAdditionOption);
-    	options.addOption(SHOULD_USE_COMMAND_LINE_TOKEN,"linhadecomando", false, "Usa linha de comando");
     	options.addOption(SHOULD_EXTRACT_TOKEN,"extrair", true, 
     			"Extrai e os arquivos de legendas para o diretório informado");
     	options.addOption(HIGH_DEF_TOKEN,"alta-definicao", true, 
@@ -146,10 +144,6 @@ public class ArgumentsParserImpl implements FilmeUtilsOptions{
 			return PASSWORD;
 		}
 		return cmd.getOptionValue(CREDENTIALS_TOKEN).split("/")[1];
-	}
-	
-	public boolean usingGui() {
-		return cmd == null || !cmd.hasOption(SHOULD_USE_COMMAND_LINE_TOKEN);
 	}
 
 	public boolean forceLogin() {

@@ -21,6 +21,36 @@ import filmeUtils.torrentSites.TorrentSearcherImpl;
 public class Gui {
 
 	public static void main(String[] args) throws IOException {
+		System.out.println("FilmeUtils é uma ferramenta para pegar filmes e séries com legendas tendo o mínimo de trabalho possível.\n" + 
+				"Como usar  \n" + 
+				"Para abrir a GUI\n" + 
+				"java -cp filmeUtils.jar Gui\n" +
+				"ou\n" +
+				"java -jar filmeUtils.jar" + 
+				"\n" + 
+				"Para usar a linha de comando\n" + 
+				"java -cp filmeUtils.jar Command\n" + 
+				"\n" + 
+				"Para so procurar a legenda\n" + 
+				"java -cp filmeUtils.jar Subtitle\n" + 
+				"\n" + 
+				"Para so procurar um link de torrent\n" + 
+				"java -cp filmeUtils.jar Torrent\n" + 
+				"\n" + 
+				"Para executar como Deamon \n" + 
+				"java -cp filmeUtils.jar Daemon\n" + 
+				"\n" + 
+				"\n" + 
+				"Sites onde a procura é feita:\n" + 
+				"\n" + 
+				"Legendas:  \n" + 
+				"legendas.tv  \n" + 
+				"\n" + 
+				"Torrents:  \n" + 
+				"piratebaySe\n" + 
+				"rarbg  \n" + 
+				"bitsnoop");
+		
 		final ExtractorImpl extract = new ExtractorImpl();
 		final FileSystem fileSystem = new FileSystemImpl();
 		final File cookieFile = new File(FilmeUtilsFolder.get(),"cookies.serialized");

@@ -80,7 +80,7 @@ public class Daemon {
 			}
 		};
 		final VerboseSysOut output = new VerboseSysOut();
-		LegendasTv legendasTv = new LegendasTv(cli, new SimpleHttpClientImpl(), output);
+		LegendasTv legendasTv = new LegendasTv(new SimpleHttpClientImpl(), output);
 		legendasTv.login();
 		
 		final File cookieFile = new File(FilmeUtilsConstants.filmeUtilsFolder(),"cookies.serialized");

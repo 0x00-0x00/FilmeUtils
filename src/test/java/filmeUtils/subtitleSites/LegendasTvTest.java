@@ -24,9 +24,8 @@ public class LegendasTvTest {
 	public void simpleSearchWithOneResultTest(){
 		final String response = "LegendasTvOneResult.html";
 		mock.setResponseForUrl("http://legendas.tv/index.php?opcao=buscarlegenda&pagina=1", response);
-		final ArgumentsParserMock cli = new ArgumentsParserMock();
-		cli.isLazy = true;
-		final LegendasTv subject = new LegendasTv(cli,mock, dummyOutputListener);
+		final LegendasTv subject = new LegendasTv(mock, dummyOutputListener);
+		subject.stopOnFirstMatch(true);
 		final AtomicBoolean wasCalled = new AtomicBoolean(false);
 		subject.search("foo", new SubtitleLinkCallback() {
 			public boolean processAndReturnIfMatches(final String name, final String link) {
@@ -43,9 +42,7 @@ public class LegendasTvTest {
 	public void simpleSearchWithMoreThanOneResultOnePageGreedyTest(){
 		final String response = "LegendasTvLotsOfResultsOnePage.html";
 		mock.setResponseForUrl("http://legendas.tv/index.php?opcao=buscarlegenda&pagina=1", response);
-		final ArgumentsParserMock cli = new ArgumentsParserMock();
-		cli.isLazy = false;
-		final LegendasTv subject = new LegendasTv(cli,mock, dummyOutputListener);
+		final LegendasTv subject = new LegendasTv(mock, dummyOutputListener);
 		final Map<String, String> expectedResults = new LinkedHashMap<String, String>();
 		expectedResults.put("Community.S01.Complete.HDTV (PACK DE LEGENDAS)", "http://legendas.tv/info.php?c=1&d=ae752094b5a1fc977e933fb619527d1a");
 		expectedResults.put("Community.S01.720p.WEB-DL.DD5.1.H.264-myTV/HoodBag (PACK DE LEGENDAS)","http://legendas.tv/info.php?c=1&d=a7faf31ace51a2110b69b822ff84b434");
@@ -65,9 +62,8 @@ public class LegendasTvTest {
 	public void simpleSearchWithMoreThanOneResultOnePageLazyTest(){
 		final String response = "LegendasTvLotsOfResultsOnePage.html";
 		mock.setResponseForUrl("http://legendas.tv/index.php?opcao=buscarlegenda&pagina=1", response);
-		final ArgumentsParserMock cli = new ArgumentsParserMock();
-		cli.isLazy = true;
-		final LegendasTv subject = new LegendasTv(cli,mock, dummyOutputListener);
+		final LegendasTv subject = new LegendasTv(mock, dummyOutputListener);
+		subject.stopOnFirstMatch(true);
 		final AtomicBoolean wasCalled = new AtomicBoolean(false);
 		subject.search("foo", new SubtitleLinkCallback() {
 			public boolean processAndReturnIfMatches(final String name, final String link) {
@@ -84,9 +80,8 @@ public class LegendasTvTest {
 	public void simpleSearchWithMoreThanOneResultOnePageLazyIgnoreFirstTest(){
 		final String response = "LegendasTvLotsOfResultsOnePage.html";
 		mock.setResponseForUrl("http://legendas.tv/index.php?opcao=buscarlegenda&pagina=1", response);
-		final ArgumentsParserMock cli = new ArgumentsParserMock();
-		cli.isLazy = true;
-		final LegendasTv subject = new LegendasTv(cli,mock, dummyOutputListener);
+		final LegendasTv subject = new LegendasTv(mock, dummyOutputListener);
+		subject.stopOnFirstMatch(true);
 		final AtomicBoolean wasCalled = new AtomicBoolean(false);
 		subject.search("foo", new SubtitleLinkCallback() {
 			public boolean processAndReturnIfMatches(final String name, final String link) {
@@ -106,9 +101,7 @@ public class LegendasTvTest {
 	public void simpleSearchWithMoreThanOneResultTwoPagesGreedyTest(){
 		mock.setResponseForUrl("http://legendas.tv/index.php?opcao=buscarlegenda&pagina=1", "LegendasTvLotsOfResultsTwoPages.html");
 		mock.setResponseForUrl("http://legendas.tv/index.php?opcao=buscarlegenda&pagina=2", "LegendasTvOneResult.html");
-		final ArgumentsParserMock cli = new ArgumentsParserMock();
-		cli.isLazy = false;
-		final LegendasTv subject = new LegendasTv(cli,mock, dummyOutputListener);
+		final LegendasTv subject = new LegendasTv(mock, dummyOutputListener);
 		final Map<String, String> expectedResults = new LinkedHashMap<String, String>();
 		expectedResults.put("Community.S01.Complete.HDTV (PACK DE LEGENDAS)", "http://legendas.tv/info.php?c=1&d=ae752094b5a1fc977e933fb619527d1a");
 		expectedResults.put("Community.S01.720p.WEB-DL.DD5.1.H.264-myTV/HoodBag (PACK DE LEGENDAS)","http://legendas.tv/info.php?c=1&d=a7faf31ace51a2110b69b822ff84b434");

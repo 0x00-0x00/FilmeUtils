@@ -61,7 +61,8 @@ public class Main {
     	final SimpleHttpClient httpclient = new SimpleHttpClientImpl(cookieFile);
     	final ExtractorImpl extract = new ExtractorImpl();
     	final VerboseSysOut output = new VerboseSysOut();
-    	final LegendasTv legendasTv = new LegendasTv(cli,httpclient, output);
+    	final LegendasTv legendasTv = new LegendasTv(httpclient, output);
+    	legendasTv.stopOnFirstMatch(cli.isLazy());
     	
     	final MagnetLinkHandler magnetLinkHandler = new OSMagnetLinkHandler();
         final TorrentSearcher torrentSearcher = new TorrentSearcherImpl(httpclient);

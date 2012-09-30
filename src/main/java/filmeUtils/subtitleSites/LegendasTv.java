@@ -12,7 +12,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import filmeUtils.FilmeUtilsOptions;
 import filmeUtils.OutputListener;
 import filmeUtils.SubtitleLinkCallback;
 import filmeUtils.http.SimpleHttpClient;
@@ -29,8 +28,9 @@ public class LegendasTv {
 	
 	private final SimpleHttpClient httpclient;
 	private final OutputListener outputListener;
+	private boolean stopOnFirstMatch = false;
 	
-	public LegendasTv(final FilmeUtilsOptions cli, final SimpleHttpClient httpclient, final OutputListener outputListener) {
+	public LegendasTv(final SimpleHttpClient httpclient, final OutputListener outputListener) {
 		this.httpclient = httpclient;
 		this.outputListener = outputListener;
 	}
@@ -68,13 +68,8 @@ public class LegendasTv {
 		searchNewAdds(startingIndex, newAddsToShow, searchListener);
 	}
 
-	class SubtitleAndLink{
-		public String name;
-		public String link;
-		public SubtitleAndLink(String name, String link) {
-			this.name = name;
-			this.link = link;
-		}
+	public void stopOnFirstMatch(boolean stopOnFirstMatch) {
+		this.stopOnFirstMatch = stopOnFirstMatch;
 	}
 	
 	private void searchRecursively(final int page, final SubtitleLinkCallback searchCallback, final String searchTerm) throws IOException{
@@ -142,7 +137,7 @@ public class LegendasTv {
 	}
 
 	private boolean stopOnFirstMatch() {
-		return false;
+		return stopOnFirstMatch;
 	}
 
 	private String search(final String searchTerm, final int page)
@@ -215,6 +210,5 @@ public class LegendasTv {
 		} catch (final Exception e) {
 			throw new RuntimeException("Ocorreu um erro ao pegar novas legendas: ",e);
 		}
-	}
-	
+	}	
 }

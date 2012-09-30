@@ -28,7 +28,7 @@ public class Downloader {
 	private OutputListener outputListener;
 	private boolean isLazy = false;
 	private boolean shouldRefuseHD = false;
-	private File subtitlesDestinationFolder;
+	private File subtitlesDestinationFolder = FilmeUtilsFolder.getSubtitlesDestinationOrNull();
 	private boolean shouldRefuseNonHD = false;
 	
 	public Downloader(final Extractor extract,final FileSystem fileSystem,final SimpleHttpClient httpclient,final TorrentSearcher torrentSearcher,final MagnetLinkHandler magnetLinkHandler,final LegendasTv legendasTv, final OutputListener outputListener) {
@@ -149,9 +149,6 @@ public class Downloader {
 		magnetLinkHandler.openURL(magnetLinkForFile);
 		getOutputListener().out("Magnet link '"+magnetLinkForFile+"' de "+subtitleName+" enviado ao client de torrent.");
 		try {
-			if(subtitlesDestinationFolder == null){
-				subtitlesDestinationFolder = FilmeUtilsFolder.getSubtitlesDestinationOrNull();
-			}
 			if(subtitlesDestinationFolder != null){				
 				FileUtils.copyFileToDirectory(next, subtitlesDestinationFolder);
 			}

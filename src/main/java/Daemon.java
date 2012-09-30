@@ -7,7 +7,6 @@ import org.apache.commons.io.FileUtils;
 
 import filmeUtils.Downloader;
 import filmeUtils.FilmeUtilsFolder;
-import filmeUtils.FilmeUtilsOptions;
 import filmeUtils.VerboseSysOut;
 import filmeUtils.extraction.ExtractorImpl;
 import filmeUtils.fileSystem.FileSystem;
@@ -30,56 +29,7 @@ public class Daemon {
 	}
 	
 	public Daemon() throws IOException {
-		final FilmeUtilsOptions cli = new FilmeUtilsOptions() {
-			
-			@Override
-			public boolean shouldRefuseNonHD() {
-				return false;
-			}
-			
-			@Override
-			public boolean shouldRefuseHD() {
-				return false;
-			}
-			
-			@Override
-			public boolean isVerbose() {
-				return true;
-			}
-			
-			@Override
-			public boolean isLazy() {
-				return false;
-			}
-			
-			@Override
-			public boolean isGeedy() {
-				return false;
-			}
-			
-			@Override
-			public String getUser() {
-				return "filmeutils"; 
-			}
-			
-			@Override
-			public File getSubtitlesDestinationFolderOrNull() {
-				File filmeUtilsFolder = FilmeUtilsFolder.get();
-				File file = new File(filmeUtilsFolder,"subtitlefolder");
-				try {
-					String readFileToString = FileUtils.readFileToString(file);
-					System.out.println(readFileToString);
-					return new File(readFileToString);
-				} catch (IOException e) {
-					return null;
-				}
-			}
-			
-			@Override
-			public String getPassword() {
-				return "filmeutilsfilme" ;
-			}
-		};
+		
 		final VerboseSysOut output = new VerboseSysOut();
 		LegendasTv legendasTv = new LegendasTv(new SimpleHttpClientImpl(), output);
 		legendasTv.login();
@@ -93,7 +43,6 @@ public class Daemon {
 		final FileSystem fileSystem = new FileSystemImpl();
     	
 		final Downloader downloader = new Downloader(extract, fileSystem, httpclient, torrentSearcher, magnetLinkHandler, legendasTv, output);
-		downloader.setOptions(cli);
 		File filmeUtilsFolder = FilmeUtilsFolder.get();
 		File filesToDownload = new File(filmeUtilsFolder,"downloadThis");
 		@SuppressWarnings("unchecked")
@@ -111,7 +60,7 @@ public class Daemon {
 						if (!alreadyChecked.contains(name)) {
 							for (String pattern : readLines) {
 								if (name.toLowerCase().matches(pattern)) {
-									System.out.println(name);
+									output.out("Pattern matched: "+name);
 									downloader.download(name, link);
 								}
 							}
@@ -124,6 +73,5 @@ public class Daemon {
 				e.printStackTrace();// ignore and go on
 			}
 		}
-	}
-	
+	}	
 }

@@ -11,7 +11,7 @@ import filmeUtils.CommandLineClient;
 import filmeUtils.Downloader;
 import filmeUtils.FilmeUtilsConstants;
 import filmeUtils.OutputListener;
-import filmeUtils.SysOut;
+import filmeUtils.VerboseSysOut;
 import filmeUtils.extraction.ExtractorImpl;
 import filmeUtils.fileSystem.FileSystem;
 import filmeUtils.fileSystem.FileSystemImpl;
@@ -60,7 +60,7 @@ public class Main {
 		final File cookieFile = new File(FilmeUtilsConstants.filmeUtilsFolder(),"cookies.serialized");
     	final SimpleHttpClient httpclient = new SimpleHttpClientImpl(cookieFile);
     	final ExtractorImpl extract = new ExtractorImpl();
-    	final SysOut output = new SysOut(cli);
+    	final VerboseSysOut output = new VerboseSysOut();
     	final LegendasTv legendasTv = new LegendasTv(cli,httpclient, output);
     	
     	final MagnetLinkHandler magnetLinkHandler = new OSMagnetLinkHandler();

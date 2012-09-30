@@ -1,6 +1,6 @@
 package filmeUtils.swing;
 
-public interface SearchCallback {
+public interface GUISearchCallback {
 
 	void done();
 	void found(String name);

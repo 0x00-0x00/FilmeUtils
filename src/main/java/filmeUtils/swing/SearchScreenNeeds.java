@@ -9,7 +9,7 @@ import org.apache.commons.io.FileUtils;
 import filmeUtils.Downloader;
 import filmeUtils.FilmeUtilsConstants;
 import filmeUtils.OutputListener;
-import filmeUtils.SearchListener;
+import filmeUtils.SubtitleLinkCallback;
 import filmeUtils.subtitleSites.LegendasTv;
 
 
@@ -46,8 +46,8 @@ public class SearchScreenNeeds {
 			@Override
 			public void run() {
 				final AtomicBoolean torrentWasFound = new AtomicBoolean(false);
-				legendasTv.search(item, new SearchListener() {
-					public boolean foundReturnIfShouldStopLooking(final String name, final String link) {
+				legendasTv.search(item, new SubtitleLinkCallback() {
+					public boolean processAndReturnIfMatches(final String name, final String link) {
 						final boolean success = downloader.download(name, link, filmeUtilsOptions);
 						if(success){
 							torrentWasFound.set(true);
@@ -77,13 +77,13 @@ public class SearchScreenNeeds {
 		return subtitleFolder.getAbsolutePath();
 	}
 
-	public void getNewAddsList(final SearchCallback callback) {
+	public void getNewAddsList(final GUISearchCallback callback) {
 		
 		new Thread(){
 			@Override
 			public void run() {				
-				legendasTv.getNewer(50, new SearchListener(){
-					public boolean foundReturnIfShouldStopLooking(final String name,final String link) {
+				legendasTv.getNewer(50, new SubtitleLinkCallback(){
+					public boolean processAndReturnIfMatches(final String name,final String link) {
 						callback.found(name);
 						return false;
 					}
@@ -94,13 +94,13 @@ public class SearchScreenNeeds {
 		}.start();
 	}
 
-	public void getResultsFor(final String text, final SearchCallback callback) {
+	public void getResultsFor(final String text, final GUISearchCallback callback) {
 		
 		new Thread(){
 			@Override
 			public void run() {				
-				legendasTv.search(text, new SearchListener(){
-					public boolean foundReturnIfShouldStopLooking(final String name,final String link) {
+				legendasTv.search(text, new SubtitleLinkCallback(){
+					public boolean processAndReturnIfMatches(final String name,final String link) {
 						callback.found(name);
 						return false;
 					}

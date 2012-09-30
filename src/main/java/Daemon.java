@@ -8,8 +8,8 @@ import org.apache.commons.io.FileUtils;
 import filmeUtils.Downloader;
 import filmeUtils.FilmeUtilsConstants;
 import filmeUtils.FilmeUtilsOptions;
-import filmeUtils.SearchListener;
-import filmeUtils.SysOut;
+import filmeUtils.SubtitleLinkCallback;
+import filmeUtils.VerboseSysOut;
 import filmeUtils.extraction.ExtractorImpl;
 import filmeUtils.fileSystem.FileSystem;
 import filmeUtils.fileSystem.FileSystemImpl;
@@ -79,7 +79,7 @@ public class Daemon {
 				return "filmeutilsfilme" ;
 			}
 		};
-		final SysOut output = new SysOut(cli);
+		final VerboseSysOut output = new VerboseSysOut();
 		LegendasTv legendasTv = new LegendasTv(cli, new SimpleHttpClientImpl(), output);
 		legendasTv.login();
 		
@@ -101,24 +101,25 @@ public class Daemon {
 		while(true){
 			
 			try {
-			int checkInterval = 60000 * 10;
-			legendasTv.getNewer(23, new SearchListener() {		
-				@Override
-				public boolean foundReturnIfShouldStopLooking(String name, String link) {
-					if(!alreadyChecked.contains(name)){
-						for (String pattern : readLines) {
-							if(name.toLowerCase().matches(pattern)){								
-								System.out.println(name);
-								downloader.download(name, link, cli);
+				int checkInterval = 60000 * 10;
+				legendasTv.getNewer(23, new SubtitleLinkCallback() {
+					@Override
+					public boolean processAndReturnIfMatches(String name, String link) {
+						if (!alreadyChecked.contains(name)) {
+							for (String pattern : readLines) {
+								if (name.toLowerCase().matches(pattern)) {
+									System.out.println(name);
+									downloader.download(name, link, cli);
+								}
 							}
+							alreadyChecked.add(name);
 						}
-						alreadyChecked.add(name);
+						return false;
 					}
-					return false;
-				}});
+				});
 				Thread.sleep(checkInterval);
 			} catch (Exception e) {
-				e.printStackTrace();//ignore and go on
+				e.printStackTrace();// ignore and go on
 			}
 		}
 	}

@@ -71,7 +71,7 @@ public class SearchScreen extends JFrame {
 	private JScrollPane outputJScrollPane;
 	private JTextArea outputTextArea;
 	private JPanel outputPanel;
-	private final SearchCallback endSearch;
+	private final GUISearchCallback endSearch;
 	private final ActionListener searchForSearchTerm;
 	private final SearchScreenNeeds searchScreenNeeds;
 	private JProgressBar progressBar;
@@ -87,7 +87,7 @@ public class SearchScreen extends JFrame {
 		
 		defaultListModel = new DefaultListModel();
 		
-		endSearch = new SearchCallback() {
+		endSearch = new GUISearchCallback() {
 			public void done() {
 				progressBar.setIndeterminate(false);
 				outputTextArea.append("\nProcura completa.");

@@ -27,7 +27,7 @@ public class CommandLineClient {
 	}
 
 	public void execute() throws IOException {
-		final SearchListener searchListener = new SearchListenerImplementation(downloader,cli,output);
+		final SubtitleLinkCallback searchListener = new SearchListenerImplementation(downloader,cli,output);
         
 		final boolean search = cli.search();
 		if(search){

@@ -9,7 +9,7 @@ import junit.framework.Assert;
 import org.junit.Test;
 
 import filmeUtils.OutputListener;
-import filmeUtils.SearchListener;
+import filmeUtils.SubtitleLinkCallback;
 
 public class LegendasTvTest {
 	
@@ -28,8 +28,8 @@ public class LegendasTvTest {
 		cli.isLazy = true;
 		final LegendasTv subject = new LegendasTv(cli,mock, dummyOutputListener);
 		final AtomicBoolean wasCalled = new AtomicBoolean(false);
-		subject.search("foo", new SearchListener() {
-			public boolean foundReturnIfShouldStopLooking(final String name, final String link) {
+		subject.search("foo", new SubtitleLinkCallback() {
+			public boolean processAndReturnIfMatches(final String name, final String link) {
 				Assert.assertEquals("Castle.S04E21.720p.WEB-DL.DD5.1.H.264-NFHD",name);
 				Assert.assertEquals("http://legendas.tv/info.php?c=1&d=e613c192c4279ff32db5f3ad0640e8d0",link);
 				wasCalled.set(true);
@@ -50,8 +50,8 @@ public class LegendasTvTest {
 		expectedResults.put("Community.S01.Complete.HDTV (PACK DE LEGENDAS)", "http://legendas.tv/info.php?c=1&d=ae752094b5a1fc977e933fb619527d1a");
 		expectedResults.put("Community.S01.720p.WEB-DL.DD5.1.H.264-myTV/HoodBag (PACK DE LEGENDAS)","http://legendas.tv/info.php?c=1&d=a7faf31ace51a2110b69b822ff84b434");
 		expectedResults.put("Community.S02.720p.WEB-DL.DD5.1.H.264-HoodBag (PACK DE LEGENDAS)","http://legendas.tv/info.php?c=1&d=fe19c9afc9dbf6a53a74d0782da8861a");
-		subject.search("foo", new SearchListener() {
-			public boolean foundReturnIfShouldStopLooking(final String name, final String link) {
+		subject.search("foo", new SubtitleLinkCallback() {
+			public boolean processAndReturnIfMatches(final String name, final String link) {
 				final String linkExpected = expectedResults.get(name);
 				Assert.assertEquals("For "+name,linkExpected, link);
 				expectedResults.remove(name);
@@ -69,8 +69,8 @@ public class LegendasTvTest {
 		cli.isLazy = true;
 		final LegendasTv subject = new LegendasTv(cli,mock, dummyOutputListener);
 		final AtomicBoolean wasCalled = new AtomicBoolean(false);
-		subject.search("foo", new SearchListener() {
-			public boolean foundReturnIfShouldStopLooking(final String name, final String link) {
+		subject.search("foo", new SubtitleLinkCallback() {
+			public boolean processAndReturnIfMatches(final String name, final String link) {
 				Assert.assertEquals("Community.S01.Complete.HDTV (PACK DE LEGENDAS)", name);
 				Assert.assertEquals("http://legendas.tv/info.php?c=1&d=ae752094b5a1fc977e933fb619527d1a", link);
 				wasCalled.set(true);
@@ -88,8 +88,8 @@ public class LegendasTvTest {
 		cli.isLazy = true;
 		final LegendasTv subject = new LegendasTv(cli,mock, dummyOutputListener);
 		final AtomicBoolean wasCalled = new AtomicBoolean(false);
-		subject.search("foo", new SearchListener() {
-			public boolean foundReturnIfShouldStopLooking(final String name, final String link) {
+		subject.search("foo", new SubtitleLinkCallback() {
+			public boolean processAndReturnIfMatches(final String name, final String link) {
 				if(name.equals("Community.S01.Complete.HDTV (PACK DE LEGENDAS)")){
 					return false;
 				}
@@ -114,8 +114,8 @@ public class LegendasTvTest {
 		expectedResults.put("Community.S01.720p.WEB-DL.DD5.1.H.264-myTV/HoodBag (PACK DE LEGENDAS)","http://legendas.tv/info.php?c=1&d=a7faf31ace51a2110b69b822ff84b434");
 		expectedResults.put("Community.S02.720p.WEB-DL.DD5.1.H.264-HoodBag (PACK DE LEGENDAS)","http://legendas.tv/info.php?c=1&d=fe19c9afc9dbf6a53a74d0782da8861a");
 		expectedResults.put("Castle.S04E21.720p.WEB-DL.DD5.1.H.264-NFHD","http://legendas.tv/info.php?c=1&d=e613c192c4279ff32db5f3ad0640e8d0");
-		subject.search("foo", new SearchListener() {
-			public boolean foundReturnIfShouldStopLooking(final String name, final String link) {
+		subject.search("foo", new SubtitleLinkCallback() {
+			public boolean processAndReturnIfMatches(final String name, final String link) {
 				final String linkExpected = expectedResults.get(name);
 				Assert.assertEquals("For "+name,linkExpected, link);
 				expectedResults.remove(name);

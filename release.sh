@@ -8,4 +8,4 @@ git add $VERSION_FILE
 git commit -m"New version"
 mvn clean package release:prepare
 mvn release:perform 
-cp target/filmeUtils.jar filmeUtils-$VERSION.jar
+#cp target/filmeUtils.jar filmeUtils-$VERSION.jar

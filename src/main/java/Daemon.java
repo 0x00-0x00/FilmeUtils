@@ -29,6 +29,15 @@ public class Daemon {
 	}
 	
 	public Daemon() throws IOException {
+		File filmeUtilsFolder = FilmeUtilsFolder.get();
+		File filesToDownload = new File(filmeUtilsFolder,"downloadThis");
+		if(!filesToDownload.exists()){
+			System.err.println("O arquivo "+filesToDownload.getAbsolutePath()+" tem que existir.");
+			System.err.println("Esse arquivo deve ter uma regex por linha.");
+			System.err.println("Quando uma nova legenda aparecer no legendas tv, o programa vai \n" +
+					"baixar a legenda em " +FilmeUtilsFolder.getSubtitlesDestinationOrNull()+" e adicionar o torrent no cliente registrado.");
+			throw new RuntimeException(filesToDownload.getAbsolutePath()+" not found.");
+		}
 		
 		final VerboseSysOut output = new VerboseSysOut();
 		LegendasTv legendasTv = new LegendasTv(new SimpleHttpClientImpl(), output);
@@ -43,8 +52,6 @@ public class Daemon {
 		final FileSystem fileSystem = new FileSystemImpl();
     	
 		final Downloader downloader = new Downloader(extract, fileSystem, httpclient, torrentSearcher, magnetLinkHandler, legendasTv, output);
-		File filmeUtilsFolder = FilmeUtilsFolder.get();
-		File filesToDownload = new File(filmeUtilsFolder,"downloadThis");
 		@SuppressWarnings("unchecked")
 		final List<String> readLines = FileUtils.readLines(filesToDownload);
 		

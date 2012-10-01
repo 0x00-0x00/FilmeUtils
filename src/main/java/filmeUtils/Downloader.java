@@ -140,13 +140,8 @@ public class Downloader {
 		if(shouldRefuse){
 			return false;
 		}
-		try {
-			getOutputListener().outVerbose("Procurando melhor torrent para "+subtitleName);
-			magnetLinkForFile = torrentSearcher.getMagnetLinkForTermOrNull(subtitleName,getOutputListener());
-		} catch (SiteOfflineException e1) {
-			getOutputListener().out("Erro procurando torrent para "+next.getName()+" : "+e1.getMessage());
-			return false;
-		}
+		getOutputListener().outVerbose("Procurando melhor torrent para "+subtitleName);
+		magnetLinkForFile = torrentSearcher.getMagnetLinkForTermOrNull(subtitleName,getOutputListener());
 		if(magnetLinkForFile == null){
 			getOutputListener().outVerbose("Nenhum torrent para "+subtitleName);
 			return false;

@@ -75,13 +75,15 @@ public class Daemon {
 							for (String pattern : subsToDownload) {
 								if (name.toLowerCase().matches(pattern) && !alreadyDownloadedFiles.contains(name)) {
 									output.out("Pattern matched: "+name);
-									downloader.download(name, link);
-									alreadyDownloadedFiles.add(name);						
-									try {
-										String filesAlreadyDownloaded = StringUtils.join(alreadyDownloadedFiles, '\n');
-										FileUtils.writeStringToFile(fileContainingAlreadyDownloaded, filesAlreadyDownloaded);
-									} catch (IOException e) {
-										e.printStackTrace();
+									boolean success = downloader.download(name, link);
+									if(success){
+										alreadyDownloadedFiles.add(name);						
+										try {
+											String filesAlreadyDownloaded = StringUtils.join(alreadyDownloadedFiles, '\n');
+											FileUtils.writeStringToFile(fileContainingAlreadyDownloaded, filesAlreadyDownloaded);
+										} catch (IOException e) {
+											e.printStackTrace();
+										}
 									}
 								}
 							}

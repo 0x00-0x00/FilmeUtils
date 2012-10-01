@@ -14,7 +14,6 @@ import filmeUtils.fileSystem.FileSystem;
 import filmeUtils.http.MagnetLinkHandler;
 import filmeUtils.http.SimpleHttpClient;
 import filmeUtils.subtitleSites.LegendasTv;
-import filmeUtils.torrentSites.SiteOfflineException;
 import filmeUtils.torrentSites.TorrentSearcher;
 
 public class Downloader {

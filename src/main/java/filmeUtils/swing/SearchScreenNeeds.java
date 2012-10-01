@@ -69,6 +69,11 @@ public class SearchScreenNeeds {
 		}
 		subtitleFolder = folder;
 		filmeUtilsOptions.setSubtitlesDestinationFolder(folder);
+		changeOptions();
+	}
+
+	private void changeOptions() {
+		downloader.setOptions(filmeUtilsOptions);
 	}
 
 	public String getSubtitleFolder() {
@@ -122,6 +127,7 @@ public class SearchScreenNeeds {
 			filmeUtilsOptions.setShouldRefuseHD(true);
 			filmeUtilsOptions.setShouldRefuseNonHD(false);
 		}
+		changeOptions();
 	}
 
 	public String allResolutionsString() {

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 
 import filmeUtils.Downloader;
 import filmeUtils.FilmeUtilsFolder;
@@ -30,13 +31,13 @@ public class Daemon {
 	
 	public Daemon() throws IOException {
 		File filmeUtilsFolder = FilmeUtilsFolder.get();
-		File filesToDownload = new File(filmeUtilsFolder,"downloadThis");
-		if(!filesToDownload.exists()){
-			System.err.println("O arquivo "+filesToDownload.getAbsolutePath()+" tem que existir.");
+		File subtitlesToDownloadFile = new File(filmeUtilsFolder,"downloadThis");
+		if(!subtitlesToDownloadFile.exists()){
+			System.err.println("O arquivo "+subtitlesToDownloadFile.getAbsolutePath()+" tem que existir.");
 			System.err.println("Esse arquivo deve ter uma regex por linha.");
 			System.err.println("Quando uma nova legenda aparecer no legendas tv, o programa vai \n" +
 					"baixar a legenda em " +FilmeUtilsFolder.getSubtitlesDestinationOrNull()+" e adicionar o torrent no cliente registrado.");
-			throw new RuntimeException(filesToDownload.getAbsolutePath()+" not found.");
+			throw new RuntimeException(subtitlesToDownloadFile.getAbsolutePath()+" not found.");
 		}
 		
 		final VerboseSysOut output = new VerboseSysOut();
@@ -53,22 +54,35 @@ public class Daemon {
     	
 		final Downloader downloader = new Downloader(extract, fileSystem, httpclient, torrentSearcher, magnetLinkHandler, legendasTv, output);
 		@SuppressWarnings("unchecked")
-		final List<String> readLines = FileUtils.readLines(filesToDownload);
+		final List<String> subsToDownload = FileUtils.readLines(subtitlesToDownloadFile);
+		final File fileContainingAlreadyDownloaded = new File(filmeUtilsFolder,"alreadyDownloaded");
+		if(!fileContainingAlreadyDownloaded.exists()){
+			fileContainingAlreadyDownloaded.createNewFile();
+		}
+		@SuppressWarnings("unchecked")
+		final List<String> alreadyDownloadedFiles = FileUtils.readLines(fileContainingAlreadyDownloaded);
 		
 		final ArrayList<String> alreadyChecked = new ArrayList<String>();
 		while(true){
 			try {
 				int checkInterval = 60000 * 10;
-				legendasTv.getNewer(23, new NewSubtitleLinkFoundCallback() {
+				legendasTv.getNewer(23*3, new NewSubtitleLinkFoundCallback() {
 					@Override
 					public void processAndReturnIfMatches(SubtitleAndLink subAndLink) {
 						String name = subAndLink.name;
 						String link = subAndLink.link;
 						if (!alreadyChecked.contains(name)) {
-							for (String pattern : readLines) {
-								if (name.toLowerCase().matches(pattern)) {
+							for (String pattern : subsToDownload) {
+								if (name.toLowerCase().matches(pattern) && !alreadyDownloadedFiles.contains(name)) {
 									output.out("Pattern matched: "+name);
 									downloader.download(name, link);
+									alreadyDownloadedFiles.add(name);						
+									try {
+										String filesAlreadyDownloaded = StringUtils.join(alreadyDownloadedFiles, '\n');
+										FileUtils.writeStringToFile(fileContainingAlreadyDownloaded, filesAlreadyDownloaded);
+									} catch (IOException e) {
+										e.printStackTrace();
+									}
 								}
 							}
 							alreadyChecked.add(name);

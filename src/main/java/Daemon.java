@@ -40,12 +40,13 @@ public class Daemon {
 			throw new RuntimeException(subtitlesToDownloadFile.getAbsolutePath()+" not found.");
 		}
 		
+		final File cookieFile = new File(FilmeUtilsFolder.get(),"cookies.serialized");
+		final SimpleHttpClient httpclient = new SimpleHttpClientImpl(cookieFile);
+		
 		final VerboseSysOut output = new VerboseSysOut();
-		LegendasTv legendasTv = new LegendasTv(new SimpleHttpClientImpl(), output);
+		LegendasTv legendasTv = new LegendasTv(httpclient, output);
 		legendasTv.login();
 		
-		final File cookieFile = new File(FilmeUtilsFolder.get(),"cookies.serialized");
-    	final SimpleHttpClient httpclient = new SimpleHttpClientImpl(cookieFile);
     	final ExtractorImpl extract = new ExtractorImpl();
     	
     	final MagnetLinkHandler magnetLinkHandler = new OSMagnetLinkHandler();
@@ -64,6 +65,7 @@ public class Daemon {
 		
 		final ArrayList<String> alreadyChecked = new ArrayList<String>();
 		while(true){
+			output.out("Procurando novas legendas.");
 			try {
 				int checkInterval = 60000 * 10;
 				legendasTv.getNewer(23*3, new NewSubtitleLinkFoundCallback() {

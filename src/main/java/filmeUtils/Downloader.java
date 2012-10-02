@@ -87,12 +87,11 @@ public class Downloader {
 	}
 
 	private void downloadLinkToFolder(final String link, final File folder) throws IOException, ClientProtocolException, ZipException {
-		String contentType;
+		String contentType = "";
 		final File destFile = File.createTempFile("filmeUtils", "filmeUtils");
 		
-		contentType = httpclient.getToFile(link, destFile);
-		
-		if(isNotAFile(contentType)){
+		while(isNotAFile(contentType)){
+			getOutputListener().out("Nao esta logado, tenando logar...");
 			legendasTv.login(); 
 			destFile.delete();
 			contentType = httpclient.getToFile(link, destFile);
@@ -102,7 +101,7 @@ public class Downloader {
 	}
 
 	private boolean isNotAFile(String contentType) {
-		return contentType.contains("text/html");
+		return contentType.contains("text/html") || contentType.isEmpty();
 	}
 
 	private boolean openTorrentsAndReturnSuccess(final File currentSubtitleFolder) {

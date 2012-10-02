@@ -3,7 +3,7 @@ FilmeUtils é uma ferramenta para pegar filmes e séries com legendas tendo o m�
 Download : https://github.com/downloads/beothorn/FilmeUtils/filmeUtils-2.8.jar
 
 Do que você precisa:
- - Java 1.7 ou maior instalado. - www.java.com/
+ - Java 1.6 ou maior instalado. - www.java.com/
  - Um cliente de torrent qualquer, recomendo o qbittorrent (http://www.qbittorrent.org/).
 
 Como usar  
@@ -21,7 +21,7 @@ java -cp filmeUtils.jar Subtitle
 Para so procurar um link de torrent
 java -cp filmeUtils.jar Torrent
 
-Para executar como Deamon 
+Para executar como Deamon, crie um arquivo de regex com o nome downloadThi em .filmeutils e rode
 java -cp filmeUtils.jar Daemon
 
 

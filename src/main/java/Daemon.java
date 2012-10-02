@@ -54,17 +54,16 @@ public class Daemon {
 		final FileSystem fileSystem = new FileSystemImpl();
     	
 		final Downloader downloader = new Downloader(extract, fileSystem, httpclient, torrentSearcher, magnetLinkHandler, legendasTv, output);
-		@SuppressWarnings("unchecked")
-		final List<String> subsToDownload = FileUtils.readLines(subtitlesToDownloadFile);
 		final File fileContainingAlreadyDownloaded = new File(filmeUtilsFolder,"alreadyDownloaded");
 		if(!fileContainingAlreadyDownloaded.exists()){
 			fileContainingAlreadyDownloaded.createNewFile();
 		}
+		
 		@SuppressWarnings("unchecked")
 		final List<String> alreadyDownloadedFiles = FileUtils.readLines(fileContainingAlreadyDownloaded);
-		
-		final ArrayList<String> alreadyChecked = new ArrayList<String>();
 		while(true){
+			@SuppressWarnings("unchecked")
+			final List<String> subsToDownload = FileUtils.readLines(subtitlesToDownloadFile);
 			output.out("Procurando novas legendas.");
 			try {
 				int checkInterval = 60000 * 10;
@@ -73,23 +72,20 @@ public class Daemon {
 					public void processAndReturnIfMatches(SubtitleAndLink subAndLink) {
 						String name = subAndLink.name;
 						String link = subAndLink.link;
-						if (!alreadyChecked.contains(name)) {
-							for (String pattern : subsToDownload) {
-								if (name.toLowerCase().matches(pattern) && !alreadyDownloadedFiles.contains(name)) {
-									output.out("Pattern matched: "+name);
-									boolean success = downloader.download(name, link);
-									if(success){
-										alreadyDownloadedFiles.add(name);						
-										try {
-											String filesAlreadyDownloaded = StringUtils.join(alreadyDownloadedFiles, '\n');
-											FileUtils.writeStringToFile(fileContainingAlreadyDownloaded, filesAlreadyDownloaded);
-										} catch (IOException e) {
-											e.printStackTrace();
-										}
+						for (String pattern : subsToDownload) {
+							if (name.toLowerCase().matches(pattern) && !alreadyDownloadedFiles.contains(name)) {
+								output.out("Pattern matched: "+name);
+								boolean success = downloader.download(name, link);
+								if(success){
+									alreadyDownloadedFiles.add(name);						
+									try {
+										String filesAlreadyDownloaded = StringUtils.join(alreadyDownloadedFiles, '\n');
+										FileUtils.writeStringToFile(fileContainingAlreadyDownloaded, filesAlreadyDownloaded);
+									} catch (IOException e) {
+										e.printStackTrace();
 									}
 								}
 							}
-							alreadyChecked.add(name);
 						}
 					}
 				});

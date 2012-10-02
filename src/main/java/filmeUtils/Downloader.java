@@ -91,7 +91,7 @@ public class Downloader {
 		final File destFile = File.createTempFile("filmeUtils", "filmeUtils");
 		
 		while(isNotAFile(contentType)){
-			getOutputListener().out("Nao esta logado, tenando logar...");
+			getOutputListener().out("Nao esta logado, tentando logar...");
 			legendasTv.login(); 
 			destFile.delete();
 			contentType = httpclient.getToFile(link, destFile);

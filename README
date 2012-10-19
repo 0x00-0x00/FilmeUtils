@@ -8,6 +8,8 @@ Do que você precisa:
 
 Como usar  
 Para abrir a GUI
+Faça download do jar e execute
+ou
 java -jar filmeUtils.jar
 ou
 java -cp filmeUtils.jar Gui
@@ -21,9 +23,15 @@ java -cp filmeUtils.jar Subtitle
 Para so procurar um link de torrent
 java -cp filmeUtils.jar Torrent
 
-Para executar como Deamon, crie um arquivo de regex com o nome downloadThi em .filmeutils e rode
+Para executar como Daemon, crie um arquivo de regex com o nome downloadThis na pasta .filmeutils que fica no seu home.
+O downloadThis deve ter uma regex por linha. ex:
+.*meu.*seriado.*
+.*meu.*outro.*seriado.*
+
+Para executar:
 java -cp filmeUtils.jar Daemon
 
+O Daemon pega todos os torrents equivalentes as legendas do zip
 
 Sites onde a procura é feita:
 

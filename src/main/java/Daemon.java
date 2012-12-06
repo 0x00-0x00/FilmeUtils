@@ -92,7 +92,8 @@ public class Daemon {
 						}
 					}
 				});
-				Thread.sleep(checkInterval);
+				if(continuousSearch)
+					Thread.sleep(checkInterval);
 			} catch (Exception e) {
 				e.printStackTrace();// ignore and go on
 			}

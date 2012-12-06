@@ -1,6 +1,5 @@
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -26,10 +25,13 @@ import filmeUtils.torrentSites.TorrentSearcherImpl;
 public class Daemon {
 
 	public static void main(String[] args) throws IOException {
-		new Daemon();
+		if(args.length == 0)
+			new Daemon(true);
+		else
+			new Daemon(!args[0].equals("onlyOnce"));
 	}
 	
-	public Daemon() throws IOException {
+	public Daemon(boolean continuousSearch) throws IOException {
 		File filmeUtilsFolder = FilmeUtilsFolder.get();
 		File subtitlesToDownloadFile = new File(filmeUtilsFolder,"downloadThis");
 		if(!subtitlesToDownloadFile.exists()){
@@ -61,13 +63,14 @@ public class Daemon {
 		
 		@SuppressWarnings("unchecked")
 		final List<String> alreadyDownloadedFiles = FileUtils.readLines(fileContainingAlreadyDownloaded);
-		while(true){
+		do{
 			@SuppressWarnings("unchecked")
 			final List<String> subsToDownload = FileUtils.readLines(subtitlesToDownloadFile);
 			output.out("Procurando novas legendas.");
 			try {
 				int checkInterval = 60000 * 10;
-				legendasTv.getNewer(23*3, new NewSubtitleLinkFoundCallback() {
+				int valuesPerPage = 23;
+				legendasTv.getNewer(valuesPerPage*3, new NewSubtitleLinkFoundCallback() {
 					@Override
 					public void processAndReturnIfMatches(SubtitleAndLink subAndLink) {
 						String name = subAndLink.name;
@@ -93,6 +96,6 @@ public class Daemon {
 			} catch (Exception e) {
 				e.printStackTrace();// ignore and go on
 			}
-		}
+		}while(continuousSearch);
 	}	
 }

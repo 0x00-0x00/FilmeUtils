@@ -53,7 +53,7 @@ public class Gui {
 		
 		final ExtractorImpl extract = new ExtractorImpl();
 		final FileSystem fileSystem = new FileSystemImpl();
-		final File cookieFile = new File(FilmeUtilsFolder.get(),"cookies.serialized");
+		final File cookieFile = FilmeUtilsFolder.getInstance().getCookiesFile();
     	final SimpleHttpClient httpclient = new SimpleHttpClientImpl(cookieFile);
     	final TorrentSearcher torrentSearcher = new TorrentSearcherImpl(httpclient);
     	final MagnetLinkHandler magnetLinkHandler = new OSMagnetLinkHandler();

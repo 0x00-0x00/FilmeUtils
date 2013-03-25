@@ -2,7 +2,6 @@ package filmeUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Calendar;
 import java.util.Iterator;
 import java.util.zip.ZipException;
 
@@ -29,7 +28,7 @@ public class Downloader {
 	private OutputListener outputListener;
 	private boolean isLazy = false;
 	private boolean shouldRefuseHD = false;
-	private File subtitlesDestinationFolder = FilmeUtilsFolder.getSubtitlesDestinationOrNull();
+	private File subtitlesDestinationFolder = FilmeUtilsFolder.getInstance().getSubtitlesDestination();
 	private boolean shouldRefuseNonHD = false;
 	
 	public Downloader(final Extractor extract,final FileSystem fileSystem,final SimpleHttpClient httpclient,final TorrentSearcher torrentSearcher,final MagnetLinkHandler magnetLinkHandler,final LegendasTv legendasTv, final OutputListener outputListener) {
@@ -63,7 +62,8 @@ public class Downloader {
 			downloadLinkToFolder(link, currentSubtitleFolder);
 		} catch (Exception e) {
 			getOutputListener().outVerbose("Erro fazendo download de legenda de "+link);
-			File errorFile = writeErrorFileOrCry(e);
+			FilmeUtilsFolder filmeUtilsFolder = FilmeUtilsFolder.getInstance();
+			File errorFile = filmeUtilsFolder.writeErrorFile(e);
 			getOutputListener().outVerbose("Mais detalhes em "+errorFile);
 		}			
 		getOutputListener().outVerbose("Extraido com sucesso para "+currentSubtitleFolder.getAbsolutePath());
@@ -74,16 +74,6 @@ public class Downloader {
 			//don't care
 		}
 		return success;
-	}
-
-	private File writeErrorFileOrCry(Exception e) {
-		File errorFile = new File(FilmeUtilsFolder.get(), Calendar.getInstance().getTimeInMillis()+".error");
-		try {
-			FileUtils.writeStringToFile(errorFile, e.getMessage()+"\n"+e.getStackTrace());
-		} catch (IOException e1) {
-			throw new RuntimeException(e1);
-		}
-		return errorFile;
 	}
 
 	private void downloadLinkToFolder(final String link, final File folder) throws IOException, ClientProtocolException, ZipException {
@@ -106,7 +96,6 @@ public class Downloader {
 
 	private boolean openTorrentsAndReturnSuccess(final File currentSubtitleFolder) {
 		boolean successfull = false;
-		@SuppressWarnings("unchecked")
 		final Iterator<File> iterateFiles = FileUtils.iterateFiles(currentSubtitleFolder, new String[]{"srt"}, true);
 		while(iterateFiles.hasNext()){
 			final File next = iterateFiles.next();

@@ -52,7 +52,7 @@ public class Main {
 	}
 
 	static void runFilmeUtils(final ArgumentsParserImpl cli) throws IOException {
-		final File cookieFile = new File(FilmeUtilsFolder.get(),"cookies.serialized");
+		final File cookieFile = FilmeUtilsFolder.getInstance().getCookiesFile();
     	final SimpleHttpClient httpclient = new SimpleHttpClientImpl(cookieFile);
     	final ExtractorImpl extract = new ExtractorImpl();
     	final VerboseSysOut output = new VerboseSysOut();

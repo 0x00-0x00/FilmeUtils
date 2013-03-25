@@ -2,8 +2,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-
 import filmeUtils.Downloader;
 import filmeUtils.FilmeUtilsFolder;
 import filmeUtils.VerboseSysOut;
@@ -23,6 +21,16 @@ import filmeUtils.torrentSites.TorrentSearcherImpl;
 
 public class Daemon {
 
+	private static final FilmeUtilsFolder filmeUtilsFolder = FilmeUtilsFolder.getInstance();
+	private static final File cookieFile = filmeUtilsFolder.getCookiesFile();
+	private static final int CHECK_INTERVAL_MILLIS = 60000 * 10;
+	private static final int VALUES_PER_PAGE = 23;
+	private static final int QNTY_OF_SUBTITLES_TO_SCAN = VALUES_PER_PAGE*3;
+	private SimpleHttpClient httpclient;
+	private VerboseSysOut output;
+	private LegendasTv legendasTv;
+	private Downloader downloader;
+
 	public static void main(String[] args) throws IOException {
 		if(args.length == 0)
 			new Daemon(true);
@@ -31,62 +39,67 @@ public class Daemon {
 	}
 	
 	public Daemon(boolean continuousSearch) throws IOException {
-		final FilmeUtilsFolder filmeUtilsFolder = FilmeUtilsFolder.getInstance();
-		File subtitlesToDownloadFile = filmeUtilsFolder.getRegexFileWithPatternsToDownload();
-		if(!subtitlesToDownloadFile.exists()){
-			System.err.println("O arquivo "+subtitlesToDownloadFile.getAbsolutePath()+" tem que existir.");
-			System.err.println("Esse arquivo deve ter uma regex por linha.");
-			System.err.println("Quando uma nova legenda aparecer no legendas tv, o programa vai \n" +
-					"baixar a legenda em " +filmeUtilsFolder.getSubtitlesDestination()+" e adicionar o torrent no cliente registrado.");
-			throw new RuntimeException(subtitlesToDownloadFile.getAbsolutePath()+" not found.");
-		}
+		ensurePatternsToDownloadFileExistsOrCry();
+		httpclient = new SimpleHttpClientImpl(cookieFile);
+		output = new VerboseSysOut();
 		
-		final File cookieFile = filmeUtilsFolder.getCookiesFile();
-		final SimpleHttpClient httpclient = new SimpleHttpClientImpl(cookieFile);
+		logonOnSubtitleSite();
 		
-		final VerboseSysOut output = new VerboseSysOut();
-		LegendasTv legendasTv = new LegendasTv(httpclient, output);
-		legendasTv.login();
+    	createDownloader();
 		
-    	final ExtractorImpl extract = new ExtractorImpl();
-    	
+		do{
+			try {
+				searchAndDownload();
+				if(continuousSearch) Thread.sleep(CHECK_INTERVAL_MILLIS);
+			} catch (Exception e) {
+				FilmeUtilsFolder.getInstance().writeErrorFile(e);// ignore and go on
+			}
+		}while(continuousSearch);
+	}
+
+	private void searchAndDownload() {
+		output.out("Procurando novas legendas.");
+		
+		NewSubtitleLinkFoundCallback searchCallback = new NewSubtitleLinkFoundCallback(){@Override public void processAndReturnIfMatches(SubtitleAndLink subAndLink) {
+			List<String> alreadyDownloadedFiles = filmeUtilsFolder.getAlreadyDownloaded();
+			List<String> subtitlesToDownloadPatterns = filmeUtilsFolder.getSubtitlesToDownloadPatterns();
+			String name = subAndLink.name;
+			String link = subAndLink.link;
+			
+			for (String pattern : subtitlesToDownloadPatterns) {
+				if (name.toLowerCase().matches(pattern) && !alreadyDownloadedFiles.contains(name)) {
+					output.out("Pattern matched: "+name);
+					boolean success = downloader.download(name, link);
+					if(success){
+						filmeUtilsFolder.addAlreadyDownloaded(name);
+					}
+				}
+			}
+		}};
+		
+		legendasTv.getNewer(QNTY_OF_SUBTITLES_TO_SCAN, searchCallback);
+	}
+
+	private void createDownloader() {
+		final ExtractorImpl extractor = new ExtractorImpl();
     	final MagnetLinkHandler magnetLinkHandler = new OSMagnetLinkHandler();
         final TorrentSearcher torrentSearcher = new TorrentSearcherImpl(httpclient);
 		final FileSystem fileSystem = new FileSystemImpl();
-    	
-		final Downloader downloader = new Downloader(extract, fileSystem, httpclient, torrentSearcher, magnetLinkHandler, legendasTv, output);
-		
-		
-		final List<String> alreadyDownloadedFiles = filmeUtilsFolder.getAlreadyDownloaded();
-		
-		do{
-			final List<String> subsToDownload = FileUtils.readLines(subtitlesToDownloadFile);
-			output.out("Procurando novas legendas.");
-			try {
-				int checkInterval = 60000 * 10;
-				int valuesPerPage = 23;
-				
-				NewSubtitleLinkFoundCallback searchCallback = new NewSubtitleLinkFoundCallback(){@Override public void processAndReturnIfMatches(SubtitleAndLink subAndLink) {
-					String name = subAndLink.name;
-					String link = subAndLink.link;
-					for (String pattern : subsToDownload) {
-						if (name.toLowerCase().matches(pattern) && !alreadyDownloadedFiles.contains(name)) {
-							output.out("Pattern matched: "+name);
-							boolean success = downloader.download(name, link);
-							if(success){
-								alreadyDownloadedFiles.add(name);
-								filmeUtilsFolder.addAlreadyDownloaded(name);
-							}
-						}
-					}
-				}};
-				
-				legendasTv.getNewer(valuesPerPage*3, searchCallback);
-				if(continuousSearch)
-					Thread.sleep(checkInterval);
-			} catch (Exception e) {
-				e.printStackTrace();// ignore and go on
-			}
-		}while(continuousSearch);
+		downloader = new Downloader(extractor, fileSystem, httpclient, torrentSearcher, magnetLinkHandler, legendasTv, output);
+	}
+
+	private void logonOnSubtitleSite() {
+		legendasTv = new LegendasTv(httpclient, output);
+		legendasTv.login();
+	}
+
+	private void ensurePatternsToDownloadFileExistsOrCry() {
+		String subtitlesToDownloadFile = filmeUtilsFolder.getRegexFileWithPatternsToDownloadPath();
+		if(!filmeUtilsFolder.subtitlesToDownloadPatternFileExists()){
+			System.err.println("O arquivo "+subtitlesToDownloadFile+" tem que existir.");
+			System.err.println("Esse arquivo deve ter uma regex por linha.");
+			System.err.println("Quando uma nova legenda aparecer no legendas tv, o programa vai \n" +"baixar a legenda em " +filmeUtilsFolder.getSubtitlesDestination()+" e adicionar o torrent no cliente registrado.");
+			throw new RuntimeException(subtitlesToDownloadFile+" not found.");
+		}
 	}	
 }

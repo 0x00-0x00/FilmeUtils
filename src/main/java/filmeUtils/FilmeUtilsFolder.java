@@ -78,7 +78,7 @@ public class FilmeUtilsFolder {
 		}
 	}
 
-	public File getRegexFileWithPatternsToDownload() {
+	private File getRegexFileWithPatternsToDownload() {
 		return new File(getFolder(),REGEX_FILE_WITH_PATTERNS_TO_DOWNLOAD);
 	}
 
@@ -108,8 +108,24 @@ public class FilmeUtilsFolder {
 			boolean append = true;
 			FileUtils.writeStringToFile(alreadyDownloadedFiles, "\n"+alreadyDownloadedFile, append);
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
+	}
+
+	public List<String> getSubtitlesToDownloadPatterns() {
+		try {
+			return FileUtils.readLines(getRegexFileWithPatternsToDownload());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public boolean subtitlesToDownloadPatternFileExists() {
+		return getRegexFileWithPatternsToDownload().exists();
+	}
+
+	public String getRegexFileWithPatternsToDownloadPath() {
+		return getRegexFileWithPatternsToDownload().getAbsolutePath();
 	}
 
 }

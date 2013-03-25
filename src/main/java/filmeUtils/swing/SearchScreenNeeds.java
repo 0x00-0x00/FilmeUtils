@@ -48,12 +48,11 @@ public class SearchScreenNeeds {
 	}
 
 	public void setSubtitleFolder(final File folder) {
-		FilmeUtilsFolder.getInstance().setSubtitleDestinyFolder(folder.getAbsolutePath());
-		filmeUtilsOptions.setSubtitlesDestinationFolder(folder);
+		FilmeUtilsFolder.getInstance().setSubtitleDestinationFolder(folder.getAbsolutePath());
 	}
 
 	public String getSubtitleFolder() {
-		return filmeUtilsOptions.getSubtitlesDestinationFolderOrNull().getAbsolutePath();
+		return FilmeUtilsFolder.getInstance().getSubtitlesDestination().getAbsolutePath();
 	}
 
 	public void getNewAddsList(final GUISearchCallback callback) {

@@ -67,7 +67,7 @@ public class FilmeUtilsFolder {
 		return errorFile;
 	}
 
-	public void setSubtitleDestinyFolder(String absolutePath) {
+	public void setSubtitleDestinationFolder(String absolutePath) {
 		final File filmeUtilsFolder = getFolder();
 		final File file = new File(filmeUtilsFolder,SUBTITLE_FOLDER_CONFIG_FILE);
 		try {

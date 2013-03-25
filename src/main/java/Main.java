@@ -64,7 +64,6 @@ public class Main {
 		final FileSystem fileSystem = new FileSystemImpl();
     	
     	final Downloader downloader = new Downloader(extract, fileSystem, httpclient, torrentSearcher, magnetLinkHandler, legendasTv, output);
-    	downloader.setOptions(cli);
     	final CommandLineClient commandLineClient = new CommandLineClient(downloader,httpclient,legendasTv,extract,cli, output);
     	commandLineClient.execute();        
 	}

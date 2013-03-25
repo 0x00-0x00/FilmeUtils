@@ -69,7 +69,7 @@ public class Daemon {
 			for (String pattern : subtitlesToDownloadPatterns) {
 				if (name.toLowerCase().matches(pattern) && !alreadyDownloadedFiles.contains(name)) {
 					output.out("Pattern matched: "+name);
-					boolean success = downloader.download(name, link);
+					boolean success = downloader.download(name, link,filmeUtilsFolder.getSubtitlesDestination(),false,false,false);
 					if(success){
 						filmeUtilsFolder.addAlreadyDownloaded(name);
 					}

@@ -23,7 +23,7 @@ final class SearchListenerImplementation implements SubtitleLinkSearchCallback {
 		String name = subAndLink.name;
 		String link = subAndLink.link;
 		if(shouldExtractSubtitles()){
-			return downloader.download(name, link);
+			return downloader.download(name, link, cli);
 		}else{			
 			final boolean shouldRefuse = shouldRefuseSubtitleFile(name);
 			if (!shouldRefuse) {

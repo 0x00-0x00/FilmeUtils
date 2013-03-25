@@ -26,10 +26,8 @@ public class Downloader {
 	private final MagnetLinkHandler magnetLinkHandler;
 	private final FileSystem fileSystem;
 	private OutputListener outputListener;
-	private boolean isLazy = false;
-	private boolean shouldRefuseHD = false;
-	private File subtitlesDestinationFolder = FilmeUtilsFolder.getInstance().getSubtitlesDestination();
-	private boolean shouldRefuseNonHD = false;
+	private File temporarySubtitleFolder;
+	private File subtitlesDestinationFolder;
 	
 	public Downloader(final Extractor extract,final FileSystem fileSystem,final SimpleHttpClient httpclient,final TorrentSearcher torrentSearcher,final MagnetLinkHandler magnetLinkHandler,final LegendasTv legendasTv, final OutputListener outputListener) {
 		this.fileSystem = fileSystem;
@@ -40,40 +38,57 @@ public class Downloader {
 		this.extract = extract;
 		this.setOutputListener(outputListener);
 	}
+	
+	public boolean download(String name, String link, FilmeUtilsOptions options) {
+		return download(name, link,options.getSubtitlesDestinationFolderOrNull(),options.isLazy(),options.shouldRefuseHD(),options.shouldRefuseNonHD());
+	}
 
-	public boolean download(final String name,final String link){
-		return unzipSearchMagnetsAndReturnSuccess(name,link);
-	}
-	
-	public void setOptions(final FilmeUtilsOptions options) {
-		isLazy = options.isLazy();
-		shouldRefuseHD = options.shouldRefuseHD();
-		subtitlesDestinationFolder = options.getSubtitlesDestinationFolderOrNull();
-		shouldRefuseNonHD = options.shouldRefuseNonHD();
-	}
-	
-	private boolean unzipSearchMagnetsAndReturnSuccess(final String name,final String link){
-		final String validNameForFile = name.replaceAll("[/ \\\\?]", "_");
-		final String tempDir = System.getProperty("java.io.tmpdir");
-		final File currentSubtitleFolder = new File(tempDir,validNameForFile);
-		fileSystem.mkdir(currentSubtitleFolder);
-		getOutputListener().outVerbose("Extraindo legendas para "+currentSubtitleFolder.getAbsolutePath());
+	public boolean download(final String name,final String link,File subtitlesDestinationFolder,boolean stopOnFirstSuccesfullTorrent,boolean shouldRefuseHD, boolean shouldRefuseNonHD){
+		this.subtitlesDestinationFolder = subtitlesDestinationFolder;
+		createTemporaryFolderForHandlingFiles(name);
+		downloadSubtitlesToTempDir(name,link);
+		boolean success = downloadTorrentsForSubtitles(stopOnFirstSuccesfullTorrent,shouldRefuseHD,shouldRefuseNonHD);
 		try {
-			downloadLinkToFolder(link, currentSubtitleFolder);
+			copySubtitlesToSubtitlesFolder();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		deleteTemporaryDir();
+		return success;
+	}
+
+	private void copySubtitlesToSubtitlesFolder() throws IOException {
+		final Iterator<File> iterateFiles = FileUtils.iterateFiles(temporarySubtitleFolder, new String[]{"srt"}, true);
+		while(iterateFiles.hasNext()){
+			final File subtitleFile = iterateFiles.next();		
+			FileUtils.copyFileToDirectory(subtitleFile, subtitlesDestinationFolder);
+		}
+	}
+
+	private void deleteTemporaryDir() {
+		try {
+			FileUtils.deleteDirectory(temporarySubtitleFolder);
+		} catch (IOException e) {
+			//don't really care
+		}
+	}
+
+	private void createTemporaryFolderForHandlingFiles(final String name) {
+		final String tempDir = System.getProperty("java.io.tmpdir");
+		final String validNameForFile = name.replaceAll("[/ \\\\?]", "_");
+		temporarySubtitleFolder = new File(tempDir,validNameForFile);
+		fileSystem.mkdir(temporarySubtitleFolder);
+	}
+
+	private void downloadSubtitlesToTempDir(String name, String link) {
+		try {
+			downloadLinkToFolder(link, temporarySubtitleFolder);
 		} catch (Exception e) {
 			getOutputListener().outVerbose("Erro fazendo download de legenda de "+link);
 			FilmeUtilsFolder filmeUtilsFolder = FilmeUtilsFolder.getInstance();
 			File errorFile = filmeUtilsFolder.writeErrorFile(e);
 			getOutputListener().outVerbose("Mais detalhes em "+errorFile);
-		}			
-		getOutputListener().outVerbose("Extraido com sucesso para "+currentSubtitleFolder.getAbsolutePath());
-		final boolean success = openTorrentsAndReturnSuccess(currentSubtitleFolder);
-		try {
-			FileUtils.deleteDirectory(currentSubtitleFolder);
-		} catch (IOException e) {
-			//don't care
 		}
-		return success;
 	}
 
 	private void downloadLinkToFolder(final String link, final File folder) throws IOException, ClientProtocolException, ZipException {
@@ -94,13 +109,13 @@ public class Downloader {
 		return contentType.contains("text/html") || contentType.isEmpty();
 	}
 
-	private boolean openTorrentsAndReturnSuccess(final File currentSubtitleFolder) {
+	private boolean downloadTorrentsForSubtitles(final boolean stopOnFirstSuccesfullTorrent,boolean shouldRefuseHD, boolean shouldRefuseNonHD) {
 		boolean successfull = false;
-		final Iterator<File> iterateFiles = FileUtils.iterateFiles(currentSubtitleFolder, new String[]{"srt"}, true);
+		final Iterator<File> iterateFiles = FileUtils.iterateFiles(temporarySubtitleFolder, new String[]{"srt"}, true);
 		while(iterateFiles.hasNext()){
 			final File next = iterateFiles.next();
-			final boolean success = downloadTorrentAndCopySubtitle(next);
-			if(isLazy && success){
+			final boolean success = downloadTorrent(next,shouldRefuseHD,shouldRefuseNonHD);
+			if(stopOnFirstSuccesfullTorrent && success){
 				return true;
 			}
 			successfull = successfull || success;
@@ -109,21 +124,25 @@ public class Downloader {
 	}
 	
 	private void extract(final File compressedFile,final File destinationFolder, final String contentType)throws ZipException, IOException {
-		if(contentType.contains(RAR)){
+		getOutputListener().outVerbose("Extraindo legendas para "+temporarySubtitleFolder.getAbsolutePath());
+		boolean isRar = contentType.contains(RAR);
+		boolean isZip = contentType.contains(ZIP);
+		if(!isRar && !isZip)
+			throw new RuntimeException("Tipo desconhecido: "+contentType);
+		
+		if(isRar){
 			extract.unrar(compressedFile, destinationFolder);
-			return;
 		}
-		if(contentType.contains(ZIP)){
+		if(isZip){
 			extract.unzip(compressedFile, destinationFolder);
-			return;
 		}
-		throw new RuntimeException("Tipo desconhecido: "+contentType);
+		getOutputListener().outVerbose("Extraido com sucesso para "+temporarySubtitleFolder.getAbsolutePath());
 	}
 
-	private boolean downloadTorrentAndCopySubtitle(final File next) {
+	private boolean downloadTorrent(final File subtitleFile, boolean shouldRefuseHD, boolean shouldRefuseNonHD) {
 		String magnetLinkForFile;
-		final String subtitleName = next.getName().replaceAll("\\.[Ss][Rr][Tt]", "");
-		final boolean shouldRefuse = shouldRefuseSubtitleFile(subtitleName);
+		final String subtitleName = subtitleFile.getName().replaceAll("\\.[Ss][Rr][Tt]", "");
+		final boolean shouldRefuse = shouldRefuseSubtitleFile(subtitleName, shouldRefuseHD, shouldRefuseNonHD);
 		if(shouldRefuse){
 			return false;
 		}
@@ -131,30 +150,25 @@ public class Downloader {
 		magnetLinkForFile = torrentSearcher.getMagnetLinkForTermOrNull(subtitleName,getOutputListener());
 		if(magnetLinkForFile == null){
 			getOutputListener().outVerbose("Nenhum torrent para "+subtitleName);
+			subtitleFile.delete();
 			return false;
 		}
 		getOutputListener().outVerbose("Abrindo magnet link no cliente: "+magnetLinkForFile);
 		magnetLinkHandler.openURL(magnetLinkForFile);
 		getOutputListener().out("Magnet link '"+magnetLinkForFile+"' de "+subtitleName+" enviado ao client de torrent.");
-		try {
-			if(subtitlesDestinationFolder != null){				
-				FileUtils.copyFileToDirectory(next, subtitlesDestinationFolder);
-			}
-		} catch (final IOException e) {
-			throw new RuntimeException(e);
-		}
+		
 		return true;
 	}
 	
-	private boolean shouldRefuseSubtitleFile(final String subtitleName) {
+	private boolean shouldRefuseSubtitleFile(final String subtitleName, boolean shouldRefuseHD, boolean shouldRefuseNonHD) {
 		boolean shouldRefuse = false;
 		final boolean isHiDef = subtitleName.contains("720") || subtitleName.contains("1080");
-		if(shouldRefuseHD ){
+		if(shouldRefuseHD){
 			if(isHiDef){
 				shouldRefuse = true;
 			}
 		}
-		if(shouldRefuseNonHD ){
+		if(shouldRefuseNonHD){
 			if(!isHiDef){
 				shouldRefuse = true;
 			}
@@ -169,4 +183,5 @@ public class Downloader {
 	public void setOutputListener(final OutputListener outputListener) {
 		this.outputListener = outputListener;
 	}
+
 }

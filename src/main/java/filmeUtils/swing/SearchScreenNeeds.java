@@ -17,7 +17,6 @@ public class SearchScreenNeeds {
 	private static final String LOW   = "Resolu\u00E7\u00E3o normal";
 	private static final String HIGH  = "Alta defini\u00E7\u00E3o";
 	private static final String ALL   = "Todas as resolu\u00E7\u00F5es";
-	private File subtitleFolder;
 	private final LegendasTv legendasTv;
 	private final Downloader downloader;
 	private final MutableFilmeUtilsOptions filmeUtilsOptions = new MutableFilmeUtilsOptions();
@@ -25,7 +24,6 @@ public class SearchScreenNeeds {
 	public SearchScreenNeeds(final LegendasTv legendasTv, final Downloader downloader) {
 		this.legendasTv = legendasTv;
 		this.downloader = downloader;
-		downloader.setOptions(new MutableFilmeUtilsOptions());
 	}
 	
 	public void download(final String item, final DownloadCallback callback) {
@@ -37,7 +35,7 @@ public class SearchScreenNeeds {
 					public boolean processAndReturnIfMatches(final SubtitleAndLink subAndLink) {
 						String name = subAndLink.name;
 						String link = subAndLink.link;
-						final boolean success = downloader.download(name, link);
+						final boolean success = downloader.download(name, link,filmeUtilsOptions);
 						if(success){
 							torrentWasFound.set(true);
 						}
@@ -51,17 +49,11 @@ public class SearchScreenNeeds {
 
 	public void setSubtitleFolder(final File folder) {
 		FilmeUtilsFolder.getInstance().setSubtitleDestinyFolder(folder.getAbsolutePath());
-		subtitleFolder = folder;
 		filmeUtilsOptions.setSubtitlesDestinationFolder(folder);
-		changeOptions();
-	}
-
-	private void changeOptions() {
-		downloader.setOptions(filmeUtilsOptions);
 	}
 
 	public String getSubtitleFolder() {
-		return subtitleFolder.getAbsolutePath();
+		return filmeUtilsOptions.getSubtitlesDestinationFolderOrNull().getAbsolutePath();
 	}
 
 	public void getNewAddsList(final GUISearchCallback callback) {
@@ -111,7 +103,6 @@ public class SearchScreenNeeds {
 			filmeUtilsOptions.setShouldRefuseHD(true);
 			filmeUtilsOptions.setShouldRefuseNonHD(false);
 		}
-		changeOptions();
 	}
 
 	public String allResolutionsString() {

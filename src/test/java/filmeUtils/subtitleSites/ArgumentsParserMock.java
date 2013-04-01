@@ -40,4 +40,9 @@ class ArgumentsParserMock implements FilmeUtilsOptions {
 		return isLazy;
 	}
 
+	@Override
+	public String subtitleRegex() {
+		throw new RuntimeException("NOT IMPLEMENTED");
+	}
+
 }

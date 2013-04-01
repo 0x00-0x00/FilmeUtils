@@ -177,4 +177,9 @@ public class ArgumentsParserImpl implements FilmeUtilsOptions{
 	public boolean isLazy() {
 		return !isGeedy();
 	}
+
+	@Override
+	public String subtitleRegex() {
+		throw new RuntimeException("NOT IMPLEMENTED");
+	}
 }

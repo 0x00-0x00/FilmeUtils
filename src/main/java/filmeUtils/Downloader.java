@@ -40,14 +40,18 @@ public class Downloader {
 	}
 	
 	public boolean download(String name, String link, FilmeUtilsOptions options) {
-		return download(name, link,options.getSubtitlesDestinationFolderOrNull(),options.isLazy(),options.shouldRefuseHD(),options.shouldRefuseNonHD());
+		return download(name, link,options.getSubtitlesDestinationFolderOrNull(),options.isLazy(),options.subtitleRegex());
+	}
+	
+	public boolean download(String name, String link, boolean stopOnFirstSuccesfullTorrent, String regex) {
+		throw new RuntimeException("NOT IMPLEMENTED");
 	}
 
-	public boolean download(final String name,final String link,File subtitlesDestinationFolder,boolean stopOnFirstSuccesfullTorrent,boolean shouldRefuseHD, boolean shouldRefuseNonHD){
+	public boolean download(final String name,final String link,File subtitlesDestinationFolder,boolean stopOnFirstSuccesfullTorrent,final String subtitleRegex){
 		this.subtitlesDestinationFolder = subtitlesDestinationFolder;
 		createTemporaryFolderForHandlingFiles(name);
 		downloadSubtitlesToTempDir(name,link);
-		boolean success = downloadTorrentsForSubtitles(stopOnFirstSuccesfullTorrent,shouldRefuseHD,shouldRefuseNonHD);
+		boolean success = downloadTorrentsForSubtitles(stopOnFirstSuccesfullTorrent,subtitleRegex);
 		try {
 			copySubtitlesToSubtitlesFolder();
 		} catch (IOException e) {
@@ -109,12 +113,12 @@ public class Downloader {
 		return contentType.contains("text/html") || contentType.isEmpty();
 	}
 
-	private boolean downloadTorrentsForSubtitles(final boolean stopOnFirstSuccesfullTorrent,boolean shouldRefuseHD, boolean shouldRefuseNonHD) {
+	private boolean downloadTorrentsForSubtitles(final boolean stopOnFirstSuccesfullTorrent,final String subtitleRegex) {
 		boolean successfull = false;
 		final Iterator<File> iterateFiles = FileUtils.iterateFiles(temporarySubtitleFolder, new String[]{"srt"}, true);
 		while(iterateFiles.hasNext()){
 			final File next = iterateFiles.next();
-			final boolean success = downloadTorrent(next,shouldRefuseHD,shouldRefuseNonHD);
+			final boolean success = downloadTorrent(next,subtitleRegex);
 			if(stopOnFirstSuccesfullTorrent && success){
 				return true;
 			}
@@ -139,10 +143,10 @@ public class Downloader {
 		getOutputListener().outVerbose("Extraido com sucesso para "+temporarySubtitleFolder.getAbsolutePath());
 	}
 
-	private boolean downloadTorrent(final File subtitleFile, boolean shouldRefuseHD, boolean shouldRefuseNonHD) {
+	private boolean downloadTorrent(final File subtitleFile, final String subtitleRegex) {
 		String magnetLinkForFile;
 		final String subtitleName = subtitleFile.getName().replaceAll("\\.[Ss][Rr][Tt]", "");
-		final boolean shouldRefuse = shouldRefuseSubtitleFile(subtitleName, shouldRefuseHD, shouldRefuseNonHD);
+		final boolean shouldRefuse = shouldRefuseSubtitleFile(subtitleName, subtitleRegex);
 		if(shouldRefuse){
 			return false;
 		}
@@ -160,20 +164,8 @@ public class Downloader {
 		return true;
 	}
 	
-	private boolean shouldRefuseSubtitleFile(final String subtitleName, boolean shouldRefuseHD, boolean shouldRefuseNonHD) {
-		boolean shouldRefuse = false;
-		final boolean isHiDef = subtitleName.contains("720") || subtitleName.contains("1080");
-		if(shouldRefuseHD){
-			if(isHiDef){
-				shouldRefuse = true;
-			}
-		}
-		if(shouldRefuseNonHD){
-			if(!isHiDef){
-				shouldRefuse = true;
-			}
-		}
-		return shouldRefuse;
+	private boolean shouldRefuseSubtitleFile(final String subtitleName, final String subtitlePattern) {
+		return subtitleName.toLowerCase().matches(subtitlePattern);
 	}
 
 	public OutputListener getOutputListener() {

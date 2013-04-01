@@ -91,16 +91,13 @@ public class SearchScreenNeeds {
 
 	public void setResolution(final String resolution) {
 		if(resolution.equals(ALL)){
-			filmeUtilsOptions.setShouldRefuseHD(false);
-			filmeUtilsOptions.setShouldRefuseNonHD(false);
+			filmeUtilsOptions.setShouldAcceptAll();
 		}
 		if(resolution.equals(HIGH)){
-			filmeUtilsOptions.setShouldRefuseHD(false);
-			filmeUtilsOptions.setShouldRefuseNonHD(true);
+			filmeUtilsOptions.setHD();
 		}
 		if(resolution.equals(LOW)){
-			filmeUtilsOptions.setShouldRefuseHD(true);
-			filmeUtilsOptions.setShouldRefuseNonHD(false);
+			filmeUtilsOptions.setNormalResolution();
 		}
 	}
 

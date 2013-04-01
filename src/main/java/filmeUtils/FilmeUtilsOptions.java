@@ -4,13 +4,12 @@ import java.io.File;
 
 public interface FilmeUtilsOptions {
 
-	String getUser();
-	String getPassword();
-	boolean shouldRefuseNonHD();
-	boolean shouldRefuseHD();
-	File getSubtitlesDestinationFolderOrNull();
-	boolean isVerbose();
-	boolean isGeedy();
-	boolean isLazy();
+	public String getUser();
+	public String getPassword();
+	public String subtitleRegex();
+	public File getSubtitlesDestinationFolderOrNull();
+	public boolean isVerbose();
+	public boolean isGeedy();
+	public boolean isLazy();
 
 }

@@ -6,8 +6,7 @@ import filmeUtils.FilmeUtilsOptions;
 
 public class MutableFilmeUtilsOptions implements FilmeUtilsOptions {
 
-	private boolean shouldRefuseHD;
-	private boolean shouldRefuseNonHD;
+	private String subtitleRegex;
 	private File subtitlesFolder;
 
 	public String getUser() {
@@ -18,20 +17,16 @@ public class MutableFilmeUtilsOptions implements FilmeUtilsOptions {
 		throw new RuntimeException("Method not implemented");
 	}
 
-	public boolean shouldRefuseNonHD() {
-		return shouldRefuseNonHD;
+	public void setNormalResolution() {
+		subtitleRegex = "^(720|1080)";
 	}
 	
-	public void setShouldRefuseHD(final boolean shouldRefuseHD) {
-		this.shouldRefuseHD = shouldRefuseHD;
+	public void setHD() {
+		subtitleRegex = "(720|1080)";
 	}
 	
-	public void setShouldRefuseNonHD(final boolean shouldRefuseNonHD) {
-		this.shouldRefuseNonHD = shouldRefuseNonHD;
-	}
-
-	public boolean shouldRefuseHD() {
-		return this.shouldRefuseHD;
+	public void setShouldAcceptAll() {
+		subtitleRegex = ".*";
 	}
 
 	public File getSubtitlesDestinationFolderOrNull() {
@@ -54,5 +49,9 @@ public class MutableFilmeUtilsOptions implements FilmeUtilsOptions {
 		this.subtitlesFolder = subtitlesFolder;
 	}
 
+	@Override
+	public String subtitleRegex() {
+		return subtitleRegex;
+	}
 
 }

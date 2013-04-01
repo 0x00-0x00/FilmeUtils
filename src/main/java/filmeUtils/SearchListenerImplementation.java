@@ -38,18 +38,6 @@ final class SearchListenerImplementation implements SubtitleLinkSearchCallback {
 	}
 
 	private boolean shouldRefuseSubtitleFile(final String subtitleName) {
-		boolean shouldRefuse = false;
-		final boolean isHiDef = subtitleName.contains("720") || subtitleName.contains("1080");
-		if(cli.shouldRefuseHD()){
-			if(isHiDef){
-				shouldRefuse = true;
-			}
-		}
-		if(cli.shouldRefuseNonHD()){
-			if(!isHiDef){
-				shouldRefuse = true;
-			}
-		}
-		return shouldRefuse;
+		return subtitleName.toLowerCase().matches(cli.subtitleRegex());
 	}
 }

@@ -1,44 +1,47 @@
-FilmeUtils é uma ferramenta para pegar filmes e séries com legendas tendo o mínimo de trabalho possível.
+FilmeUtils é uma ferramenta para baixar filmes e séries com legendas.
 
-Download : https://github.com/downloads/beothorn/FilmeUtils/filmeUtils-3.0.jar
+Download :  
+https://github.com/downloads/beothorn/FilmeUtils/filmeUtils-3.0.jar
 
 Do que você precisa:
  - Java 1.6 ou maior instalado. - www.java.com/
  - Um cliente de torrent qualquer, recomendo o qbittorrent (http://www.qbittorrent.org/).
 
-Como usar  
-Para abrir a GUI
-Faça download do jar e execute
-ou
-java -jar filmeUtils.jar
-ou
-java -cp filmeUtils.jar Gui
+[screenshot] 
 
-Para usar a linha de comando
-java -cp filmeUtils.jar Command
+Comandos
 
-Para so procurar a legenda
-java -cp filmeUtils.jar Subtitle
+-h   
+	Modo console
 
-Para so procurar um link de torrent
-java -cp filmeUtils.jar Torrent
+-lt <nome>  
+	procura e faz download da legenda e do torrent correspondente
+	
+-r <regex>  
+	aplica regex as legendas encontradas e guarda somente as que dão match, usar em conjunto com -l ou -lt
 
-Para executar como Daemon, crie um arquivo de regex com o nome downloadThis na pasta .filmeutils que fica no seu home.
-O downloadThis deve ter uma regex por linha. ex:
-.*meu.*seriado.*
-.*meu.*outro.*seriado.*
+-l <legenda>  
+	procura e faz download só da legenda
+	
+-t <torrent>  
+	procura e faz download só do torrent
+	
+-f [arquivo de regex]  
+	Usa o arquivo de regex para procurar legendas e seus torrents nas novas legendas  
+	Se não for passado o camino, usa o arquivo padrão em .filmeUtils/downloadThis  
+	Formato do arquivo de regex  
+	<padrao para pacote de legendas>[:padrao para legenda]  
+	ex:  
+	.*meu.*seriado.*so.*em.*hd.*:720  
+	.*meu.*seriado.*qqer.*resolucao.*  
+	
+-p <nome>  
+	somente lista os pacotes de legendas  
+	
+-n  
+	lista novas legendas  
 
-Para executar:
-java -cp filmeUtils.jar Daemon
 
-O Daemon pega todos os torrents equivalentes as legendas do zip
 
-Sites onde a procura é feita:
 
-Legendas:  
-legendas.tv  
 
-Torrents:  
-piratebaySe
-rarbg  
-bitsnoop

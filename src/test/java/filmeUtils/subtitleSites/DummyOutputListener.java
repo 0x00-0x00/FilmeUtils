@@ -2,7 +2,7 @@ package filmeUtils.subtitleSites;
 
 import org.apache.commons.cli.Options;
 
-import filmeUtils.OutputListener;
+import filmeUtils.commons.OutputListener;
 
 public class DummyOutputListener implements OutputListener {
 

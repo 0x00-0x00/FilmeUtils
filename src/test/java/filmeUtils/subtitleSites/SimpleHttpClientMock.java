@@ -9,7 +9,7 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.ClientProtocolException;
 
-import filmeUtils.http.SimpleHttpClient;
+import filmeUtils.utils.http.SimpleHttpClient;
 
 class SimpleHttpClientMock implements SimpleHttpClient {
 

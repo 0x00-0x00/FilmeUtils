@@ -7,41 +7,65 @@ Do que você precisa:
  - Java 1.6 ou maior instalado. - www.java.com/
  - Um cliente de torrent qualquer, recomendo o qbittorrent (http://www.qbittorrent.org/).
 
-[screenshot] 
+[screenshot]  
 
-Comandos
+Comandos  
 
--h   
-	Modo console
+Sem argumentos  
+	Abre a gui.  
 
--lt <nome>  
-	procura e faz download da legenda e do torrent correspondente
+-h ou --help  
+	Mostra a ajuda  
+
+-lt <termo da procura da legenda>  [-r <regex para arquivos de legenda>] [-d <diretório de destino>]  
+	Procura e faz download do pacote de legendas,   
+	aplica a regex nas legendas do arquivo e tenta pegar o torrent das legendas que dão match.   
+	Copia as legendas que tem torrents para o diretório de destino.  
+	Se o destino não for especificado, usa-se o que estiver no HOME/.filmeUtils/subtitlefolder  
+	O termo de procura não é uma regex.    
+	Ex:  
+	java -jar filmeUtils.jar -lt "game of" -r ".*720.*" -d "/home/foo/Downloads"  
+
+-l <termo da procura da legenda>  [-r <regex para arquivos de legenda>] [-d <diretório de destino>]  
+	Procura e faz download do pacote de legendas,   
+	aplica a regex nas legendas do pacote e copia as legendas que dão match para o destino.    
+	Se o destino não for especificado, usa-se o que estiver no HOME/.filmeUtils/subtitlefolder   
+	O termo de procura não é uma regex.
+	Ex:  
+	java -jar filmeUtils.jar -l "game of" -r ".*720.*" -d "/home/foo/Downloads"     
+		
+-t <termo da procura do torrent>  
+	Procura e faz download do torrent com mais seeds.  
+	O termo de procura não é uma regex.      
+	Ex:  
+	java -jar filmeUtils.jar -t "game of S01E01"  
 	
--r <regex>  
-	aplica regex as legendas encontradas e guarda somente as que dão match, usar em conjunto com -l ou -lt
-
--l <legenda>  
-	procura e faz download só da legenda
-	
--t <torrent>  
-	procura e faz download só do torrent
+-n  [-r <regex para pacote de legenda>[:regex para legenda]] [-d <diretório de destino>]  
+	Se não for passado uma regex, mostra a lista legendas adicionadas recentemente.    
+	Se for passada a regex, faz download do pacote de legendas que dá match,   
+	e se for passada a segunda parte da regex com :  
+	aplica regex nos arquivos de legendas.  
+	Tenta pegar o torrent das legendas que derão match e     
+	copia as legendas que tem torrents para o diretório de destino.  
+	Se o destino não for especificado, usa-se o que estiver no HOME/.filmeUtils/subtitlefolder    
+	Ex:  
+	java -jar filmeUtils.jar -n  
+		Lista os pacotes de legendas novos
+	java -jar filmeUtils.jar -n -r ".*game.*of.*:.*720.*" -d "/home/foo/Downloads"  
+		   
 	
 -f [arquivo de regex]  
-	Usa o arquivo de regex para procurar legendas e seus torrents nas novas legendas  
-	Se não for passado o camino, usa o arquivo padrão em .filmeUtils/downloadThis  
+	Procura nas legendas adicionadas recentemente os pacotes de legenda que   
+	dão match com as regex no arquivo passado.     
+	Para os pacotes de legenda que dão match, aplica a segunda regex nos arquivos de legenda   
+	e faz download da legenda e do torrent.    
+	Se não for passado o caminho do arquivo de regex, usa o arquivo padrão em .filmeUtils/downloadThis        
 	Formato do arquivo de regex  
-	<padrao para pacote de legendas>[:padrao para legenda]  
+	<regex para pacote de legendas>[:regex para legenda]  
 	ex:  
 	.*meu.*seriado.*so.*em.*hd.*:720  
 	.*meu.*seriado.*qqer.*resolucao.*  
 	
--p <nome>  
-	somente lista os pacotes de legendas  
-	
--n  
-	lista novas legendas  
-
-
-
-
-
+-p <termo da procura>  
+	Somente lista os pacotes de legendas que batem com a procura e suas legendas.  
+	O termo de procura não é uma regex.     

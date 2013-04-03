@@ -2,78 +2,59 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import filmeUtils.Downloader;
-import filmeUtils.FilmeUtilsFolder;
-import filmeUtils.VerboseSysOut;
-import filmeUtils.extraction.ExtractorImpl;
-import filmeUtils.fileSystem.FileSystem;
-import filmeUtils.fileSystem.FileSystemImpl;
-import filmeUtils.http.MagnetLinkHandler;
-import filmeUtils.http.OSMagnetLinkHandler;
-import filmeUtils.http.SimpleHttpClient;
-import filmeUtils.http.SimpleHttpClientImpl;
-import filmeUtils.subtitleSites.LegendasTv;
-import filmeUtils.subtitleSites.NewSubtitleLinkFoundCallback;
-import filmeUtils.subtitleSites.SubtitleAndLink;
-import filmeUtils.torrentSites.TorrentSearcher;
-import filmeUtils.torrentSites.TorrentSearcherImpl;
+import filmeUtils.commons.FilmeUtilsFolder;
+import filmeUtils.commons.VerboseSysOut;
+import filmeUtils.downloader.Downloader;
+import filmeUtils.subtitle.SubtitleRegexUtils;
+import filmeUtils.subtitle.subtitleSites.LegendasTv;
+import filmeUtils.subtitle.subtitleSites.SubtitleAndLink;
+import filmeUtils.subtitle.subtitleSites.SubtitleLinkSearchCallback;
+import filmeUtils.torrent.torrentSites.TorrentSearcher;
+import filmeUtils.torrent.torrentSites.TorrentSearcherImpl;
+import filmeUtils.utils.extraction.ExtractorImpl;
+import filmeUtils.utils.fileSystem.FileSystem;
+import filmeUtils.utils.fileSystem.FileSystemImpl;
+import filmeUtils.utils.http.MagnetLinkHandler;
+import filmeUtils.utils.http.OSMagnetLinkHandler;
+import filmeUtils.utils.http.SimpleHttpClient;
+import filmeUtils.utils.http.SimpleHttpClientImpl;
 
 
 public class Daemon {
 
 	private static final FilmeUtilsFolder filmeUtilsFolder = FilmeUtilsFolder.getInstance();
 	private static final File cookieFile = filmeUtilsFolder.getCookiesFile();
-	private static final int CHECK_INTERVAL_MILLIS = 60000 * 10;
-	private static final int VALUES_PER_PAGE = 23;
-	private static final int QNTY_OF_SUBTITLES_TO_SCAN = VALUES_PER_PAGE*3;
 	private SimpleHttpClient httpclient;
 	private VerboseSysOut output;
 	private LegendasTv legendasTv;
 	private Downloader downloader;
 
 	public static void main(String[] args) throws IOException {
-		if(args.length == 0)
-			new Daemon(true);
-		else
-			new Daemon(!args[0].equals("onlyOnce"));
+		new Daemon();
 	}
 	
-	public Daemon(boolean continuousSearch) throws IOException {
+	public Daemon() throws IOException {
 		ensurePatternsToDownloadFileExistsOrCry();
 		httpclient = new SimpleHttpClientImpl(cookieFile);
 		output = new VerboseSysOut();
-		
 		logonOnSubtitleSite();
-		
     	createDownloader();
-		
-		do{
-			try {
-				searchAndDownload();
-				if(continuousSearch) Thread.sleep(CHECK_INTERVAL_MILLIS);
-			} catch (Exception e) {
-				FilmeUtilsFolder.getInstance().writeErrorFile(e);// ignore and go on
-			}
-		}while(continuousSearch);
+		searchAndDownload();
 	}
 
 	private void searchAndDownload() {
 		output.out("Procurando novas legendas.");
 		
-		NewSubtitleLinkFoundCallback searchCallback = new NewSubtitleLinkFoundCallback(){@Override public void processAndReturnIfMatches(SubtitleAndLink subAndLink) {
+		SubtitleLinkSearchCallback searchCallback = new SubtitleLinkSearchCallback(){@Override public void process(SubtitleAndLink subAndLink) {
 			List<String> alreadyDownloadedFiles = filmeUtilsFolder.getAlreadyDownloaded();
 			List<String> subtitlesToDownloadPatterns = filmeUtilsFolder.getSubtitlesToDownloadPatterns();
 			String name = subAndLink.name;
 			String link = subAndLink.link;
 			
 			for (String pattern : subtitlesToDownloadPatterns) {
-				if (name.toLowerCase().matches(pattern) && !alreadyDownloadedFiles.contains(name)) {
+				if (name.toLowerCase().matches(SubtitleRegexUtils.getSubtitlesZipRegex(pattern)) && !alreadyDownloadedFiles.contains(name)) {
 					output.out("Pattern matched: "+name);
-					String[] splitted = pattern.split(":");
-					String subtitleRegex = ".*";
-					if(splitted.length > 1)
-						subtitleRegex = splitted[1];
-					boolean success = downloader.download(name, link,filmeUtilsFolder.getSubtitlesDestination(),false, subtitleRegex);
+					boolean success = downloader.download(name, link,filmeUtilsFolder.getSubtitlesDestination(), SubtitleRegexUtils.getSubtitleRegex(pattern));
 					if(success){
 						filmeUtilsFolder.addAlreadyDownloaded(name);
 					}
@@ -81,7 +62,7 @@ public class Daemon {
 			}
 		}};
 		
-		legendasTv.getNewer(QNTY_OF_SUBTITLES_TO_SCAN, searchCallback);
+		legendasTv.getNewer(searchCallback);
 	}
 
 	private void createDownloader() {
@@ -94,7 +75,6 @@ public class Daemon {
 
 	private void logonOnSubtitleSite() {
 		legendasTv = new LegendasTv(httpclient, output);
-		legendasTv.login();
 	}
 
 	private void ensurePatternsToDownloadFileExistsOrCry() {

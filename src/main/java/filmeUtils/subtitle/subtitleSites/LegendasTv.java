@@ -28,10 +28,15 @@ public class LegendasTv {
 	private final SimpleHttpClient httpclient;
 	private final OutputListener outputListener;
 	
-	public LegendasTv(final SimpleHttpClient httpclient, final OutputListener outputListener) {
+	public LegendasTv(final SimpleHttpClient httpclient, final OutputListener outputListener, final boolean login) {
 		this.httpclient = httpclient;
 		this.outputListener = outputListener;
-		login();
+		if(login)
+			login();
+	}
+	
+	public LegendasTv(final SimpleHttpClient httpclient, final OutputListener outputListener) {
+		this(httpclient, outputListener, true);
 	}
 	
 	public void login(){		

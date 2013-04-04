@@ -42,7 +42,7 @@ public class Subtitle {
 	}
 
 	public void download(String searchTerm, final File destDir) {
-		download(searchTerm,destDir,".*");
+		download(searchTerm,".*",destDir);
 	}
 	
 	public void downloadNewer(final File destDir,final String zipRegex,final String subtitleRegex) {
@@ -56,7 +56,7 @@ public class Subtitle {
 		legendasTv.getNewer(searchListener);
 	}
 	
-	public void download(String searchTerm, final File destDir,final String subtitleRegex) {
+	public void download(String searchTerm, final String subtitleRegex,final File destDir) {
 		SubtitleLinkSearchCallback searchListener = new SubtitleLinkSearchCallback() {	
 			@Override
 			public void process(SubtitleAndLink nameAndlink) {

@@ -55,7 +55,7 @@ public class Downloader {
 	public void download(final String searchTerm, File subtitlesDestinationFolder,final String subtitleRegex){
 		Subtitle subtitle = new Subtitle(outputListener,httpclient,legendasTv);
 		File tmpFolder = createTempDir();
-		subtitle.download(searchTerm, tmpFolder, subtitleRegex);
+		subtitle.download(searchTerm, subtitleRegex, tmpFolder);
 		copySubtitlesThatHaveTorrentToDir(tmpFolder, subtitlesDestinationFolder);
 	}
 

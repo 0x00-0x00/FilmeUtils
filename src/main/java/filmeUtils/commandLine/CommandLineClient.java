@@ -3,7 +3,6 @@ package filmeUtils.commandLine;
 import java.io.File;
 
 import filmeUtils.commons.OutputListener;
-import filmeUtils.commons.VerboseSysOut;
 import filmeUtils.downloader.Downloader;
 import filmeUtils.subtitle.Subtitle;
 import filmeUtils.subtitle.subtitleSites.LegendasTv;
@@ -12,13 +11,11 @@ import filmeUtils.subtitle.subtitleSites.SubtitleLinkSearchCallback;
 import filmeUtils.torrent.torrentSites.TorrentSearcher;
 import filmeUtils.torrent.torrentSites.TorrentSearcherImpl;
 import filmeUtils.utils.extraction.Extractor;
-import filmeUtils.utils.extraction.ExtractorImpl;
 import filmeUtils.utils.fileSystem.FileSystem;
 import filmeUtils.utils.fileSystem.FileSystemImpl;
 import filmeUtils.utils.http.MagnetLinkHandler;
 import filmeUtils.utils.http.OSMagnetLinkHandler;
 import filmeUtils.utils.http.SimpleHttpClient;
-import filmeUtils.utils.http.SimpleHttpClientImpl;
 
 public class CommandLineClient implements CommandLine {
 	

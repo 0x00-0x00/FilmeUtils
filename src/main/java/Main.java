@@ -19,38 +19,55 @@ public class Main {
 			CommandLineClient commandLineClient = createCommandLine();
 			String token = args[0];
 			if(token.equals("-p")){
-				if(args.length != 2)
-					throw new RuntimeException("Uso: -p <termo da procura>");
-				String subtitleSearchTerm = args[1];
-				commandLineClient.p(subtitleSearchTerm);
+				p(args, commandLineClient);
 			}
 			if(token.equals("-lt")){
-				if(args.length < 2 || args.length > 6)
-					throw new RuntimeException("Uso: -lt <termo da procura da legenda>  [-r <regex para arquivos de legenda>] [-d <diretório de destino>]");
-				String subtitleSearchTerm = args[1];
-				String regex = ".*";
-				File destinyDirectory = FilmeUtilsFolder.getInstance().getSubtitlesDestination();
-				if(args.length > 3){
-					if(!args[2].equals("-r") && !args[2].equals("-d"))
-						throw new RuntimeException("Uso: -lt <termo da procura da legenda>  [-r <regex para arquivos de legenda>] [-d <diretório de destino>]");
-					if(args[2].equals("-r")){
-						regex = args[3];
-					}
-					if(args[2].equals("-d")){
-						destinyDirectory = new File(args[3]);
-					}
-				}
-				if(args.length > 5){
-					if(args[4].equals("-d")){
-						destinyDirectory = new File(args[5]);
-					}else{
-						throw new RuntimeException("Uso: -lt <termo da procura da legenda>  [-r <regex para arquivos de legenda>] [-d <diretório de destino>]");
-					}
-				}
-				commandLineClient.lt(subtitleSearchTerm, regex, destinyDirectory);
+				lt(args, commandLineClient);
+			}
+			if(token.equals("-n")){
+				n(args, commandLineClient);
 			}
 		}
     }
+
+	private static void n(String[] args, CommandLineClient commandLineClient) {
+		throw new RuntimeException("NOT IMPLEMENTED");
+	}
+
+	private static void lt(final String[] args,
+			CommandLineClient commandLineClient) {
+		if(args.length < 2 || args.length > 6)
+			throw new RuntimeException("Uso: -lt <termo da procura da legenda>  [-r <regex para arquivos de legenda>] [-d <diretório de destino>]");
+		String subtitleSearchTerm = args[1];
+		String regex = ".*";
+		File destinyDirectory = FilmeUtilsFolder.getInstance().getSubtitlesDestination();
+		if(args.length > 3){
+			if(!args[2].equals("-r") && !args[2].equals("-d"))
+				throw new RuntimeException("Uso: -lt <termo da procura da legenda>  [-r <regex para arquivos de legenda>] [-d <diretório de destino>]");
+			if(args[2].equals("-r")){
+				regex = args[3];
+			}
+			if(args[2].equals("-d")){
+				destinyDirectory = new File(args[3]);
+			}
+		}
+		if(args.length > 5){
+			if(args[4].equals("-d")){
+				destinyDirectory = new File(args[5]);
+			}else{
+				throw new RuntimeException("Uso: -lt <termo da procura da legenda>  [-r <regex para arquivos de legenda>] [-d <diretório de destino>]");
+			}
+		}
+		commandLineClient.lt(subtitleSearchTerm, regex, destinyDirectory);
+	}
+
+	private static void p(final String[] args,
+			CommandLineClient commandLineClient) {
+		if(args.length != 2)
+			throw new RuntimeException("Uso: -p <termo da procura>");
+		String subtitleSearchTerm = args[1];
+		commandLineClient.p(subtitleSearchTerm);
+	}
 
 	private static CommandLineClient createCommandLine() {
 		final SimpleHttpClient httpclient = new SimpleHttpClientImpl();

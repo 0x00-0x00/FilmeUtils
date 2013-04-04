@@ -20,7 +20,7 @@ import filmeUtils.utils.http.SimpleHttpClientImpl;
 
 public class Gui {
 
-	public static void open(){
+	public void open(){
 		final ExtractorImpl extract = new ExtractorImpl();
 		final FileSystem fileSystem = new FileSystemImpl();
 		final File cookieFile = FilmeUtilsFolder.getInstance().getCookiesFile();

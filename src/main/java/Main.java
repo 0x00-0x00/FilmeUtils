@@ -24,7 +24,13 @@ public class Main {
 				h(commandLineClient);
 				return;
 			}
+			if(token.equals("-t")){
+				t(args, commandLineClient);
+				return;
+			}
+			
 			legendasTv.login();
+			
 			if(token.equals("-lt")){
 				lt(args, commandLineClient);
 				return;
@@ -43,6 +49,11 @@ public class Main {
 			}
 		}
     }
+
+	private static void t(String[] args, CommandLineClient commandLineClient) {
+		if(args.length != 2) throw new RuntimeException("Uso: -t <termo da procura do torrent>");
+		commandLineClient.t(args[1]);
+	}
 
 	private static void l(String[] args, CommandLineClient commandLineClient) {
 		String errorMessage = "Uso: -l <termo da procura da legenda>  [-r <regex para arquivos de legenda>] [-d <diretório de destino>]";
@@ -77,8 +88,7 @@ public class Main {
 	}
 
 	private static SubSearchTermRegexAndDestDir getRegexAnDestDir(final String[] args, String errorMessage) {
-		if(args.length < 2 || args.length > 6)
-			throw new RuntimeException(errorMessage);
+		if(args.length < 2 || args.length > 6) throw new RuntimeException(errorMessage);
 		String subtitleSearchTerm = args[1];
 		String regex = ".*";
 		File destinyDirectory = FilmeUtilsFolder.getInstance().getSubtitlesDestination();

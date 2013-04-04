@@ -8,6 +8,7 @@ import filmeUtils.subtitle.Subtitle;
 import filmeUtils.subtitle.subtitleSites.LegendasTv;
 import filmeUtils.subtitle.subtitleSites.SubtitleAndLink;
 import filmeUtils.subtitle.subtitleSites.SubtitleLinkSearchCallback;
+import filmeUtils.torrent.Torrent;
 import filmeUtils.torrent.torrentSites.TorrentSearcher;
 import filmeUtils.torrent.torrentSites.TorrentSearcherImpl;
 import filmeUtils.utils.extraction.Extractor;
@@ -146,7 +147,8 @@ public class CommandLineClient implements CommandLine {
 
 	@Override
 	public void t(String torrentSearchTerm) {
-		throw new RuntimeException("NOT IMPLEMENTED");
+		Torrent torrent = new Torrent(output);
+		torrent.download(torrentSearchTerm);
 	}
 
 	@Override

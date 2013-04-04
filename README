@@ -64,7 +64,7 @@ Sem argumentos
 	destino não for	especificado, usa-se o que estiver  
 	no HOME/.filmeUtils/subtitlefolder   
 	Se não for passado o caminho do arquivo de regex,  
-	usa-se o arquivo padrão em .filmeUtils/downloadThis  
+	usa-se o arquivo padrão em HOME/.filmeUtils/downloadThis  
 	Formato do arquivo de regex  
 	<regex para pacote de legendas>[:regex para legenda]  
 	ex:  
@@ -73,4 +73,12 @@ Sem argumentos
 
 -p <termo da procura>  
 	Somente lista os pacotes de legendas que batem com a procura e suas legendas.  
-	O termo de procura não é uma regex.     
+	O termo de procura não é uma regex.   
+	
+-auto
+	Procura nas legendas adicionadas recentemente as legendas que dão match com as  
+	regex no arquivo HOME/.filmeUtils/downloadThis . Procura o torrent para essas  
+	legendas, se encontrar, baixa o torrent para o diretório configurado em  
+	HOME/.filmeUtils/subtitlefolder . Depois adiciona o nome do pacote de legendas  
+	no arquivo HOME/.filmeUtils/alreadyDownloaded . Se um torrent/legenda já foi  
+	pego, ele não faz o download.

@@ -5,7 +5,6 @@ import java.io.File;
 public interface CommandLine {
 	
 	public void h();
-	public void lt(final String subtitleSearchTerm, final File destinantion);
 	public void lt(final String subtitleSearchTerm, final String regexToApplyOnSubtitlesFiles, final File destinantion);
 	public void l(final String subtitleSearchTerm, final File destinantion);
 	public void l(final String subtitleSearchTerm, final String regexToApplyOnSubtitlesFiles, final File destinantion);

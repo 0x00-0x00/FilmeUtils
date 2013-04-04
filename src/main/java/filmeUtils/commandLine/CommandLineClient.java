@@ -3,18 +3,29 @@ package filmeUtils.commandLine;
 import java.io.File;
 
 import filmeUtils.commons.OutputListener;
+import filmeUtils.commons.VerboseSysOut;
+import filmeUtils.downloader.Downloader;
 import filmeUtils.subtitle.Subtitle;
 import filmeUtils.subtitle.subtitleSites.LegendasTv;
 import filmeUtils.subtitle.subtitleSites.SubtitleAndLink;
 import filmeUtils.subtitle.subtitleSites.SubtitleLinkSearchCallback;
+import filmeUtils.torrent.torrentSites.TorrentSearcher;
+import filmeUtils.torrent.torrentSites.TorrentSearcherImpl;
 import filmeUtils.utils.extraction.Extractor;
+import filmeUtils.utils.extraction.ExtractorImpl;
+import filmeUtils.utils.fileSystem.FileSystem;
+import filmeUtils.utils.fileSystem.FileSystemImpl;
+import filmeUtils.utils.http.MagnetLinkHandler;
+import filmeUtils.utils.http.OSMagnetLinkHandler;
 import filmeUtils.utils.http.SimpleHttpClient;
+import filmeUtils.utils.http.SimpleHttpClientImpl;
 
 public class CommandLineClient implements CommandLine {
 	
 	private final SimpleHttpClient httpclient;
 	private final LegendasTv legendasTv;
 	private final OutputListener output;
+	private Extractor extractor;
 
 	public CommandLineClient(
 			final SimpleHttpClient httpclient,
@@ -23,6 +34,7 @@ public class CommandLineClient implements CommandLine {
 			final OutputListener output) {
 		this.httpclient = httpclient;
 		this.legendasTv = legendasTv;
+		this.extractor = extract;
 		this.output = output;
 	}
 
@@ -46,14 +58,14 @@ public class CommandLineClient implements CommandLine {
 	}
 
 	@Override
-	public void lt(String subtitleSearchTerm, File destinantion) {
-		throw new RuntimeException("NOT IMPLEMENTED");
-	}
-
-	@Override
-	public void lt(String subtitleSearchTerm,
-			String regexToApplyOnSubtitlesFiles, File destinantion) {
-		throw new RuntimeException("NOT IMPLEMENTED");
+	public void lt(String subtitleSearchTerm, String regexToApplyOnSubtitlesFiles, File destinantion) {
+    	final MagnetLinkHandler magnetLinkHandler = new OSMagnetLinkHandler();
+        final TorrentSearcher torrentSearcher = new TorrentSearcherImpl(httpclient);
+		final FileSystem fileSystem = new FileSystemImpl();
+		LegendasTv legendasTv = new LegendasTv(httpclient, output);
+		Downloader downloader = new Downloader(extractor, fileSystem, httpclient, torrentSearcher, magnetLinkHandler, legendasTv, output);
+		output.out("Procurando "+subtitleSearchTerm+" aplicando regex "+regexToApplyOnSubtitlesFiles+" salvando em "+destinantion.getAbsolutePath());
+		downloader.download(subtitleSearchTerm, destinantion, regexToApplyOnSubtitlesFiles);
 	}
 
 	@Override

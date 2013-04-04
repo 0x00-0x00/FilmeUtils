@@ -76,9 +76,9 @@ Sem argumentos
 	O termo de procura não é uma regex.   
 	
 -auto
-	Procura nas legendas adicionadas recentemente as legendas que dão match com as  
-	regex no arquivo HOME/.filmeUtils/downloadThis . Procura o torrent para essas  
-	legendas, se encontrar, baixa o torrent para o diretório configurado em  
-	HOME/.filmeUtils/subtitlefolder . Depois adiciona o nome do pacote de legendas  
-	no arquivo HOME/.filmeUtils/alreadyDownloaded . Se um torrent/legenda já foi  
-	pego, ele não faz o download.
+	Procura nas legendas adicionadas recentemente as legendas que dão match  
+	com as regex no arquivo HOME/.filmeUtils/downloadThis . Procura o torrent  
+	para essas legendas, se encontrar, baixa o torrent para o diretório  
+	configurado em HOME/.filmeUtils/subtitlefolder . Depois adiciona o nome  
+	do pacote de legendas no arquivo HOME/.filmeUtils/alreadyDownloaded . Se  
+	um torrent/legenda já foi pego, ele não faz o download.

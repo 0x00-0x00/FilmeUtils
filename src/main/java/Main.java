@@ -6,6 +6,8 @@ import filmeUtils.commons.FilmeUtilsFolder;
 import filmeUtils.commons.VerboseSysOut;
 import filmeUtils.gui.Gui;
 import filmeUtils.subtitle.subtitleSites.LegendasTv;
+import filmeUtils.utils.RegexForSubPackageAndSubFile;
+import filmeUtils.utils.RegexUtils;
 import filmeUtils.utils.extraction.ExtractorImpl;
 import filmeUtils.utils.http.SimpleHttpClient;
 import filmeUtils.utils.http.SimpleHttpClientImpl;
@@ -70,6 +72,24 @@ public class Main {
 			commandLineClient.n();
 			return;
 		}
+		String errorMessage = "Uso: -n  [-r <regex para pacote de legenda>[:regex para legenda]] [-d <diretório de destino>]";
+		if(args.length > 5) throw new RuntimeException(errorMessage);
+		String regex = ".*";
+		File destinyDirectory = FilmeUtilsFolder.getInstance().getSubtitlesDestination();
+		if(!args[1].equals("-r") && !args[1].equals("-d"))
+			throw new RuntimeException(errorMessage);
+		if(args[1].equals("-r")){
+			regex = args[2];
+			if(!args[3].equals("-d")) throw new RuntimeException(errorMessage);
+			destinyDirectory = new File(args[4]);
+		}
+		if(args[1].equals("-d")){
+			destinyDirectory = new File(args[2]);
+		}
+		
+		RegexForSubPackageAndSubFile splittedRegex = RegexUtils.getSplittedRegex(regex);
+		
+		commandLineClient.n(splittedRegex.packageRegex,splittedRegex.fileRegex,destinyDirectory);
 	}
 
 	private static class SubSearchTermRegexAndDestDir{

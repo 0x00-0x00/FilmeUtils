@@ -159,9 +159,17 @@ public class CommandLineClient implements CommandLine {
 	}
 
 	@Override
-	public void n(String regexToApplyOnSubtitlesPackage,
-			String regexToApplyOnSubtitlesFiles, File destinantion) {
-		throw new RuntimeException("NOT IMPLEMENTED");
+	public void n(String regexToApplyOnSubtitlesPackage, String regexToApplyOnSubtitlesFiles, File destinantion) {
+		output.out("Procurando "+regexToApplyOnSubtitlesPackage+" nas legendas adicionadas recentemente");
+		output.out("Aplicando "+regexToApplyOnSubtitlesFiles+" nos arquivos de legendas");
+		output.out("Salvando em "+destinantion.getAbsolutePath());
+		
+		final MagnetLinkHandler magnetLinkHandler = new OSMagnetLinkHandler();
+        final TorrentSearcher torrentSearcher = new TorrentSearcherImpl(httpclient);
+		final FileSystem fileSystem = new FileSystemImpl();
+		LegendasTv legendasTv = new LegendasTv(httpclient, output);
+		Downloader downloader = new Downloader(extractor, fileSystem, httpclient, torrentSearcher, magnetLinkHandler, legendasTv, output);
+		downloader.downloadFromNewest(regexToApplyOnSubtitlesPackage, regexToApplyOnSubtitlesFiles, destinantion);
 	}
 
 	@Override

@@ -153,7 +153,9 @@ public class CommandLineClient implements CommandLine {
 
 	@Override
 	public void n() {
-		throw new RuntimeException("NOT IMPLEMENTED");
+		Subtitle subtitle = new Subtitle(output,httpclient,legendasTv);
+		output.out("Legendas adicionadas recentemente");
+		subtitle.listNewSubtitles();
 	}
 
 	@Override

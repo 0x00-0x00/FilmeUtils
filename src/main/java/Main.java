@@ -66,7 +66,10 @@ public class Main {
 	}
 
 	private static void n(String[] args, final CommandLineClient commandLineClient) {
-		throw new RuntimeException("NOT IMPLEMENTED");
+		if(args.length == 1){
+			commandLineClient.n();
+			return;
+		}
 	}
 
 	private static class SubSearchTermRegexAndDestDir{

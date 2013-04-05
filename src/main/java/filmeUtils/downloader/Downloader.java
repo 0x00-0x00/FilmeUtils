@@ -51,17 +51,18 @@ public class Downloader {
 	}
 	
 	public void downloadFromNewest(List<RegexForSubPackageAndSubFile> regexes, File destinantion) {
-		Subtitle subtitle = new Subtitle(outputListener,httpclient,legendasTv);
+		Subtitle subtitle = getSubtitleDownloader();
 		File tmpFolder = createTempDir();
 		subtitle.downloadNewer(tmpFolder, regexes);
 		searchTorrentsForSubtitlesOnFolderAndCopySubtitlesThatHaveTorrentToDestFolderThenDeleteSourceFolder(tmpFolder, destinantion);
 	}
 
 	public void download(final String searchTerm, File subtitlesDestinationFolder,final String subtitleRegex){
-		Subtitle subtitle = new Subtitle(outputListener,httpclient,legendasTv);
+		Subtitle subtitle = getSubtitleDownloader();
 		File tmpFolder = createTempDir();
 		subtitle.download(searchTerm, subtitleRegex, tmpFolder);
-		searchTorrentsForSubtitlesOnFolderAndCopySubtitlesThatHaveTorrentToDestFolderThenDeleteSourceFolder(tmpFolder, subtitlesDestinationFolder);
+		boolean success = searchTorrentsForSubtitlesOnFolderAndCopySubtitlesThatHaveTorrentToDestFolderThenDeleteSourceFolder(tmpFolder, subtitlesDestinationFolder);
+		if(!success) outputListener.out("Nenhum torrent para nenhuma legenda encontrada");
 	}
 
 	public boolean downloadWithKnownLink(final String name,final String link,final String subtitleRegex, final File subtitlesDestinationFolder){
@@ -73,6 +74,11 @@ public class Downloader {
 
 	public void setOutputListener(final OutputListener outputListener) {
 		this.outputListener = outputListener;
+	}
+
+	private Subtitle getSubtitleDownloader() {
+		Subtitle subtitle = new Subtitle(outputListener,httpclient,legendasTv);
+		return subtitle;
 	}
 
 	private File createTempDir() {

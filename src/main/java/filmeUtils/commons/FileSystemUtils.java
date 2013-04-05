@@ -24,14 +24,6 @@ public class FileSystemUtils {
 		return filmeUtilsFolder;
 	}
 	
-	private final File getFolder(){
-		final File filmeUtilsFolder = new File(System.getProperty("user.home"),FILME_UTILS_FOLDER);
-		if(!filmeUtilsFolder.exists()){
-			filmeUtilsFolder.mkdir();
-		}
-		return filmeUtilsFolder;
-	}
-	
 	public final File getSubtitlesDestination(){
 		File filmeUtilsFolder = getFolder();
 		File subtitleFolder = new File(filmeUtilsFolder,SUBTITLE_FOLDER_CONFIG_FILE);
@@ -43,17 +35,20 @@ public class FileSystemUtils {
 				throw new RuntimeException(e);
 			}
 		}
-		String SubtitleDestinationFolder;
+		String destinationFolderPath;
 		try {
-			SubtitleDestinationFolder = FileUtils.readFileToString(subtitleFolder);
+			destinationFolderPath = FileUtils.readFileToString(subtitleFolder);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-		File subtitlesDestinationFolder = new File(SubtitleDestinationFolder);
-		if(subtitlesDestinationFolder.exists() && subtitlesDestinationFolder.isDirectory()){
-			return subtitlesDestinationFolder;
+		File subtitlesDestinationFolder = new File(destinationFolderPath);
+		if(subtitlesDestinationFolder.exists()){
+			throw new RuntimeException("Pasta não existe "+destinationFolderPath);
 		}
-		throw new RuntimeException("Invalid subtitle destination folder "+SubtitleDestinationFolder);
+		if(!subtitlesDestinationFolder.isDirectory()){
+			throw new RuntimeException("Não é uma pasta: "+destinationFolderPath);
+		}
+		return subtitlesDestinationFolder;
 	}
 
 	public File getCookiesFile() {
@@ -79,22 +74,6 @@ public class FileSystemUtils {
 		} catch (final IOException e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	private File getRegexFileWithPatternsToDownload() {
-		return new File(getFolder(),REGEX_FILE_WITH_PATTERNS_TO_DOWNLOAD);
-	}
-
-	private File getFileContainingAlreadyDownloaded() {
-		File fileContainingAlreadyDownloaded = new File(getFolder(),ALREADY_DOWNLOADED_FILE);
-		if(!fileContainingAlreadyDownloaded.exists()){
-			try {
-				fileContainingAlreadyDownloaded.createNewFile();
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		}
-		return fileContainingAlreadyDownloaded;
 	}
 
 	public List<String> getAlreadyDownloaded() {
@@ -150,6 +129,30 @@ public class FileSystemUtils {
 		try {
 			FileUtils.deleteDirectory(source);
 		}catch(IOException e){/*don't really care*/}
+	}
+
+	private final File getFolder(){
+		final File filmeUtilsFolder = new File(System.getProperty("user.home"),FILME_UTILS_FOLDER);
+		if(!filmeUtilsFolder.exists()){
+			filmeUtilsFolder.mkdir();
+		}
+		return filmeUtilsFolder;
+	}
+	
+	private File getRegexFileWithPatternsToDownload() {
+		return new File(getFolder(),REGEX_FILE_WITH_PATTERNS_TO_DOWNLOAD);
+	}
+
+	private File getFileContainingAlreadyDownloaded() {
+		File fileContainingAlreadyDownloaded = new File(getFolder(),ALREADY_DOWNLOADED_FILE);
+		if(!fileContainingAlreadyDownloaded.exists()){
+			try {
+				fileContainingAlreadyDownloaded.createNewFile();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		return fileContainingAlreadyDownloaded;
 	}
 
 }

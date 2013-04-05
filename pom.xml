@@ -94,12 +94,6 @@
 			<groupId>com.github.beothorn</groupId>
 			<artifactId>URISchemeHandler</artifactId>
 			<version>1.5</version>
-			<exclusions>
-		    	<exclusion>
-		      		<groupId>commons-io</groupId>
-		      		<artifactId>commons-io</artifactId>
-		    	</exclusion>
-		  	</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>

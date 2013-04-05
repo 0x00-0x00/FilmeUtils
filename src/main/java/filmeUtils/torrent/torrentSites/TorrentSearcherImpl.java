@@ -17,7 +17,11 @@ public class TorrentSearcherImpl implements TorrentSearcher {
 		sites.add(new BitSnoop(httpclient));
 	}
 	
+	@Override
 	public String getMagnetLinkForTermOrNull(final String exactFileName,final OutputListener outputListener){
+		if(exactFileName.contains("tv")){
+			System.out.println();
+		}
 		for (final TorrentSite site : sites) {
 			outputListener.outVerbose("Procurando magnet link para "+exactFileName+" em "+site.getSiteName());
 			String magnetLinkFirstResultOrNull = null;

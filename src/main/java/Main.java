@@ -1,8 +1,10 @@
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import filmeUtils.commandLine.CommandLineClient;
-import filmeUtils.commons.FilmeUtilsFolder;
+import filmeUtils.commons.FileSystemUtils;
 import filmeUtils.commons.VerboseSysOut;
 import filmeUtils.gui.Gui;
 import filmeUtils.subtitle.subtitleSites.LegendasTv;
@@ -22,7 +24,9 @@ public class Main {
 		}else{
 			CommandLineClient commandLineClient = createCommandLine();
 			String token = args[0];
-			if(token.equals("-h")){
+			if(!token.equals("-h") && !token.equals("-t") && !token.equals("-lt")
+					&& !token.equals("-l") && !token.equals("-t") && !token.equals("-n")
+					&& !token.equals("-f") && !token.equals("-p") && !token.equals("-auto")){
 				h(commandLineClient);
 				return;
 			}
@@ -45,12 +49,47 @@ public class Main {
 				n(args, commandLineClient);
 				return;
 			}
+			if(token.equals("-f")){
+				f(args, commandLineClient);
+				return;
+			}
+			if(token.equals("-auto")){
+				auto(commandLineClient);
+				return;
+			}
 			if(token.equals("-p")){
 				p(args, commandLineClient);
 				return;
 			}
 		}
     }
+
+	private static void auto(CommandLineClient commandLineClient) {
+		throw new RuntimeException("NOT IMPLEMENTED");
+	}
+
+	private static void f(String[] args, CommandLineClient commandLineClient) {
+		final String errorMessage = "Uso: -f [arquivo de regex] [-d <diretório de destino>]";
+		if(args.length > 4) throw new RuntimeException(errorMessage);
+		FileSystemUtils instance = FileSystemUtils.getInstance();
+		List<String> subtitlesToDownloadPatterns = instance.getSubtitlesToDownloadPatterns();
+		if(args.length >= 2){
+			File file = new File(args[1]);
+			subtitlesToDownloadPatterns = instance.getSubtitlesToDownloadPatterns(file);
+		}
+		File subtitlesDestination = instance.getSubtitlesDestination();
+		if(args.length > 2){
+			if(!args[2].equals("-d")) throw new RuntimeException(errorMessage);
+			subtitlesDestination = new File(args[3]);
+		}
+		
+		List<RegexForSubPackageAndSubFile> regexes = new ArrayList<RegexForSubPackageAndSubFile>();
+		for (String maybeComposedRegex : subtitlesToDownloadPatterns) {
+			regexes.add(RegexUtils.getRegexForSubPackageAndSubFile(maybeComposedRegex));
+		}
+		
+		commandLineClient.f(regexes, subtitlesDestination);
+	}
 
 	private static void t(String[] args, CommandLineClient commandLineClient) {
 		if(args.length != 2) throw new RuntimeException("Uso: -t <termo da procura do torrent>");
@@ -75,7 +114,7 @@ public class Main {
 		String errorMessage = "Uso: -n  [-r <regex para pacote de legenda>[:regex para legenda]] [-d <diretório de destino>]";
 		if(args.length > 5) throw new RuntimeException(errorMessage);
 		String regex = ".*";
-		File destinyDirectory = FilmeUtilsFolder.getInstance().getSubtitlesDestination();
+		File destinyDirectory = FileSystemUtils.getInstance().getSubtitlesDestination();
 		if(!args[1].equals("-r") && !args[1].equals("-d"))
 			throw new RuntimeException(errorMessage);
 		if(args[1].equals("-r")){
@@ -87,9 +126,9 @@ public class Main {
 			destinyDirectory = new File(args[2]);
 		}
 		
-		RegexForSubPackageAndSubFile splittedRegex = RegexUtils.getSplittedRegex(regex);
+		RegexForSubPackageAndSubFile regexForSubPackageAndSubFile = RegexUtils.getRegexForSubPackageAndSubFile(regex);
 		
-		commandLineClient.n(splittedRegex.packageRegex,splittedRegex.fileRegex,destinyDirectory);
+		commandLineClient.n(regexForSubPackageAndSubFile,destinyDirectory);
 	}
 
 	private static class SubSearchTermRegexAndDestDir{
@@ -114,7 +153,7 @@ public class Main {
 		if(args.length < 2 || args.length > 6) throw new RuntimeException(errorMessage);
 		String subtitleSearchTerm = args[1];
 		String regex = ".*";
-		File destinyDirectory = FilmeUtilsFolder.getInstance().getSubtitlesDestination();
+		File destinyDirectory = FileSystemUtils.getInstance().getSubtitlesDestination();
 		if(args.length > 3){
 			if(!args[2].equals("-r") && !args[2].equals("-d"))
 				throw new RuntimeException(errorMessage);

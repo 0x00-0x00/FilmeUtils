@@ -3,7 +3,7 @@ package filmeUtils.gui.gui;
 import java.io.File;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import filmeUtils.commons.FilmeUtilsFolder;
+import filmeUtils.commons.FileSystemUtils;
 import filmeUtils.commons.OutputListener;
 import filmeUtils.downloader.Downloader;
 import filmeUtils.subtitle.subtitleSites.LegendasTv;
@@ -30,10 +30,11 @@ public class SearchScreenNeeds {
 			public void run() {
 				final AtomicBoolean torrentWasFound = new AtomicBoolean(false);
 				legendasTv.search(item, new SubtitleLinkSearchCallback() {
+					@Override
 					public void process(final SubtitleAndLink subAndLink) {
 						String name = subAndLink.name;
 						String link = subAndLink.link;
-						final boolean success = downloader.download(name, link, FilmeUtilsFolder.getInstance().getSubtitlesDestination() ,regex);
+						final boolean success = downloader.downloadWithKnownLink(name, link,regex, FileSystemUtils.getInstance().getSubtitlesDestination());
 						torrentWasFound.set(success);
 					}
 				});
@@ -43,11 +44,11 @@ public class SearchScreenNeeds {
 	}
 
 	public void setSubtitleFolder(final File folder) {
-		FilmeUtilsFolder.getInstance().setSubtitleDestinationFolder(folder.getAbsolutePath());
+		FileSystemUtils.getInstance().setSubtitleDestinationFolder(folder.getAbsolutePath());
 	}
 
 	public String getSubtitleFolder() {
-		return FilmeUtilsFolder.getInstance().getSubtitlesDestination().getAbsolutePath();
+		return FileSystemUtils.getInstance().getSubtitlesDestination().getAbsolutePath();
 	}
 
 	public void getNewAddsList(final GUISearchCallback callback) {
@@ -56,6 +57,7 @@ public class SearchScreenNeeds {
 			@Override
 			public void run() {				
 				legendasTv.getNewer(new SubtitleLinkSearchCallback(){
+					@Override
 					public void process(final SubtitleAndLink subAndLink) {
 						String name = subAndLink.name;
 						callback.found(name);
@@ -72,6 +74,7 @@ public class SearchScreenNeeds {
 			@Override
 			public void run() {				
 				legendasTv.search(text, new SubtitleLinkSearchCallback(){
+					@Override
 					public void process(final SubtitleAndLink subAndLink) {
 						String name = subAndLink.name;
 						callback.found(name);
@@ -91,7 +94,7 @@ public class SearchScreenNeeds {
 			regex = ".*(720|1080).*";
 		}
 		if(resolution.equals(LOW)){
-			regex = ".*^(720|1080).*";
+			regex = "^((?!(720|1080)).)*$";
 		}
 	}
 

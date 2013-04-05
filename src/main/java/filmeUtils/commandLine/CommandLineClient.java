@@ -1,6 +1,7 @@
 package filmeUtils.commandLine;
 
 import java.io.File;
+import java.util.List;
 
 import filmeUtils.commons.OutputListener;
 import filmeUtils.downloader.Downloader;
@@ -9,13 +10,10 @@ import filmeUtils.subtitle.subtitleSites.LegendasTv;
 import filmeUtils.subtitle.subtitleSites.SubtitleAndLink;
 import filmeUtils.subtitle.subtitleSites.SubtitleLinkSearchCallback;
 import filmeUtils.torrent.Torrent;
-import filmeUtils.torrent.torrentSites.TorrentSearcher;
-import filmeUtils.torrent.torrentSites.TorrentSearcherImpl;
+import filmeUtils.utils.RegexForSubPackageAndSubFile;
 import filmeUtils.utils.extraction.Extractor;
 import filmeUtils.utils.fileSystem.FileSystem;
 import filmeUtils.utils.fileSystem.FileSystemImpl;
-import filmeUtils.utils.http.MagnetLinkHandler;
-import filmeUtils.utils.http.OSMagnetLinkHandler;
 import filmeUtils.utils.http.SimpleHttpClient;
 
 public class CommandLineClient implements CommandLine {
@@ -129,11 +127,9 @@ public class CommandLineClient implements CommandLine {
 
 	@Override
 	public void lt(String subtitleSearchTerm, String regexToApplyOnSubtitlesFiles, File destinantion) {
-    	final MagnetLinkHandler magnetLinkHandler = new OSMagnetLinkHandler();
-        final TorrentSearcher torrentSearcher = new TorrentSearcherImpl(httpclient);
 		final FileSystem fileSystem = new FileSystemImpl();
 		LegendasTv legendasTv = new LegendasTv(httpclient, output);
-		Downloader downloader = new Downloader(extractor, fileSystem, httpclient, torrentSearcher, magnetLinkHandler, legendasTv, output);
+		Downloader downloader = new Downloader(extractor, fileSystem, httpclient, legendasTv, output);
 		output.out("Procurando "+subtitleSearchTerm+" aplicando regex "+regexToApplyOnSubtitlesFiles+" salvando em "+destinantion.getAbsolutePath());
 		downloader.download(subtitleSearchTerm, destinantion, regexToApplyOnSubtitlesFiles);
 	}
@@ -159,22 +155,23 @@ public class CommandLineClient implements CommandLine {
 	}
 
 	@Override
-	public void n(String regexToApplyOnSubtitlesPackage, String regexToApplyOnSubtitlesFiles, File destinantion) {
-		output.out("Procurando "+regexToApplyOnSubtitlesPackage+" nas legendas adicionadas recentemente");
-		output.out("Aplicando "+regexToApplyOnSubtitlesFiles+" nos arquivos de legendas");
+	public void n(RegexForSubPackageAndSubFile regex, File destinantion) {
+		output.out("Procurando "+regex.packageRegex+" nas legendas adicionadas recentemente");
+		output.out("Aplicando "+regex.fileRegex+" nos arquivos de legendas");
 		output.out("Salvando em "+destinantion.getAbsolutePath());
 		
-		final MagnetLinkHandler magnetLinkHandler = new OSMagnetLinkHandler();
-        final TorrentSearcher torrentSearcher = new TorrentSearcherImpl(httpclient);
 		final FileSystem fileSystem = new FileSystemImpl();
 		LegendasTv legendasTv = new LegendasTv(httpclient, output);
-		Downloader downloader = new Downloader(extractor, fileSystem, httpclient, torrentSearcher, magnetLinkHandler, legendasTv, output);
-		downloader.downloadFromNewest(regexToApplyOnSubtitlesPackage, regexToApplyOnSubtitlesFiles, destinantion);
+		Downloader downloader = new Downloader(extractor, fileSystem, httpclient, legendasTv, output);
+		downloader.downloadFromNewest(regex, destinantion);
 	}
 
 	@Override
-	public void f(File regexFile, File destinantion) {
-		throw new RuntimeException("NOT IMPLEMENTED");
+	public void f(List<RegexForSubPackageAndSubFile> regexes, File destinantion) {
+		final FileSystem fileSystem = new FileSystemImpl();
+		LegendasTv legendasTv = new LegendasTv(httpclient, output);
+		Downloader downloader = new Downloader(extractor, fileSystem, httpclient,legendasTv, output);
+		downloader.downloadFromNewest(regexes, destinantion);
 	}
 
 	@Override

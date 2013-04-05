@@ -3,21 +3,24 @@ package filmeUtils.commons;
 import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
-public class FilmeUtilsFolder {
+import filmeUtils.utils.RegexUtils;
+
+public class FileSystemUtils {
 	
 	private static final String ALREADY_DOWNLOADED_FILE = "alreadyDownloaded";
 	private static final String REGEX_FILE_WITH_PATTERNS_TO_DOWNLOAD = "downloadThis";
 	private static final String SERIALIZED_COOKIES_FILE = "cookies.serialized";
 	private static final String SUBTITLE_FOLDER_CONFIG_FILE = "subtitlefolder";
 	private static final String FILME_UTILS_FOLDER = ".filmeUtils";
-	private static FilmeUtilsFolder filmeUtilsFolder;
+	private static FileSystemUtils filmeUtilsFolder;
 	
-	public static final FilmeUtilsFolder getInstance(){
-		if(filmeUtilsFolder == null) filmeUtilsFolder = new FilmeUtilsFolder();
+	public static final FileSystemUtils getInstance(){
+		if(filmeUtilsFolder == null) filmeUtilsFolder = new FileSystemUtils();
 		return filmeUtilsFolder;
 	}
 	
@@ -113,8 +116,13 @@ public class FilmeUtilsFolder {
 	}
 
 	public List<String> getSubtitlesToDownloadPatterns() {
+		File file = getRegexFileWithPatternsToDownload();
+		return getSubtitlesToDownloadPatterns(file);
+	}
+
+	public List<String> getSubtitlesToDownloadPatterns(File file) {
 		try {
-			return FileUtils.readLines(getRegexFileWithPatternsToDownload());
+			return FileUtils.readLines(file);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -126,6 +134,22 @@ public class FilmeUtilsFolder {
 
 	public String getRegexFileWithPatternsToDownloadPath() {
 		return getRegexFileWithPatternsToDownload().getAbsolutePath();
+	}
+
+	public static void copyFilesMatchingRegexAndDeleteSourceDir(final File source,final File dest, final String regex) {
+		final Iterator<File> iterateFiles = FileUtils.iterateFiles(source, new String[]{"srt"}, true);
+		while(iterateFiles.hasNext()){
+			final File file = iterateFiles.next();
+			try {
+				String subtitleFilename = file.getName();
+				if(RegexUtils.matchesCaseInsensitive(subtitleFilename, regex)){
+					FileUtils.copyFile(file, new File(dest,subtitleFilename));
+				}
+			}catch(IOException e){throw new RuntimeException(e);}
+		}
+		try {
+			FileUtils.deleteDirectory(source);
+		}catch(IOException e){/*don't really care*/}
 	}
 
 }

@@ -2,22 +2,24 @@ package filmeUtils.subtitle;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 
+import filmeUtils.commons.FileSystemUtils;
 import filmeUtils.commons.OutputListener;
 import filmeUtils.subtitle.subtitleSites.LegendasTv;
 import filmeUtils.subtitle.subtitleSites.SubtitleAndLink;
 import filmeUtils.subtitle.subtitleSites.SubtitleLinkSearchCallback;
+import filmeUtils.utils.RegexForSubPackageAndSubFile;
 import filmeUtils.utils.RegexUtils;
 import filmeUtils.utils.extraction.ExtractorImpl;
 import filmeUtils.utils.http.SimpleHttpClient;
 
 public class Subtitle {
 	
-	private LegendasTv legendasTv;
-	private OutputListener output;
-	private SimpleHttpClient httpclient;
+	private final LegendasTv legendasTv;
+	private final OutputListener output;
+	private final SimpleHttpClient httpclient;
 
 	public Subtitle(final OutputListener output,final SimpleHttpClient httpclient,final LegendasTv legendasTv) {
 		this.output = output;
@@ -45,12 +47,13 @@ public class Subtitle {
 		download(searchTerm,".*",destDir);
 	}
 	
-	public void downloadNewer(final File destDir,final String zipRegex,final String subtitleRegex) {
+	public void downloadNewer(final File destDir,final List<RegexForSubPackageAndSubFile> regexes) {
 		SubtitleLinkSearchCallback searchListener = new SubtitleLinkSearchCallback() {	
 			@Override
 			public void process(SubtitleAndLink nameAndlink) {
-				if(!RegexUtils.matchesCaseInsensitive(nameAndlink.name,zipRegex)) return;
-				downloadSubtitlesMatchingRegexToDir(destDir, subtitleRegex,nameAndlink);
+				final RegexForSubPackageAndSubFile regexMatchingPackageOrNull = RegexUtils.getRegexMatchingPackageOrNull(nameAndlink.name,regexes);
+				if(regexMatchingPackageOrNull == null) return;
+				downloadSubtitlesMatchingRegexToDir(destDir, regexMatchingPackageOrNull.fileRegex , nameAndlink);
 			}
 		};
 		legendasTv.getNewer(searchListener);
@@ -71,21 +74,9 @@ public class Subtitle {
 		String link = nameAndlink.link;
 		
 		final File unzippedTempDestination = downloadAndExtractToTempDir(link);
-		File[] listFiles = unzippedTempDestination.listFiles();
-		for (File file : listFiles) {					
-			try {
-				String subtitleFilename = file.getName();
-				if(RegexUtils.matchesCaseInsensitive(subtitleFilename, subtitleRegex)){
-					output.out(" -"+subtitleFilename+" em "+destDir.getAbsolutePath());
-					FileUtils.copyFile(file, new File(destDir,subtitleFilename));
-				}
-			}catch(IOException e){throw new RuntimeException(e);}
-		}
-		try {
-			FileUtils.deleteDirectory(unzippedTempDestination);
-		}catch(IOException e){/*don't really care*/}
+		FileSystemUtils.copyFilesMatchingRegexAndDeleteSourceDir(unzippedTempDestination,destDir, subtitleRegex);
 	}
-	
+
 	public void listNewSubtitles() {
 		legendasTv.getNewer(new SubtitleLinkSearchCallback(){@Override public void process(SubtitleAndLink nameAndlink) {
 				output.out(nameAndlink.name);

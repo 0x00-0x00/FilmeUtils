@@ -19,7 +19,6 @@ import filmeUtils.torrent.torrentSites.TorrentSearcher;
 import filmeUtils.torrent.torrentSites.TorrentSearcherImpl;
 import filmeUtils.utils.RegexForSubPackageAndSubFile;
 import filmeUtils.utils.extraction.Extractor;
-import filmeUtils.utils.fileSystem.FileSystem;
 import filmeUtils.utils.http.OSMagnetLinkHandler;
 import filmeUtils.utils.http.SimpleHttpClient;
 
@@ -32,11 +31,11 @@ public class Downloader {
 	private final LegendasTv legendasTv;
 	private OutputListener outputListener;
 	
-	public Downloader(final Extractor extract,final FileSystem fileSystem,final SimpleHttpClient httpclient, final LegendasTv legendasTv, final OutputListener outputListener) {
+	public Downloader(final Extractor extract,final SimpleHttpClient httpclient, final LegendasTv legendasTv, final OutputListener outputListener) {
 		this.httpclient = httpclient;
 		this.legendasTv = legendasTv;
 		this.extract = extract;
-		this.setOutputListener(outputListener);
+		this.outputListener = outputListener;
 	}
 
 	public void downloadFromNewest(final String zipRegex,final String subtitleRegex,File subtitlesDestinationFolder){
@@ -51,9 +50,13 @@ public class Downloader {
 	}
 	
 	public void downloadFromNewest(List<RegexForSubPackageAndSubFile> regexes, File destinantion) {
+		downloadFromNewest(regexes, destinantion, new ArrayList<String>());
+	}
+	
+	public void downloadFromNewest(List<RegexForSubPackageAndSubFile> regexes, File destinantion, List<String> subtitlesPackagesToIgnore) {		
 		Subtitle subtitle = getSubtitleDownloader();
 		File tmpFolder = createTempDir();
-		subtitle.downloadNewer(tmpFolder, regexes);
+		subtitle.downloadNewer(tmpFolder, regexes, subtitlesPackagesToIgnore);
 		searchTorrentsForSubtitlesOnFolderAndCopySubtitlesThatHaveTorrentToDestFolderThenDeleteSourceFolder(tmpFolder, destinantion);
 	}
 

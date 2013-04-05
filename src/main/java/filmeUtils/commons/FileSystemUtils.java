@@ -37,12 +37,12 @@ public class FileSystemUtils {
 		}
 		String destinationFolderPath;
 		try {
-			destinationFolderPath = FileUtils.readFileToString(subtitleFolder);
+			destinationFolderPath = FileUtils.readFileToString(subtitleFolder).trim();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 		File subtitlesDestinationFolder = new File(destinationFolderPath);
-		if(subtitlesDestinationFolder.exists()){
+		if(!subtitlesDestinationFolder.exists()){
 			throw new RuntimeException("Pasta não existe "+destinationFolderPath);
 		}
 		if(!subtitlesDestinationFolder.isDirectory()){

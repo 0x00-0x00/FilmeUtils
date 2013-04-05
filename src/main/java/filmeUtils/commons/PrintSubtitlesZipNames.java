@@ -1,6 +1,6 @@
 package filmeUtils.commons;
 
-import filmeUtils.subtitle.subtitleSites.SubtitleAndLink;
+import filmeUtils.subtitle.subtitleSites.SubtitlePackageAndLink;
 import filmeUtils.subtitle.subtitleSites.SubtitleLinkSearchCallback;
 
 public final class PrintSubtitlesZipNames implements SubtitleLinkSearchCallback {
@@ -11,7 +11,7 @@ public final class PrintSubtitlesZipNames implements SubtitleLinkSearchCallback 
 		this.outputListener = outputListener;
 	}
 
-	public void process(final SubtitleAndLink subAndLink) {
+	public void process(final SubtitlePackageAndLink subAndLink) {
 		String name = subAndLink.name;
 		outputListener.out(name);
 	}

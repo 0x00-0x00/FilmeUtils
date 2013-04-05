@@ -1,19 +1,18 @@
 package filmeUtils.commandLine;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
+import filmeUtils.commons.FileSystemUtils;
 import filmeUtils.commons.OutputListener;
 import filmeUtils.downloader.Downloader;
 import filmeUtils.subtitle.Subtitle;
 import filmeUtils.subtitle.subtitleSites.LegendasTv;
-import filmeUtils.subtitle.subtitleSites.SubtitleAndLink;
-import filmeUtils.subtitle.subtitleSites.SubtitleLinkSearchCallback;
 import filmeUtils.torrent.Torrent;
 import filmeUtils.utils.RegexForSubPackageAndSubFile;
+import filmeUtils.utils.RegexUtils;
 import filmeUtils.utils.extraction.Extractor;
-import filmeUtils.utils.fileSystem.FileSystem;
-import filmeUtils.utils.fileSystem.FileSystemImpl;
 import filmeUtils.utils.http.SimpleHttpClient;
 
 public class CommandLineClient implements CommandLine {
@@ -32,20 +31,6 @@ public class CommandLineClient implements CommandLine {
 		this.legendasTv = legendasTv;
 		this.extractor = extract;
 		this.output = output;
-	}
-
-	public void search(final String searchTerm){		
-//		output.outVerbose("Procurando '"+searchTerm+"' ...");
-//		legendasTv.search(searchTerm,searchListener);
-//		httpclient.close();
-	}
-	
-	public void showNewAdditions(){		
-		output.outVerbose("Novas legendas:");
-		legendasTv.getNewer(new SubtitleLinkSearchCallback() {@Override public void process(SubtitleAndLink nameAndlink) {
-			output.out(nameAndlink.name);
-		}});
-		httpclient.close();
 	}
 
 	@Override
@@ -127,9 +112,8 @@ public class CommandLineClient implements CommandLine {
 
 	@Override
 	public void lt(String subtitleSearchTerm, String regexToApplyOnSubtitlesFiles, File destinantion) {
-		final FileSystem fileSystem = new FileSystemImpl();
 		LegendasTv legendasTv = new LegendasTv(httpclient, output);
-		Downloader downloader = new Downloader(extractor, fileSystem, httpclient, legendasTv, output);
+		Downloader downloader = new Downloader(extractor,  httpclient, legendasTv, output);
 		output.out("Procurando "+subtitleSearchTerm+" aplicando regex "+regexToApplyOnSubtitlesFiles+" salvando em "+destinantion.getAbsolutePath());
 		downloader.download(subtitleSearchTerm, destinantion, regexToApplyOnSubtitlesFiles);
 	}
@@ -160,17 +144,15 @@ public class CommandLineClient implements CommandLine {
 		output.out("Aplicando "+regex.fileRegex+" nos arquivos de legendas");
 		output.out("Salvando em "+destinantion.getAbsolutePath());
 		
-		final FileSystem fileSystem = new FileSystemImpl();
 		LegendasTv legendasTv = new LegendasTv(httpclient, output);
-		Downloader downloader = new Downloader(extractor, fileSystem, httpclient, legendasTv, output);
+		Downloader downloader = new Downloader(extractor, httpclient, legendasTv, output);
 		downloader.downloadFromNewest(regex, destinantion);
 	}
 
 	@Override
 	public void f(List<RegexForSubPackageAndSubFile> regexes, File destinantion) {
-		final FileSystem fileSystem = new FileSystemImpl();
 		LegendasTv legendasTv = new LegendasTv(httpclient, output);
-		Downloader downloader = new Downloader(extractor, fileSystem, httpclient,legendasTv, output);
+		Downloader downloader = new Downloader(extractor, httpclient,legendasTv, output);
 		downloader.downloadFromNewest(regexes, destinantion);
 	}
 
@@ -183,7 +165,15 @@ public class CommandLineClient implements CommandLine {
 
 	@Override
 	public void auto() {
-		throw new RuntimeException("NOT IMPLEMENTED");
+		final FileSystemUtils instance = FileSystemUtils.getInstance();
+		List<String> subtitlesToDownloadPatterns = instance.getSubtitlesToDownloadPatterns();
+		List<RegexForSubPackageAndSubFile> regexes = new ArrayList<RegexForSubPackageAndSubFile>();
+		for (String maybeComposedRegex : subtitlesToDownloadPatterns) {
+			regexes.add(RegexUtils.getRegexForSubPackageAndSubFile(maybeComposedRegex));
+		}
+		LegendasTv legendasTv = new LegendasTv(httpclient, output);
+		Downloader downloader = new Downloader(extractor, httpclient,legendasTv, output);
+		downloader.downloadFromNewest(regexes, instance.getSubtitlesDestination(),instance.getAlreadyDownloaded());
 	}
 
 }

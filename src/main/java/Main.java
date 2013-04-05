@@ -65,7 +65,7 @@ public class Main {
     }
 
 	private static void auto(CommandLineClient commandLineClient) {
-		throw new RuntimeException("NOT IMPLEMENTED");
+		commandLineClient.auto();
 	}
 
 	private static void f(String[] args, CommandLineClient commandLineClient) {

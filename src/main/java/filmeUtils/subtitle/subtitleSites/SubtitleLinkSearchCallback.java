@@ -1,5 +1,5 @@
 package filmeUtils.subtitle.subtitleSites;
 
 public interface SubtitleLinkSearchCallback {
-	void process(SubtitleAndLink nameAndlink);
+	void process(SubtitlePackageAndLink nameAndlink);
 }

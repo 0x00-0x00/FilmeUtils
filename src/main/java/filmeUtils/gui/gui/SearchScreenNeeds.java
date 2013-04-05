@@ -7,7 +7,7 @@ import filmeUtils.commons.FileSystemUtils;
 import filmeUtils.commons.OutputListener;
 import filmeUtils.downloader.Downloader;
 import filmeUtils.subtitle.subtitleSites.LegendasTv;
-import filmeUtils.subtitle.subtitleSites.SubtitleAndLink;
+import filmeUtils.subtitle.subtitleSites.SubtitlePackageAndLink;
 import filmeUtils.subtitle.subtitleSites.SubtitleLinkSearchCallback;
 
 public class SearchScreenNeeds {
@@ -31,7 +31,7 @@ public class SearchScreenNeeds {
 				final AtomicBoolean torrentWasFound = new AtomicBoolean(false);
 				legendasTv.search(item, new SubtitleLinkSearchCallback() {
 					@Override
-					public void process(final SubtitleAndLink subAndLink) {
+					public void process(final SubtitlePackageAndLink subAndLink) {
 						String name = subAndLink.name;
 						String link = subAndLink.link;
 						final boolean success = downloader.downloadWithKnownLink(name, link,regex, FileSystemUtils.getInstance().getSubtitlesDestination());
@@ -58,7 +58,7 @@ public class SearchScreenNeeds {
 			public void run() {				
 				legendasTv.getNewer(new SubtitleLinkSearchCallback(){
 					@Override
-					public void process(final SubtitleAndLink subAndLink) {
+					public void process(final SubtitlePackageAndLink subAndLink) {
 						String name = subAndLink.name;
 						callback.found(name);
 					}
@@ -75,7 +75,7 @@ public class SearchScreenNeeds {
 			public void run() {				
 				legendasTv.search(text, new SubtitleLinkSearchCallback(){
 					@Override
-					public void process(final SubtitleAndLink subAndLink) {
+					public void process(final SubtitlePackageAndLink subAndLink) {
 						String name = subAndLink.name;
 						callback.found(name);
 					}

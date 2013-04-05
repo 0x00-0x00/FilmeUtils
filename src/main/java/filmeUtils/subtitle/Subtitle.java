@@ -4,12 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-
 import filmeUtils.commons.FileSystemUtils;
 import filmeUtils.commons.OutputListener;
 import filmeUtils.subtitle.subtitleSites.LegendasTv;
-import filmeUtils.subtitle.subtitleSites.SubtitleAndLink;
 import filmeUtils.subtitle.subtitleSites.SubtitleLinkSearchCallback;
+import filmeUtils.subtitle.subtitleSites.SubtitlePackageAndLink;
 import filmeUtils.utils.RegexForSubPackageAndSubFile;
 import filmeUtils.utils.RegexUtils;
 import filmeUtils.utils.extraction.ExtractorImpl;
@@ -32,7 +31,7 @@ public class Subtitle {
 	}
 	
 	public void search(String searchTerm, final String subtitleRegex) {
-		legendasTv.search(searchTerm, new SubtitleLinkSearchCallback(){@Override public void process(SubtitleAndLink nameAndlink) {
+		legendasTv.search(searchTerm, new SubtitleLinkSearchCallback(){@Override public void process(SubtitlePackageAndLink nameAndlink) {
 				output.out(nameAndlink.name);
 				File tempDirWithSubtitles = downloadAndExtractToTempDir(nameAndlink.link);
 				String[] subtitlesFilenames = tempDirWithSubtitles.list();
@@ -47,13 +46,16 @@ public class Subtitle {
 		download(searchTerm,".*",destDir);
 	}
 	
-	public void downloadNewer(final File destDir,final List<RegexForSubPackageAndSubFile> regexes) {
+	public void downloadNewer(final File destDir,final List<RegexForSubPackageAndSubFile> regexes, final List<String> ignoredPackages) {
 		SubtitleLinkSearchCallback searchListener = new SubtitleLinkSearchCallback() {	
 			@Override
-			public void process(SubtitleAndLink nameAndlink) {
-				final RegexForSubPackageAndSubFile regexMatchingPackageOrNull = RegexUtils.getRegexMatchingPackageOrNull(nameAndlink.name,regexes);
+			public void process(SubtitlePackageAndLink nameAndlink) {
+				String packageName = nameAndlink.name;
+				if(ignoredPackages.contains(packageName)) return;
+				final RegexForSubPackageAndSubFile regexMatchingPackageOrNull = RegexUtils.getRegexMatchingPackageOrNull(packageName,regexes);
 				if(regexMatchingPackageOrNull == null) return;
 				downloadSubtitlesMatchingRegexToDir(destDir, regexMatchingPackageOrNull.fileRegex , nameAndlink);
+				FileSystemUtils.getInstance().addAlreadyDownloaded(packageName);
 			}
 		};
 		legendasTv.getNewer(searchListener);
@@ -62,14 +64,14 @@ public class Subtitle {
 	public void download(String searchTerm, final String subtitleRegex,final File destDir) {
 		SubtitleLinkSearchCallback searchListener = new SubtitleLinkSearchCallback() {	
 			@Override
-			public void process(SubtitleAndLink nameAndlink) {
+			public void process(SubtitlePackageAndLink nameAndlink) {
 				downloadSubtitlesMatchingRegexToDir(destDir, subtitleRegex,nameAndlink);
 			}
 		};
 		legendasTv.search(searchTerm, searchListener);
 	}
 
-	private void downloadSubtitlesMatchingRegexToDir(final File destDir, final String subtitleRegex,final SubtitleAndLink nameAndlink) {
+	private void downloadSubtitlesMatchingRegexToDir(final File destDir, final String subtitleRegex,final SubtitlePackageAndLink nameAndlink) {
 		output.out("Abrindo zip de legendas "+nameAndlink.name);
 		String link = nameAndlink.link;
 		
@@ -78,7 +80,7 @@ public class Subtitle {
 	}
 
 	public void listNewSubtitles() {
-		legendasTv.getNewer(new SubtitleLinkSearchCallback(){@Override public void process(SubtitleAndLink nameAndlink) {
+		legendasTv.getNewer(new SubtitleLinkSearchCallback(){@Override public void process(SubtitlePackageAndLink nameAndlink) {
 				output.out(nameAndlink.name);
 		}});
 	}

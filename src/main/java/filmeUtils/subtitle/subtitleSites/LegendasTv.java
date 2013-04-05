@@ -89,23 +89,23 @@ public class LegendasTv {
 			content = search(searchTerm, page);
 		}
 	
-		ArrayList<SubtitleAndLink> subtitleLinks = getSubtitleLinks(content);
+		ArrayList<SubtitlePackageAndLink> subtitleLinks = getSubtitleLinks(content);
 		
-		for (SubtitleAndLink link : subtitleLinks) {
+		for (SubtitlePackageAndLink link : subtitleLinks) {
 			searchCallback.process(link);
 		}
 		
 		searchNextPage(page, searchCallback, searchTerm, content);
 	}
 
-	private ArrayList<SubtitleAndLink> getSubtitleLinks(String content) {
-		ArrayList<SubtitleAndLink> links = new ArrayList<SubtitleAndLink>();
+	private ArrayList<SubtitlePackageAndLink> getSubtitleLinks(String content) {
+		ArrayList<SubtitlePackageAndLink> links = new ArrayList<SubtitlePackageAndLink>();
 		final Document parsed = Jsoup.parse(content);
 		final Elements subtitleSpans = parsed.select("#conteudodest > div > span");
 		for(final Element subtitleSpan : subtitleSpans) {
 			final String subtitleName = getSubtitleName(subtitleSpan);
 			final String subtitleLink = getSubtitleLink(subtitleSpan);
-			SubtitleAndLink subtitleAndLink = new SubtitleAndLink(subtitleName,subtitleLink);
+			SubtitlePackageAndLink subtitleAndLink = new SubtitlePackageAndLink(subtitleName,subtitleLink);
 			links.add(subtitleAndLink);
 		}
 		return links;
@@ -192,7 +192,7 @@ public class LegendasTv {
 			final String thirdQuotedWordRegex = "[^']*'[^']*','[^']*','([^']*)'.*";
 			subtitleName = subtitleName.replaceAll(thirdQuotedWordRegex, "$1");
 			final String downloadLink = getDownloadFromOnClick(subtitleDiv);
-			SubtitleAndLink nameAndlink = new SubtitleAndLink(subtitleName, downloadLink);
+			SubtitlePackageAndLink nameAndlink = new SubtitlePackageAndLink(subtitleName, downloadLink);
 			searchListener.process(nameAndlink);
 		}
 		if(currentIndex<howMuchNewAddsToShow){

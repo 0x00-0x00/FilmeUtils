@@ -1,14 +1,21 @@
-FilmeUtils é uma ferramenta para baixar filmes e séries com legendas.  
+FilmeUtils
+====================
 
-Download: https://docs.google.com/file/d/0B0QLHCMQb769VGNtOG5kalpTOFk/edit?usp=sharing   
+FilmeUtils baixa filmes e séries do legendas.tv  
 
-Do que você precisa:  
+Download
+---------------------
+https://docs.google.com/file/d/0B0QLHCMQb769VGNtOG5kalpTOFk/edit?usp=sharing   
+
+Do que você precisa  
+--------------------- 
  - Java 1.6 ou maior instalado. - www.java.com/  
  - Um cliente de torrent qualquer, recomendo o qbittorrent (http://www.qbittorrent.org/).  
 
 ![Screenshot da gui](https://raw.github.com/beothorn/FilmeUtils/master/gui.png "GUI")  
 
 Comandos  
+---------------------
 
 <pre><code>
 Sem argumentos  

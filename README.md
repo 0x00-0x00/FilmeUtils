@@ -5,7 +5,7 @@ FilmeUtils baixa filmes e séries do legendas.tv
 
 Download
 ---------------------
-https://docs.google.com/file/d/0B0QLHCMQb769VGNtOG5kalpTOFk/edit?usp=sharing   
+https://www.dropbox.com/s/hs96718zut03mw6/filmeUtils.jar
 
 Do que você precisa  
 --------------------- 

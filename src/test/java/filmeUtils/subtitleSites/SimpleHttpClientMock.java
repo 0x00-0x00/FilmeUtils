@@ -15,15 +15,23 @@ class SimpleHttpClientMock implements SimpleHttpClient {
 
 	private final Map<String, String> responseForUrl = new LinkedHashMap<String, String>();
 
+	
+	public SimpleHttpClientMock() {
+		setResponseForUrl("http://legendas.tv/login_verificar.php", "LegendasTvGoodLogin.html");
+	}
+	
+	@Override
 	public String getToFile(final String link, final File destFile)
 			throws ClientProtocolException, IOException {
 		throw new RuntimeException("Method not implemented");
 	}
 
+	@Override
 	public String getOrNull(final String url) {
 		throw new RuntimeException("Method not implemented");
 	}
 
+	@Override
 	public String post(final String postUrl, final Map<String, String> params) throws ClientProtocolException, IOException {
 		final String response = responseForUrl.get(postUrl);
 		if(response == null){
@@ -32,10 +40,12 @@ class SimpleHttpClientMock implements SimpleHttpClient {
 		return response;
 	}
 
+	@Override
 	public String get(final String get) throws ClientProtocolException, IOException {
 		throw new RuntimeException("Method not implemented");
 	}
 
+	@Override
 	public void close() {
 		throw new RuntimeException("Method not implemented");
 	}

@@ -10,8 +10,8 @@ import org.junit.Test;
 
 import filmeUtils.commons.OutputListener;
 import filmeUtils.subtitle.subtitleSites.LegendasTv;
-import filmeUtils.subtitle.subtitleSites.SubtitlePackageAndLink;
 import filmeUtils.subtitle.subtitleSites.SubtitleLinkSearchCallback;
+import filmeUtils.subtitle.subtitleSites.SubtitlePackageAndLink;
 
 public class LegendasTvTest {
 	
@@ -24,11 +24,12 @@ public class LegendasTvTest {
 	
 	@Test
 	public void simpleSearchWithOneResultTest(){
-		final String response = "LegendasTvOneResult.html";
-		mock.setResponseForUrl("http://legendas.tv/index.php?opcao=buscarlegenda&pagina=1", response);
+		mock.setResponseForUrl("http://legendas.tv/index.php?opcao=buscarlegenda&pagina=1", "LegendasTvOneResult.html");
+		
 		final LegendasTv subject = new LegendasTv(mock, dummyOutputListener);
 		final AtomicBoolean wasCalled = new AtomicBoolean(false);
 		subject.search("foo", new SubtitleLinkSearchCallback() {
+			@Override
 			public void process(final SubtitlePackageAndLink subAndLink) {
 				Assert.assertEquals("Castle.S04E21.720p.WEB-DL.DD5.1.H.264-NFHD",subAndLink.name);
 				Assert.assertEquals("http://legendas.tv/info.php?c=1&d=e613c192c4279ff32db5f3ad0640e8d0",subAndLink.link);
@@ -48,6 +49,7 @@ public class LegendasTvTest {
 		expectedResults.put("Community.S01.720p.WEB-DL.DD5.1.H.264-myTV/HoodBag (PACK DE LEGENDAS)","http://legendas.tv/info.php?c=1&d=a7faf31ace51a2110b69b822ff84b434");
 		expectedResults.put("Community.S02.720p.WEB-DL.DD5.1.H.264-HoodBag (PACK DE LEGENDAS)","http://legendas.tv/info.php?c=1&d=fe19c9afc9dbf6a53a74d0782da8861a");
 		subject.search("foo", new SubtitleLinkSearchCallback() {
+			@Override
 			public void process(final SubtitlePackageAndLink subAndLink) {
 				String name = subAndLink.name;
 				String link = subAndLink.link;
@@ -70,6 +72,7 @@ public class LegendasTvTest {
 		expectedResults.put("Community.S02.720p.WEB-DL.DD5.1.H.264-HoodBag (PACK DE LEGENDAS)","http://legendas.tv/info.php?c=1&d=fe19c9afc9dbf6a53a74d0782da8861a");
 		expectedResults.put("Castle.S04E21.720p.WEB-DL.DD5.1.H.264-NFHD","http://legendas.tv/info.php?c=1&d=e613c192c4279ff32db5f3ad0640e8d0");
 		subject.search("foo", new SubtitleLinkSearchCallback() {
+			@Override
 			public void process(final SubtitlePackageAndLink subAndLink) {
 				String name = subAndLink.name;
 				String link = subAndLink.link;

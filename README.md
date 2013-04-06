@@ -17,7 +17,7 @@ Sem argumentos
 -h ou --help  
 	Mostra a ajuda  
 
--lt \<termo da procura da legenda\>  [-r \<regex para arquivos de legenda\>] [-d \<diretório de destino\>]  
+-lt &lttermo da procura da legenda&gt  [-r &ltregex para arquivos de legenda&gt] [-d &ltdiretório de destino&gt]  
 	Procura e faz download do pacote de legendas,  
 	aplica a regex nas legendas do arquivo e tenta pegar o torrent das legendas  
 	que dão match. Copia as legendas que tem torrents para o diretório de  
@@ -27,7 +27,7 @@ Sem argumentos
 	Ex:  
 	java -jar filmeUtils.jar -lt "game of" -r ".*720.*" -d "/home/foo/Downloads"  
 
--l \<termo da procura da legenda\>  [-r \<regex para arquivos de legenda\>] [-d \<diretório de destino\>]  
+-l &lttermo da procura da legenda&gt  [-r &ltregex para arquivos de legenda&gt] [-d &ltdiretório de destino&gt]  
 	Procura e faz download do pacote de legendas,   
 	aplica a regex nas legendas do pacote e copia as legendas que dão match  
 	para o destino. Se o destino não for especificado, usa-se o que estiver no  
@@ -36,13 +36,13 @@ Sem argumentos
 	Ex:  
 	java -jar filmeUtils.jar -l "game of" -r ".*720.*" -d "/home/foo/Downloads"     
 
--t \<termo da procura do torrent\>  
+-t &lttermo da procura do torrent&gt  
 	Procura e faz download do torrent com mais seeds.  
 	O termo de procura não é uma regex.      
 	Ex:  
 	java -jar filmeUtils.jar -t "game of S01E01"  
 
--n  [-r \<regex para pacote de legenda\>[:regex para legenda]] [-d \<diretório de destino\>]  
+-n  [-r &ltregex para pacote de legenda&gt[:regex para legenda]] [-d &ltdiretório de destino&gt]  
 	Se não for passado uma regex, mostra a lista legendas adicionadas  
 	recentemente. Se for passada a regex, faz download do pacote de legendas  
 	que dá match,  
@@ -56,7 +56,7 @@ Sem argumentos
 	java -jar filmeUtils.jar -n -r ".*game.*of.*:.*720.*" -d "/home/foo/Downloads"  
 
 
--f [arquivo de regex] [-d \<diretório de destino\>]  
+-f [arquivo de regex] [-d &ltdiretório de destino&gt]  
 	Procura nas legendas adicionadas recentemente os pacotes de legenda que dão  
 	match com as regex no arquivo passado. Para os pacotes de legenda que dão  
 	match, aplica a segunda regex nos arquivos de legenda e faz download da    
@@ -66,12 +66,12 @@ Sem argumentos
 	Se não for passado o caminho do arquivo de regex,  
 	usa-se o arquivo padrão em HOME/.filmeUtils/downloadThis  
 	Formato do arquivo de regex  
-	\<regex para pacote de legendas\>[:regex para legenda]  
+	&ltregex para pacote de legendas&gt[:regex para legenda]  
 	ex:  
 	.*meu.*seriado.*so.*em.*hd.*:720  
 	.*meu.*seriado.*qqer.*resolucao.*  
 
--p \<termo da procura\>  
+-p &lttermo da procura&gt  
 	Somente lista os pacotes de legendas que batem com a procura e suas legendas.  
 	O termo de procura não é uma regex.   
 	

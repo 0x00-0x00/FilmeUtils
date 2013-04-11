@@ -12,6 +12,15 @@ Do que você precisa
  - Java 1.6 ou maior instalado. - www.java.com/  
  - Um cliente de torrent qualquer, recomendo o qbittorrent (http://www.qbittorrent.org/).  
 
+Como funciona  
+---------------------
+FilmeUtils procura a legenda no legendas.tv e depois o torrent no piratebay/bitsnoop/rarbg .  
+Funciona melhor com legendas novas. Usando a linha de comando -auto é possível colocar o filmeUtils  
+pra fazer o download do seriado assim que sai a legenda.  
+
+GUI  
+---------------------
+
 ![Screenshot da gui](https://raw.github.com/beothorn/FilmeUtils/master/gui.png "GUI")  
 
 Comandos  

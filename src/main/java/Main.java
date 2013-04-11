@@ -24,9 +24,14 @@ public class Main {
 		}else{
 			CommandLineClient commandLineClient = createCommandLine();
 			String token = args[0];
-			if(!token.equals("-h") && !token.equals("-t") && !token.equals("-lt")
-					&& !token.equals("-l") && !token.equals("-t") && !token.equals("-n")
-					&& !token.equals("-f") && !token.equals("-p") && !token.equals("-auto")){
+			if(!token.equals("-t")  && 
+			   !token.equals("-lt")	&& 
+			   !token.equals("-l")  && 
+			   !token.equals("-t")  && 
+			   !token.equals("-n")	&& 
+			   !token.equals("-f")  && 
+			   !token.equals("-p")  && 
+			   !token.equals("-auto")){
 				h(commandLineClient);
 				return;
 			}

@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import filmeUtils.Version;
 import filmeUtils.commons.FileSystemUtils;
 import filmeUtils.commons.OutputListener;
 import filmeUtils.downloader.Downloader;
@@ -35,7 +36,8 @@ public class CommandLineClient implements CommandLine {
 
 	@Override
 	public void h() {
-		output.out("Ajuda dos comandos:\n" +
+		output.out("FilmeUtils "+Version.VERSION+"\n" +
+				"Ajuda dos comandos:\n" +
 				"Sem argumentos  \n" + 
 				"	Abre a gui.  \n" + 
 				"\n" + 

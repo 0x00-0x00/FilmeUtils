@@ -2,6 +2,7 @@
 target/*
 .classpath
 .project
+bin
 .settings/*
 pom.xml.releaseBackup
 release.properties

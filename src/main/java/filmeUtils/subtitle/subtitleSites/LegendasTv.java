@@ -2,6 +2,7 @@ package filmeUtils.subtitle.subtitleSites;
 
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -12,6 +13,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import filmeUtils.commons.FileSystemUtils;
 import filmeUtils.commons.OutputListener;
 import filmeUtils.utils.http.SimpleHttpClient;
 
@@ -21,9 +23,6 @@ public class LegendasTv {
 	private static final String LOGIN_URL = BASE_URL+"/login_verificar.php";
 	private static final String NEW_ADDS_URL = "/destaques.php?start=";
 	private static final String SEARCH_ON_PAGE_URL = "/index.php?opcao=buscarlegenda&pagina=";
-	
-	private static final String USER = "filmeutils";
-	private static final String PASSWORD = "filmeutilsfilme";
 	
 	private final SimpleHttpClient httpclient;
 	private final OutputListener outputListener;
@@ -42,8 +41,9 @@ public class LegendasTv {
 	public void login(){		
         try {
 			final HashMap<String, String> params = new HashMap<String, String>();
-			params.put("txtLogin", USER);
-			params.put("txtSenha", PASSWORD);
+			FileSystemUtils instance = FileSystemUtils.getInstance();
+			params.put("txtLogin", instance.getUser());
+			params.put("txtSenha", instance.getPassword());
 			params.put("chkLogin", "1");
 			
 			
@@ -205,6 +205,8 @@ public class LegendasTv {
 		try {
 			final String get = BASE_URL+NEW_ADDS_URL+startingIndex;
 			return httpclient.get(get);
+		}catch(SocketTimeoutException timeout){
+			throw new RuntimeException("Legendas tv muito lento ou fora do ar: ",timeout);
 		} catch (final Exception e) {
 			throw new RuntimeException("Ocorreu um erro ao pegar novas legendas: ",e);
 		}

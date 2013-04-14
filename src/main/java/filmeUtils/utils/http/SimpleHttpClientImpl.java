@@ -16,6 +16,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.http.Header;
+import org.apache.http.HeaderElement;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -35,7 +37,7 @@ import org.apache.http.protocol.HTTP;
 
 public class SimpleHttpClientImpl implements SimpleHttpClient {
 
-	public static final int TIMEOUT = 30;
+	public static final int TIMEOUT_IN_SECONDS = 120;
 	private final DefaultHttpClient httpclient;
 	private final File cookieFile;
 	
@@ -48,16 +50,18 @@ public class SimpleHttpClientImpl implements SimpleHttpClient {
 		httpclient = new DefaultHttpClient();
 		loadCookies();
 		final HttpParams httpParameters = httpclient.getParams();
-		final int connectionTimeOutSec= TIMEOUT;
-		final int socketTimeoutSec = TIMEOUT;
+		final int connectionTimeOutSec= TIMEOUT_IN_SECONDS;
+		final int socketTimeoutSec = TIMEOUT_IN_SECONDS;
 		HttpConnectionParams.setConnectionTimeout(httpParameters, connectionTimeOutSec * 1000);
 		HttpConnectionParams.setSoTimeout        (httpParameters, socketTimeoutSec * 1000);
 	}
 	
+	@Override
 	public void close() { 
 		httpclient.getConnectionManager().shutdown();
 	}
 
+	@Override
 	public String get(final String get) throws ClientProtocolException, IOException {
 		final HttpGet httpGet = new HttpGet(get); 
 		setFirefoxAsAgent(httpGet);
@@ -69,6 +73,7 @@ public class SimpleHttpClientImpl implements SimpleHttpClient {
 		httpGet.setHeader("User-Agent", "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.13) Gecko/20101206 Ubuntu/10.10 (maverick) Firefox/3.6.13");
 	}
 
+	@Override
 	public String post(final String postUrl, final Map<String, String> params) throws ClientProtocolException, IOException {
 		final HttpPost httpost = new HttpPost(postUrl);
 		setFirefoxAsAgent(httpost);
@@ -82,6 +87,7 @@ public class SimpleHttpClientImpl implements SimpleHttpClient {
 		return result;
 	}
 
+	@Override
 	public String getOrNull(final String url) {
 		try {
 			final String getResult = get(url);
@@ -91,6 +97,7 @@ public class SimpleHttpClientImpl implements SimpleHttpClient {
 		}
 	}
 
+	@Override
 	public String getToFile(final String link, final File destFile) throws ClientProtocolException, IOException {
 		final HttpGet httpGet = new HttpGet(link);
 		return executeSaveResponseToFileReturnContentType(httpGet, destFile);
@@ -104,7 +111,11 @@ public class SimpleHttpClientImpl implements SimpleHttpClient {
 		final HttpResponse response = execute(httpost);
 	    final HttpEntity entity = response.getEntity();
 		final InputStream contentIS = entity.getContent();
-		String encoding = entity.getContentType().getElements()[0].getParameterByName("charset").getValue();
+		Header contentType = entity.getContentType();
+		HeaderElement[] elements = contentType.getElements();
+		HeaderElement headerElement = elements[0];
+		NameValuePair parameterByName = headerElement.getParameterByName("charset");
+		String encoding = parameterByName.getValue();
 		if(encoding.equals("ISO-8859-1")){			
 			encoding = "CP1252";
 		}

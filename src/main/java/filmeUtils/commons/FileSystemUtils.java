@@ -12,7 +12,11 @@ import filmeUtils.utils.RegexUtils;
 
 public class FileSystemUtils {
 	
+	private static final String DEFAULT_USER = "filmeutils";
+	private static final String USER_PASSWORD_SEPARATOR = "/";
+	private static final String DEFAULT_PASSWORD = "filmeutilsfilme";
 	private static final String ALREADY_DOWNLOADED_FILE = "alreadyDownloaded";
+	private static final String USER_PASSWORD_FILE = "userPassword";
 	private static final String REGEX_FILE_WITH_PATTERNS_TO_DOWNLOAD = "downloadThis";
 	private static final String SERIALIZED_COOKIES_FILE = "cookies.serialized";
 	private static final String SUBTITLE_FOLDER_CONFIG_FILE = "subtitlefolder";
@@ -154,5 +158,29 @@ public class FileSystemUtils {
 		}
 		return fileContainingAlreadyDownloaded;
 	}
+
+	public String getUser() {
+		String userPassword = getUserPassword();
+		return userPassword.split(USER_PASSWORD_SEPARATOR)[0];
+	}
+
+	public String getPassword() {
+		String userPassword = getUserPassword();
+		return userPassword.split(USER_PASSWORD_SEPARATOR)[1];
+	}
+	
+	private String getUserPassword(){
+		File fileContainingUserAndPassword = new File(getFolder(),USER_PASSWORD_FILE);
+		try {
+			if(!fileContainingUserAndPassword.exists()){
+				fileContainingUserAndPassword.createNewFile();
+				FileUtils.writeStringToFile(fileContainingUserAndPassword, DEFAULT_USER+USER_PASSWORD_SEPARATOR+DEFAULT_PASSWORD);
+			}
+			return FileUtils.readFileToString(fileContainingUserAndPassword);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 
 }

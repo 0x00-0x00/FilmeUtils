@@ -3,9 +3,9 @@ FilmeUtils
 
 FilmeUtils baixa filmes e séries do legendas.tv  
 
-Download
----------------------
-https://www.dropbox.com/s/hs96718zut03mw6/filmeUtils.jar
+[Download](https://www.dropbox.com/s/vtsa54ervupiqhm/filmeUtils.jar)
+=============
+
 
 Do que você precisa  
 --------------------- 
@@ -15,8 +15,8 @@ Do que você precisa
 Como funciona  
 ---------------------
 FilmeUtils procura a legenda no legendas.tv e depois o torrent no piratebay/bitsnoop/rarbg .  
-Funciona melhor com legendas novas. Usando a linha de comando -auto é possível colocar o filmeUtils  
-pra fazer o download do seriado assim que sai a legenda.  
+Funciona melhor com legendas novas. Usando a linha de comando -auto e um agendador de taefas
+é possível colocar o filmeUtils pra fazer o download do seriado assim que sai a legenda.  
 
 GUI  
 ---------------------

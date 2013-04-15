@@ -116,7 +116,8 @@ public class SimpleHttpClientImpl implements SimpleHttpClient {
 		HeaderElement headerElement = elements[0];
 		NameValuePair parameterByName = headerElement.getParameterByName("charset");
 		String encoding = parameterByName.getValue();
-		if(encoding.equals("ISO-8859-1")){			
+		encoding = "UTF-8";
+		if(encoding != null  && encoding.equals("ISO-8859-1")){			
 			encoding = "CP1252";
 		}
 		final String content = IOUtils.toString(contentIS,encoding);

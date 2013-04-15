@@ -50,6 +50,16 @@ public class LegendasTv {
 			outputListener.outVerbose("Entrando no legendas.tv...");
 			final String postResults = httpclient.post(LOGIN_URL, params);
 			
+			if(postResults == null){
+				outputListener.out("Legendas tv não está respondendo");
+				throw new RuntimeException();
+			}
+			
+			if(postResults.isEmpty()){
+				outputListener.out("Legendas tv não está respondendo");
+				throw new RuntimeException();
+			}
+			
 			if(postResults.contains("Dados incorretos")){
 				outputListener.out("Login/senha incorretos");
 				throw new RuntimeException();

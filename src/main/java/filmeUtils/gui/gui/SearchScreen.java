@@ -182,6 +182,21 @@ public class SearchScreen extends JFrame {
 			}
 		});
 	}
+	
+	private void downloadSubtitle(final String item) {
+		searchScreenNeeds.downloadSubtitles(item, new DownloadCallback() {
+			@Override
+			public void done(boolean found) {
+				progressBar.setIndeterminate(false); 
+				if(found){
+					output("Dowload de legendas de '"+item+"' terminado com sucesso.");
+				}else{
+					output("ERRO!");
+					output("Ocorreu um erro ao pegar as legendas de '"+item+"'.");
+				}
+			}
+		});
+	}
 
 	private void setupSearchResultPanel() {
 		searchResultsPanel = new JPanel();
@@ -230,18 +245,7 @@ public class SearchScreen extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				final String item = (String) result.getSelectedValue();
-				searchScreenNeeds.downloadSubtitles(item, new DownloadCallback() {
-					@Override
-					public void done(boolean found) {
-						progressBar.setIndeterminate(false); 
-						if(found){
-							output("Dowload de legendas de '"+item+"' terminado com sucesso.");
-						}else{
-							output("ERRO!");
-							output("Ocorreu um erro ao pegar as legendas de '"+item+"'.");
-						}
-					}
-				});
+				downloadSubtitle(item);
 			}
 		});
 		
@@ -254,8 +258,8 @@ public class SearchScreen extends JFrame {
 			}
 		});
 		
-		popup.add(menuDownloadSubtitles);
 		popup.add(menuDownloadSubtitlesAndTorrent);
+		popup.add(menuDownloadSubtitles);
 		
 		progressBar = new JProgressBar();
 		

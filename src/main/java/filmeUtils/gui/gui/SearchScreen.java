@@ -24,7 +24,9 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -84,18 +86,21 @@ public class SearchScreen extends JFrame {
 		defaultListModel = new DefaultListModel();
 		
 		endSearch = new GUISearchCallback() {
+			@Override
 			public void done() {
 				progressBar.setIndeterminate(false);
 				outputTextArea.append("\nProcura completa.");
 				outputTextArea.setCaretPosition(outputTextArea.getDocument().getLength());
 			}
 			
+			@Override
 			public void found(final String name) {
 				addSubtitleToList(name);
 			}
 			
 			private void addSubtitleToList(final String name) {
 				SwingUtilities.invokeLater(new Runnable() {
+					@Override
 					public void run() {
 						defaultListModel.addElement(name);
 					}
@@ -107,6 +112,7 @@ public class SearchScreen extends JFrame {
 			
 			String lastSearch = "";
 			
+			@Override
 			public void actionPerformed(final ActionEvent event) {
 				final String searchTerm = searchString.getText();
 				final boolean noNewSearch = lastSearch.equals(searchTerm);
@@ -155,18 +161,23 @@ public class SearchScreen extends JFrame {
 	
 	private void downloadSubtitleAtPosition(final int index) {
 		final ListModel dlm = result.getModel();
-		final Object item = dlm.getElementAt(index);
+		final String subtitlePackage = (String) dlm.getElementAt(index);
 		result.ensureIndexIsVisible(index);
+		download(subtitlePackage);
+	}
+
+	private void download(final String subtitlePackage) {
 		progressBar.setIndeterminate(true);
-		output("Fazendo o download de '"+item+"'.");
-		searchScreenNeeds.download((String) item, new DownloadCallback() {
+		output("Fazendo o download de '"+subtitlePackage+"'.");
+		searchScreenNeeds.download(subtitlePackage, new DownloadCallback() {
+			@Override
 			public void done(boolean found) {
 				progressBar.setIndeterminate(false); 
 				if(found){
-					output("Dowload de '"+item+"' terminado com sucesso.");
+					output("Dowload de '"+subtitlePackage+"' terminado com sucesso.");
 				}else{
 					output("ERRO!");
-					output("Torrent compatível para '"+item+"' não foi encontrado.");
+					output("Torrent compatível para '"+subtitlePackage+"' não foi encontrado.");
 				}
 			}
 		});
@@ -196,6 +207,55 @@ public class SearchScreen extends JFrame {
 				downloadSubtitleAtPosition(index);
 			}
 		}});
+		
+
+		final JPopupMenu popup = new JPopupMenu();
+		
+		result.addMouseListener(new MouseAdapter() {
+			@Override public void mousePressed(MouseEvent e)  {check(e);}
+			@Override public void mouseReleased(MouseEvent e) {check(e);}
+			
+			public void check(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					int locationToIndex = result.locationToIndex(e.getPoint());
+					if(locationToIndex == -1) return;
+					result.setSelectedIndex(locationToIndex);
+					popup.show(result, e.getX(), e.getY());
+				}
+			}
+		});
+		
+		JMenuItem menuDownloadSubtitles = new JMenuItem("Fazer download somente das legendas");
+		menuDownloadSubtitles.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				final String item = (String) result.getSelectedValue();
+				searchScreenNeeds.downloadSubtitles(item, new DownloadCallback() {
+					@Override
+					public void done(boolean found) {
+						progressBar.setIndeterminate(false); 
+						if(found){
+							output("Dowload de legendas de '"+item+"' terminado com sucesso.");
+						}else{
+							output("ERRO!");
+							output("Ocorreu um erro ao pegar as legendas de '"+item+"'.");
+						}
+					}
+				});
+			}
+		});
+		
+		JMenuItem menuDownloadSubtitlesAndTorrent = new JMenuItem("Fazer download de legenda e torrent");
+		menuDownloadSubtitlesAndTorrent.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				final String item = (String) result.getSelectedValue();
+				download(item);
+			}
+		});
+		
+		popup.add(menuDownloadSubtitles);
+		popup.add(menuDownloadSubtitlesAndTorrent);
 		
 		progressBar = new JProgressBar();
 		
@@ -248,12 +308,14 @@ public class SearchScreen extends JFrame {
 		searchString.setText(defaultSearchString);
 		searchString.addFocusListener(new FocusListener() {
 			
+			@Override
 			public void focusLost(final FocusEvent e) {
 				if(searchString.getText().equals("")){
 					searchString.setText(defaultSearchString);
 				}
 			}
 			
+			@Override
 			public void focusGained(final FocusEvent e) {
 				if(searchString.getText().equals(defaultSearchString)){
 					searchString.setText("");
@@ -303,6 +365,7 @@ public class SearchScreen extends JFrame {
 		gbc_btnNovasLegendas.gridy = 0;
 		newSubtitlesFolder.setFocusable(false);
 		searchNewSubtitles = new ActionListener() {
+			@Override
 			public void actionPerformed(final ActionEvent arg0) {
 				
 				final String text = "Procurando novas legendas...";
@@ -329,6 +392,7 @@ public class SearchScreen extends JFrame {
 		resolution.setModel(new DefaultComboBoxModel(new String[] { searchScreenNeeds.allResolutionsString() , searchScreenNeeds.highResolutionString(), searchScreenNeeds.lowResolutionString()}));
 		resolution.addActionListener(new ActionListener() {
 			
+			@Override
 			public void actionPerformed(final ActionEvent arg0) {
 				searchScreenNeeds.setResolution(resolution.getSelectedItem().toString());
 			}
@@ -363,6 +427,7 @@ public class SearchScreen extends JFrame {
 		optionsPanel.add(subtitlesDest, gbc_subtitlesDest);
 		subtitlesDest.setFocusable(false);
 		subtitlesDest.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(final ActionEvent e) {
 				final JFileChooser jFileChooser = new JFileChooser();
 				jFileChooser.setFileSelectionMode( JFileChooser.DIRECTORIES_ONLY);
@@ -411,6 +476,7 @@ public class SearchScreen extends JFrame {
 	
 	private void clearList() {
 		SwingUtilities.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				defaultListModel.clear();
 			}

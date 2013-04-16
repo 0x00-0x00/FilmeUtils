@@ -17,7 +17,7 @@ import filmeUtils.utils.http.SimpleHttpClient;
 public class Subtitle {
 	
 	private final LegendasTv legendasTv;
-	private final OutputListener output;
+	private OutputListener output;
 	private final SimpleHttpClient httpclient;
 
 	public Subtitle(final OutputListener output,final SimpleHttpClient httpclient,final LegendasTv legendasTv) {
@@ -104,6 +104,10 @@ public class Subtitle {
 		}catch(IOException e){throw new RuntimeException(e);}
 		
 		return unzippedTempDestination;
+	}
+
+	public void setOutputListener(OutputListener outputListener) {
+		output = outputListener;
 	}
 
 }

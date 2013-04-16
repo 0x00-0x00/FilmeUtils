@@ -6,9 +6,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import filmeUtils.commons.FileSystemUtils;
 import filmeUtils.commons.OutputListener;
 import filmeUtils.downloader.Downloader;
+import filmeUtils.subtitle.Subtitle;
 import filmeUtils.subtitle.subtitleSites.LegendasTv;
-import filmeUtils.subtitle.subtitleSites.SubtitlePackageAndLink;
 import filmeUtils.subtitle.subtitleSites.SubtitleLinkSearchCallback;
+import filmeUtils.subtitle.subtitleSites.SubtitlePackageAndLink;
 
 public class SearchScreenNeeds {
 
@@ -18,10 +19,26 @@ public class SearchScreenNeeds {
 	private String regex = ".*";
 	private final LegendasTv legendasTv;
 	private final Downloader downloader;
+	private final Subtitle subtitle;
 
-	public SearchScreenNeeds(final LegendasTv legendasTv, final Downloader downloader) {
+	public SearchScreenNeeds(final LegendasTv legendasTv, final Downloader downloader, final Subtitle subtitle) {
 		this.legendasTv = legendasTv;
 		this.downloader = downloader;
+		this.subtitle = subtitle;
+	}
+	
+	public void downloadSubtitles(final String item, final DownloadCallback callback) {
+		new Thread(){
+			@Override
+			public void run() {
+				try{
+					subtitle.download(item, FileSystemUtils.getInstance().getSubtitlesDestination());
+					callback.done(true);
+				}catch(Exception e){
+					callback.done(false);
+				}
+			}
+		}.start();
 	}
 	
 	public void download(final String item, final DownloadCallback callback) {
@@ -112,6 +129,7 @@ public class SearchScreenNeeds {
 
 	public void setOutputListener(final OutputListener outputListener) {
 		downloader.setOutputListener(outputListener);
+		subtitle.setOutputListener(outputListener);
 	}
 
 }

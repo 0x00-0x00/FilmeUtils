@@ -30,13 +30,13 @@ public class CommandLineClient implements CommandLine {
 			final OutputListener output) {
 		this.httpclient = httpclient;
 		this.legendasTv = legendasTv;
-		this.extractor = extract;
+		extractor = extract;
 		this.output = output;
 	}
 
 	@Override
 	public void h() {
-		output.out("FilmeUtils "+Version.VERSION+"\n" +
+		output.out("FilmeUtils "+Version.getVersion()+"\n" +
 				"Ajuda dos comandos:\n" +
 				"Sem argumentos  \n" + 
 				"	Abre a gui.  \n" + 
@@ -113,54 +113,54 @@ public class CommandLineClient implements CommandLine {
 	}
 
 	@Override
-	public void lt(String subtitleSearchTerm, String regexToApplyOnSubtitlesFiles, File destinantion) {
-		LegendasTv legendasTv = new LegendasTv(httpclient, output);
-		Downloader downloader = new Downloader(extractor,  httpclient, legendasTv, output);
+	public void lt(final String subtitleSearchTerm, final String regexToApplyOnSubtitlesFiles, final File destinantion) {
+		final LegendasTv legendasTv = new LegendasTv(httpclient, output);
+		final Downloader downloader = new Downloader(extractor,  httpclient, legendasTv, output);
 		output.out("Procurando "+subtitleSearchTerm+" aplicando regex "+regexToApplyOnSubtitlesFiles+" salvando em "+destinantion.getAbsolutePath());
 		downloader.download(subtitleSearchTerm, destinantion, regexToApplyOnSubtitlesFiles);
 	}
 
 	@Override
-	public void l(String subtitleSearchTerm, String regexToApplyOnSubtitlesFiles, File destinantion) {
-		Subtitle subtitle = new Subtitle(output,httpclient,legendasTv);
+	public void l(final String subtitleSearchTerm, final String regexToApplyOnSubtitlesFiles, final File destinantion) {
+		final Subtitle subtitle = new Subtitle(output,httpclient,legendasTv);
 		output.out("Procurando "+subtitleSearchTerm);
 		subtitle.download(subtitleSearchTerm,regexToApplyOnSubtitlesFiles,destinantion);
 	}
 
 	@Override
-	public void t(String torrentSearchTerm) {
-		Torrent torrent = new Torrent(output);
+	public void t(final String torrentSearchTerm) {
+		final Torrent torrent = new Torrent(output);
 		torrent.download(torrentSearchTerm);
 	}
 
 	@Override
 	public void n() {
-		Subtitle subtitle = new Subtitle(output,httpclient,legendasTv);
+		final Subtitle subtitle = new Subtitle(output,httpclient,legendasTv);
 		output.out("Legendas adicionadas recentemente");
 		subtitle.listNewSubtitles();
 	}
 
 	@Override
-	public void n(RegexForSubPackageAndSubFile regex, File destinantion) {
+	public void n(final RegexForSubPackageAndSubFile regex, final File destinantion) {
 		output.out("Procurando "+regex.packageRegex+" nas legendas adicionadas recentemente");
 		output.out("Aplicando "+regex.fileRegex+" nos arquivos de legendas");
 		output.out("Salvando em "+destinantion.getAbsolutePath());
 		
-		LegendasTv legendasTv = new LegendasTv(httpclient, output);
-		Downloader downloader = new Downloader(extractor, httpclient, legendasTv, output);
+		final LegendasTv legendasTv = new LegendasTv(httpclient, output);
+		final Downloader downloader = new Downloader(extractor, httpclient, legendasTv, output);
 		downloader.downloadFromNewest(regex, destinantion);
 	}
 
 	@Override
-	public void f(List<RegexForSubPackageAndSubFile> regexes, File destinantion) {
-		LegendasTv legendasTv = new LegendasTv(httpclient, output);
-		Downloader downloader = new Downloader(extractor, httpclient,legendasTv, output);
+	public void f(final List<RegexForSubPackageAndSubFile> regexes, final File destinantion) {
+		final LegendasTv legendasTv = new LegendasTv(httpclient, output);
+		final Downloader downloader = new Downloader(extractor, httpclient,legendasTv, output);
 		downloader.downloadFromNewest(regexes, destinantion);
 	}
 
 	@Override
-	public void p(String subtitleSearchTerm) {
-		Subtitle subtitle = new Subtitle(output,httpclient,legendasTv);
+	public void p(final String subtitleSearchTerm) {
+		final Subtitle subtitle = new Subtitle(output,httpclient,legendasTv);
 		output.out("Procurando "+subtitleSearchTerm);
 		subtitle.search(subtitleSearchTerm);
 	}
@@ -168,13 +168,13 @@ public class CommandLineClient implements CommandLine {
 	@Override
 	public void auto() {
 		final FileSystemUtils instance = FileSystemUtils.getInstance();
-		List<String> subtitlesToDownloadPatterns = instance.getSubtitlesToDownloadPatterns();
-		List<RegexForSubPackageAndSubFile> regexes = new ArrayList<RegexForSubPackageAndSubFile>();
-		for (String maybeComposedRegex : subtitlesToDownloadPatterns) {
+		final List<String> subtitlesToDownloadPatterns = instance.getSubtitlesToDownloadPatterns();
+		final List<RegexForSubPackageAndSubFile> regexes = new ArrayList<RegexForSubPackageAndSubFile>();
+		for (final String maybeComposedRegex : subtitlesToDownloadPatterns) {
 			regexes.add(RegexUtils.getRegexForSubPackageAndSubFile(maybeComposedRegex));
 		}
-		LegendasTv legendasTv = new LegendasTv(httpclient, output);
-		Downloader downloader = new Downloader(extractor, httpclient,legendasTv, output);
+		final LegendasTv legendasTv = new LegendasTv(httpclient, output);
+		final Downloader downloader = new Downloader(extractor, httpclient,legendasTv, output);
 		downloader.downloadFromNewest(regexes, instance.getSubtitlesDestination(),instance.getAlreadyDownloaded());
 	}
 

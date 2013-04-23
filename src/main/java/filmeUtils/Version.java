@@ -3,7 +3,10 @@ package filmeUtils;
 public class Version {
 	
 	public static String getVersion(){
-		return Version.class.getPackage().getImplementationVersion();
+		final String implementationVersion = Version.class.getPackage().getImplementationVersion();
+		if(implementationVersion == null)
+			return "DEVELOPMENT";
+		return implementationVersion;
 	}
 
 }

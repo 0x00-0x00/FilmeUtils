@@ -111,12 +111,13 @@ public class SimpleHttpClientImpl implements SimpleHttpClient {
 		final HttpResponse response = execute(httpost);
 	    final HttpEntity entity = response.getEntity();
 		final InputStream contentIS = entity.getContent();
-		Header contentType = entity.getContentType();
-		HeaderElement[] elements = contentType.getElements();
-		HeaderElement headerElement = elements[0];
-		NameValuePair parameterByName = headerElement.getParameterByName("charset");
-		String encoding = parameterByName.getValue();
-		encoding = "UTF-8";
+		final Header contentType = entity.getContentType();
+		final HeaderElement[] elements = contentType.getElements();
+		final HeaderElement headerElement = elements[0];
+		final NameValuePair parameterByName = headerElement.getParameterByName("charset");
+		String encoding = "UTF-8";
+		if(parameterByName != null)
+			encoding = parameterByName.getValue();
 		if(encoding != null  && encoding.equals("ISO-8859-1")){			
 			encoding = "CP1252";
 		}

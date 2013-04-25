@@ -2,6 +2,7 @@ package filmeUtils.commons;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
@@ -29,23 +30,23 @@ public class FileSystemUtils {
 	}
 	
 	public final File getSubtitlesDestination(){
-		File filmeUtilsFolder = getFolder();
-		File subtitleFolder = new File(filmeUtilsFolder,SUBTITLE_FOLDER_CONFIG_FILE);
+		final File filmeUtilsFolder = getFolder();
+		final File subtitleFolder = new File(filmeUtilsFolder,SUBTITLE_FOLDER_CONFIG_FILE);
 		if(!subtitleFolder.exists()){
 			try {
 				subtitleFolder.createNewFile();
 				FileUtils.writeStringToFile(subtitleFolder, System.getProperty("user.home"));
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				throw new RuntimeException(e);
 			}
 		}
 		String destinationFolderPath;
 		try {
 			destinationFolderPath = FileUtils.readFileToString(subtitleFolder).trim();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			throw new RuntimeException(e);
 		}
-		File subtitlesDestinationFolder = new File(destinationFolderPath);
+		final File subtitlesDestinationFolder = new File(destinationFolderPath);
 		if(!subtitlesDestinationFolder.exists()){
 			throw new RuntimeException("Pasta não existe "+destinationFolderPath);
 		}
@@ -59,17 +60,17 @@ public class FileSystemUtils {
 		return new File(getFolder(),SERIALIZED_COOKIES_FILE);
 	}
 
-	public File writeErrorFile(Exception e) {
-		File errorFile = new File(getFolder(), Calendar.getInstance().getTimeInMillis()+".error");
+	public File writeErrorFile(final Exception e) {
+		final File errorFile = new File(getFolder(), Calendar.getInstance().getTimeInMillis()+".error");
 		try {
 			FileUtils.writeStringToFile(errorFile, e.getMessage()+"\n"+e.getStackTrace());
-		} catch (IOException e1) {
+		} catch (final IOException e1) {
 			throw new RuntimeException(e1);
 		}
 		return errorFile;
 	}
 
-	public void setSubtitleDestinationFolder(String absolutePath) {
+	public void setSubtitleDestinationFolder(final String absolutePath) {
 		final File filmeUtilsFolder = getFolder();
 		final File file = new File(filmeUtilsFolder,SUBTITLE_FOLDER_CONFIG_FILE);
 		try {
@@ -83,30 +84,30 @@ public class FileSystemUtils {
 	public List<String> getAlreadyDownloaded() {
 		try {
 			return FileUtils.readLines(getFileContainingAlreadyDownloaded());
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	public void addAlreadyDownloaded(String alreadyDownloadedFile) {
-		File alreadyDownloadedFiles = getFileContainingAlreadyDownloaded();
+	public void addAlreadyDownloaded(final String alreadyDownloadedFile) {
+		final File alreadyDownloadedFiles = getFileContainingAlreadyDownloaded();
 		try {
-			boolean append = true;
+			final boolean append = true;
 			FileUtils.writeStringToFile(alreadyDownloadedFiles, "\n"+alreadyDownloadedFile, append);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	public List<String> getSubtitlesToDownloadPatterns() {
-		File file = getRegexFileWithPatternsToDownload();
+		final File file = getRegexFileWithPatternsToDownload();
 		return getSubtitlesToDownloadPatterns(file);
 	}
 
-	public List<String> getSubtitlesToDownloadPatterns(File file) {
+	public List<String> getSubtitlesToDownloadPatterns(final File file) {
 		try {
 			return FileUtils.readLines(file);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -119,20 +120,23 @@ public class FileSystemUtils {
 		return getRegexFileWithPatternsToDownload().getAbsolutePath();
 	}
 
-	public static void copyFilesMatchingRegexAndDeleteSourceDir(final File source,final File dest, final String regex) {
+	public static List<String> copyFilesMatchingRegexAndDeleteSourceDir(final File source,final File dest, final String regex) {
+		final ArrayList<String> filesThatMatch = new ArrayList<String>();
 		final Iterator<File> iterateFiles = FileUtils.iterateFiles(source, new String[]{"srt"}, true);
 		while(iterateFiles.hasNext()){
 			final File file = iterateFiles.next();
 			try {
-				String subtitleFilename = file.getName();
+				final String subtitleFilename = file.getName();
 				if(RegexUtils.matchesCaseInsensitive(subtitleFilename, regex)){
+					filesThatMatch.add(file.getName());
 					FileUtils.copyFile(file, new File(dest,subtitleFilename));
 				}
-			}catch(IOException e){throw new RuntimeException(e);}
+			}catch(final IOException e){throw new RuntimeException(e);}
 		}
 		try {
 			FileUtils.deleteDirectory(source);
-		}catch(IOException e){/*don't really care*/}
+		}catch(final IOException e){/*don't really care*/}
+		return filesThatMatch;
 	}
 
 	private final File getFolder(){
@@ -148,11 +152,11 @@ public class FileSystemUtils {
 	}
 
 	private File getFileContainingAlreadyDownloaded() {
-		File fileContainingAlreadyDownloaded = new File(getFolder(),ALREADY_DOWNLOADED_FILE);
+		final File fileContainingAlreadyDownloaded = new File(getFolder(),ALREADY_DOWNLOADED_FILE);
 		if(!fileContainingAlreadyDownloaded.exists()){
 			try {
 				fileContainingAlreadyDownloaded.createNewFile();
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				throw new RuntimeException(e);
 			}
 		}
@@ -160,24 +164,24 @@ public class FileSystemUtils {
 	}
 
 	public String getUser() {
-		String userPassword = getUserPassword();
+		final String userPassword = getUserPassword();
 		return userPassword.split(USER_PASSWORD_SEPARATOR)[0];
 	}
 
 	public String getPassword() {
-		String userPassword = getUserPassword();
+		final String userPassword = getUserPassword();
 		return userPassword.split(USER_PASSWORD_SEPARATOR)[1];
 	}
 	
 	private String getUserPassword(){
-		File fileContainingUserAndPassword = new File(getFolder(),USER_PASSWORD_FILE);
+		final File fileContainingUserAndPassword = new File(getFolder(),USER_PASSWORD_FILE);
 		try {
 			if(!fileContainingUserAndPassword.exists()){
 				fileContainingUserAndPassword.createNewFile();
 				FileUtils.writeStringToFile(fileContainingUserAndPassword, DEFAULT_USER+USER_PASSWORD_SEPARATOR+DEFAULT_PASSWORD);
 			}
 			return FileUtils.readFileToString(fileContainingUserAndPassword);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			throw new RuntimeException(e);
 		}
 	}

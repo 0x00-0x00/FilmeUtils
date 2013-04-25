@@ -37,7 +37,7 @@ import org.apache.http.protocol.HTTP;
 
 public class SimpleHttpClientImpl implements SimpleHttpClient {
 
-	public static final int TIMEOUT_IN_SECONDS = 120;
+	public static final int TIMEOUT_IN_SECONDS = 7*60;
 	private final DefaultHttpClient httpclient;
 	private final File cookieFile;
 	

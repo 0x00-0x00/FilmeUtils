@@ -2,6 +2,9 @@ package filmeUtils.subtitle;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 import filmeUtils.commons.FileSystemUtils;
@@ -26,31 +29,31 @@ public class Subtitle {
 		this.legendasTv = legendasTv;
 	}
 
-	public void search(String searchTerm) {
+	public void search(final String searchTerm) {
 		search(searchTerm,".*");
 	}
 	
-	public void search(String searchTerm, final String subtitleRegex) {
-		legendasTv.search(searchTerm, new SubtitleLinkSearchCallback(){@Override public void process(SubtitlePackageAndLink nameAndlink) {
+	public void search(final String searchTerm, final String subtitleRegex) {
+		legendasTv.search(searchTerm, new SubtitleLinkSearchCallback(){@Override public void process(final SubtitlePackageAndLink nameAndlink) {
 				output.out(nameAndlink.name);
-				File tempDirWithSubtitles = downloadAndExtractToTempDir(nameAndlink.link);
-				String[] subtitlesFilenames = tempDirWithSubtitles.list();
-				for (String subtitlesFilename : subtitlesFilenames) {
+				final File tempDirWithSubtitles = downloadAndExtractToTempDir(nameAndlink.link);
+				final String[] subtitlesFilenames = tempDirWithSubtitles.list();
+				for (final String subtitlesFilename : subtitlesFilenames) {
 					if(RegexUtils.matchesCaseInsensitive(subtitlesFilename, subtitleRegex))
 						output.out(" -"+subtitlesFilename);
 				}
 		}});
 	}
 
-	public void download(String searchTerm, final File destDir) {
+	public void download(final String searchTerm, final File destDir) {
 		download(searchTerm,".*",destDir);
 	}
 	
 	public void downloadNewer(final File destDir,final List<RegexForSubPackageAndSubFile> regexes, final List<String> ignoredPackages) {
-		SubtitleLinkSearchCallback searchListener = new SubtitleLinkSearchCallback() {	
+		final SubtitleLinkSearchCallback searchListener = new SubtitleLinkSearchCallback() {	
 			@Override
-			public void process(SubtitlePackageAndLink nameAndlink) {
-				String packageName = nameAndlink.name;
+			public void process(final SubtitlePackageAndLink nameAndlink) {
+				final String packageName = nameAndlink.name;
 				if(ignoredPackages.contains(packageName)) return;
 				final RegexForSubPackageAndSubFile regexMatchingPackageOrNull = RegexUtils.getRegexMatchingPackageOrNull(packageName,regexes);
 				if(regexMatchingPackageOrNull == null) return;
@@ -61,10 +64,10 @@ public class Subtitle {
 		legendasTv.getNewer(searchListener);
 	}
 	
-	public void download(String searchTerm, final String subtitleRegex,final File destDir) {
-		SubtitleLinkSearchCallback searchListener = new SubtitleLinkSearchCallback() {	
+	public void download(final String searchTerm, final String subtitleRegex,final File destDir) {
+		final SubtitleLinkSearchCallback searchListener = new SubtitleLinkSearchCallback() {	
 			@Override
-			public void process(SubtitlePackageAndLink nameAndlink) {
+			public void process(final SubtitlePackageAndLink nameAndlink) {
 				downloadSubtitlesMatchingRegexToDir(destDir, subtitleRegex,nameAndlink);
 			}
 		};
@@ -72,41 +75,77 @@ public class Subtitle {
 	}
 
 	private void downloadSubtitlesMatchingRegexToDir(final File destDir, final String subtitleRegex,final SubtitlePackageAndLink nameAndlink) {
-		output.out("Abrindo zip de legendas "+nameAndlink.name);
-		String link = nameAndlink.link;
+		boolean logged = false;
+		int tries = 0;
+		while(!logged && tries < 4){
+			tries++;
+			try {
+				final URL url = new URL(nameAndlink.link);
+				final HttpURLConnection connection = (HttpURLConnection)  url.openConnection();
+				connection.setRequestMethod("HEAD");
+				connection.connect();
+				final String contentType = connection.getContentType();
+				if(contentType.startsWith("text/html")){
+					output.out("Não logou no legendas.tv, tentando novamente.");
+					legendasTv.login();
+				}else{
+					logged = true;
+				}
+			} catch (final MalformedURLException e) {
+				e.printStackTrace();
+			} catch (final IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		if(!logged){
+			output.out("Não foi possível logar no legendas.tv");
+			System.exit(1);
+		}
+		
+		output.out("Fazendo download de pacote de legendas "+nameAndlink.name);
+		final String link = nameAndlink.link;
 		
 		final File unzippedTempDestination = downloadAndExtractToTempDir(link);
-		FileSystemUtils.copyFilesMatchingRegexAndDeleteSourceDir(unzippedTempDestination,destDir, subtitleRegex);
+		final List<String> filesThatMatches = FileSystemUtils.copyFilesMatchingRegexAndDeleteSourceDir(unzippedTempDestination,destDir, subtitleRegex);
+		for (final String file : filesThatMatches) {
+			output.out("Legenda "+file+" copiada para "+destDir.getAbsolutePath());
+		}
 	}
 
 	public void listNewSubtitles() {
-		legendasTv.getNewer(new SubtitleLinkSearchCallback(){@Override public void process(SubtitlePackageAndLink nameAndlink) {
+		legendasTv.getNewer(new SubtitleLinkSearchCallback(){@Override public void process(final SubtitlePackageAndLink nameAndlink) {
 				output.out(nameAndlink.name);
 		}});
 	}
 
-	private File downloadAndExtractToTempDir(String link) {
+	private File downloadAndExtractToTempDir(final String link) {
 		final File unzippedTempDestination;
 		try {
 			final File zipTempDestination = File.createTempFile("Filmeutils", "Filmeutils");
 			unzippedTempDestination = File.createTempFile("Filmeutils", "Filmeutils");
 			unzippedTempDestination.delete();
 			unzippedTempDestination.mkdir();
-			String contentType = httpclient.getToFile(link, zipTempDestination);
-			ExtractorImpl extractor = new ExtractorImpl();
+			final String contentType = httpclient.getToFile(link, zipTempDestination);
+			output.out("Download de pacote de legendas de "+link+" para "+zipTempDestination+" terminado. Descompactando...");
+			final ExtractorImpl extractor = new ExtractorImpl();
+			if(!contentType.contains("rar") && !contentType.contains("zip")){
+				throw new RuntimeException("ContentType "+contentType+" errado. Deveria ser zip ou rar.");
+			}
 			if(contentType.contains("rar")){
 				extractor.unrar(zipTempDestination, unzippedTempDestination);
 			}
 			if(contentType.contains("zip")){
 				extractor.unzip(zipTempDestination, unzippedTempDestination);
 			}
+			output.out("Pacote de legendas descompactado.");
 			zipTempDestination.delete();
-		}catch(IOException e){throw new RuntimeException(e);}
+		}catch(final IOException e){throw new RuntimeException(e);}
 		
 		return unzippedTempDestination;
 	}
 
-	public void setOutputListener(OutputListener outputListener) {
+	public void setOutputListener(final OutputListener outputListener) {
 		output = outputListener;
 	}
 

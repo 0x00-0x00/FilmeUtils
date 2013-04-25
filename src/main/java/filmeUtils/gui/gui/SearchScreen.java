@@ -46,7 +46,7 @@ import filmeUtils.commons.OutputListener;
 public class SearchScreen extends JFrame {
 	
 	private JTextField searchString;
-	private final DefaultListModel defaultListModel;
+	private final DefaultListModel<String> defaultListModel;
 	private JPanel upperPanel;
 	private JPanel searchPanel;
 	private GridBagLayout gbl_searchPanel;
@@ -56,7 +56,7 @@ public class SearchScreen extends JFrame {
 	private JPanel optionsPanel;
 	private JButton newSubtitlesFolder;
 	private GridBagConstraints gbc_btnNovasLegendas;
-	private JComboBox resolution;
+	private JComboBox<?> resolution;
 	private GridBagConstraints gbc_resolution;
 	private JLabel subtitlesFolder;
 	private GridBagConstraints gbc_subtitlesFolder;
@@ -65,7 +65,7 @@ public class SearchScreen extends JFrame {
 	private JButton subtitlesDest;
 	private GridBagConstraints gbc_subtitlesDest;
 	private JPanel searchResultsPanel;
-	private JList result;
+	private JList<String> result;
 	private JScrollPane resultJScrollPane;
 	private JScrollPane outputJScrollPane;
 	private JTextArea outputTextArea;
@@ -83,7 +83,7 @@ public class SearchScreen extends JFrame {
 		
 		this.searchScreenNeeds = searchScreenNeeds;
 		
-		defaultListModel = new DefaultListModel();
+		defaultListModel = new DefaultListModel<String>();
 		
 		endSearch = new GUISearchCallback() {
 			@Override
@@ -160,8 +160,8 @@ public class SearchScreen extends JFrame {
 	}
 	
 	private void downloadSubtitleAtPosition(final int index) {
-		final ListModel dlm = result.getModel();
-		final String subtitlePackage = (String) dlm.getElementAt(index);
+		final ListModel<String> dlm = result.getModel();
+		final String subtitlePackage = dlm.getElementAt(index);
 		result.ensureIndexIsVisible(index);
 		download(subtitlePackage);
 	}
@@ -171,7 +171,7 @@ public class SearchScreen extends JFrame {
 		output("Fazendo o download de '"+subtitlePackage+"'.");
 		searchScreenNeeds.download(subtitlePackage, new DownloadCallback() {
 			@Override
-			public void done(boolean found) {
+			public void done(final boolean found) {
 				progressBar.setIndeterminate(false); 
 				if(found){
 					output("Dowload de '"+subtitlePackage+"' terminado com sucesso.");
@@ -186,7 +186,7 @@ public class SearchScreen extends JFrame {
 	private void downloadSubtitle(final String item) {
 		searchScreenNeeds.downloadSubtitles(item, new DownloadCallback() {
 			@Override
-			public void done(boolean found) {
+			public void done(final boolean found) {
 				progressBar.setIndeterminate(false); 
 				if(found){
 					output("Dowload de legendas de '"+item+"' terminado com sucesso.");
@@ -213,7 +213,7 @@ public class SearchScreen extends JFrame {
 		splitPane.setContinuousLayout(true);
 		resultJScrollPane = new JScrollPane();	
 		
-		result = new JList();
+		result = new JList<String>();
 		result.setFocusable(false);
 		result.setModel(defaultListModel);
 		result.addMouseListener(new MouseAdapter() { @Override public void mouseClicked(final MouseEvent e) {
@@ -227,12 +227,12 @@ public class SearchScreen extends JFrame {
 		final JPopupMenu popup = new JPopupMenu();
 		
 		result.addMouseListener(new MouseAdapter() {
-			@Override public void mousePressed(MouseEvent e)  {check(e);}
-			@Override public void mouseReleased(MouseEvent e) {check(e);}
+			@Override public void mousePressed(final MouseEvent e)  {check(e);}
+			@Override public void mouseReleased(final MouseEvent e) {check(e);}
 			
-			public void check(MouseEvent e) {
+			public void check(final MouseEvent e) {
 				if (e.isPopupTrigger()) {
-					int locationToIndex = result.locationToIndex(e.getPoint());
+					final int locationToIndex = result.locationToIndex(e.getPoint());
 					if(locationToIndex == -1) return;
 					result.setSelectedIndex(locationToIndex);
 					popup.show(result, e.getX(), e.getY());
@@ -240,20 +240,20 @@ public class SearchScreen extends JFrame {
 			}
 		});
 		
-		JMenuItem menuDownloadSubtitles = new JMenuItem("Fazer download somente das legendas");
+		final JMenuItem menuDownloadSubtitles = new JMenuItem("Fazer download somente das legendas");
 		menuDownloadSubtitles.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				final String item = (String) result.getSelectedValue();
+			public void actionPerformed(final ActionEvent e) {
+				final String item = result.getSelectedValue();
 				downloadSubtitle(item);
 			}
 		});
 		
-		JMenuItem menuDownloadSubtitlesAndTorrent = new JMenuItem("Fazer download de legenda e torrent");
+		final JMenuItem menuDownloadSubtitlesAndTorrent = new JMenuItem("Fazer download de legenda e torrent");
 		menuDownloadSubtitlesAndTorrent.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				final String item = (String) result.getSelectedValue();
+			public void actionPerformed(final ActionEvent e) {
+				final String item = result.getSelectedValue();
 				download(item);
 			}
 		});

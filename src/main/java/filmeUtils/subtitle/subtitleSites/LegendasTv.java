@@ -41,9 +41,11 @@ public class LegendasTv {
 	public void login(){		
         try {
 			final HashMap<String, String> params = new HashMap<String, String>();
-			FileSystemUtils instance = FileSystemUtils.getInstance();
-			params.put("txtLogin", instance.getUser());
-			params.put("txtSenha", instance.getPassword());
+			final FileSystemUtils instance = FileSystemUtils.getInstance();
+			final String user = instance.getUser();
+			final String password = instance.getPassword();
+			params.put("txtLogin", user);
+			params.put("txtSenha", password);
 			params.put("chkLogin", "1");
 			
 			
@@ -99,29 +101,29 @@ public class LegendasTv {
 			content = search(searchTerm, page);
 		}
 	
-		ArrayList<SubtitlePackageAndLink> subtitleLinks = getSubtitleLinks(content);
+		final ArrayList<SubtitlePackageAndLink> subtitleLinks = getSubtitleLinks(content);
 		
-		for (SubtitlePackageAndLink link : subtitleLinks) {
+		for (final SubtitlePackageAndLink link : subtitleLinks) {
 			searchCallback.process(link);
 		}
 		
 		searchNextPage(page, searchCallback, searchTerm, content);
 	}
 
-	private ArrayList<SubtitlePackageAndLink> getSubtitleLinks(String content) {
-		ArrayList<SubtitlePackageAndLink> links = new ArrayList<SubtitlePackageAndLink>();
+	private ArrayList<SubtitlePackageAndLink> getSubtitleLinks(final String content) {
+		final ArrayList<SubtitlePackageAndLink> links = new ArrayList<SubtitlePackageAndLink>();
 		final Document parsed = Jsoup.parse(content);
 		final Elements subtitleSpans = parsed.select("#conteudodest > div > span");
 		for(final Element subtitleSpan : subtitleSpans) {
 			final String subtitleName = getSubtitleName(subtitleSpan);
 			final String subtitleLink = getSubtitleLink(subtitleSpan);
-			SubtitlePackageAndLink subtitleAndLink = new SubtitlePackageAndLink(subtitleName,subtitleLink);
+			final SubtitlePackageAndLink subtitleAndLink = new SubtitlePackageAndLink(subtitleName,subtitleLink);
 			links.add(subtitleAndLink);
 		}
 		return links;
 	}
 
-	private void searchNextPage(final int page, final SubtitleLinkSearchCallback searchListener, final String searchTerm, String content) throws IOException {
+	private void searchNextPage(final int page, final SubtitleLinkSearchCallback searchListener, final String searchTerm, final String content) throws IOException {
 		final int nextPage = page+1;
 		
 		final boolean pageLinkExists = pageLinkExists(content, nextPage);
@@ -130,15 +132,15 @@ public class LegendasTv {
 		}
 	}
 
-	private boolean onMaintenance(String content) {
+	private boolean onMaintenance(final String content) {
 		return content.contains("Estamos realizando manuten");
 	}
 
-	private boolean isOffline(String content) {
+	private boolean isOffline(final String content) {
 		return content.contains(" temporariamente offline");
 	}
 
-	private boolean isNotLogged(String content) {
+	private boolean isNotLogged(final String content) {
 		return content.contains(" precisa estar logado para acessar essa ");
 	}
 
@@ -202,7 +204,7 @@ public class LegendasTv {
 			final String thirdQuotedWordRegex = "[^']*'[^']*','[^']*','([^']*)'.*";
 			subtitleName = subtitleName.replaceAll(thirdQuotedWordRegex, "$1");
 			final String downloadLink = getDownloadFromOnClick(subtitleDiv);
-			SubtitlePackageAndLink nameAndlink = new SubtitlePackageAndLink(subtitleName, downloadLink);
+			final SubtitlePackageAndLink nameAndlink = new SubtitlePackageAndLink(subtitleName, downloadLink);
 			searchListener.process(nameAndlink);
 		}
 		if(currentIndex<howMuchNewAddsToShow){
@@ -215,7 +217,7 @@ public class LegendasTv {
 		try {
 			final String get = BASE_URL+NEW_ADDS_URL+startingIndex;
 			return httpclient.get(get);
-		}catch(SocketTimeoutException timeout){
+		}catch(final SocketTimeoutException timeout){
 			throw new RuntimeException("Legendas tv muito lento ou fora do ar: ",timeout);
 		} catch (final Exception e) {
 			throw new RuntimeException("Ocorreu um erro ao pegar novas legendas: ",e);

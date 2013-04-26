@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
+
 import filmeUtils.commons.FileSystemUtils;
 import filmeUtils.commons.OutputListener;
 import filmeUtils.subtitle.subtitleSites.LegendasTv;
@@ -84,7 +86,7 @@ public class Subtitle {
 				tries++;
 				unzippedTempDestination = downloadAndExtractToTempDirReturnUnzippedDirOrNull(link);
 				if(unzippedTempDestination == null){					
-					output.out("Não logou no legendas.tv, tentando novamente.");
+					output.out("Erro no download!!! Não logou no legendas.tv, tentando novamente...");
 					legendasTv.login();
 				}
 			}
@@ -115,15 +117,21 @@ public class Subtitle {
 			unzippedTempDestination.delete();
 			unzippedTempDestination.mkdir();
 			final String contentType = httpclient.getToFile(link, zipTempDestination);
-			output.out("Download de pacote de legendas de "+link+" para "+zipTempDestination+" terminado. Descompactando...");
+			output.out("Download de pacote de legendas de "+link+" para "+zipTempDestination+" terminado.\nVerificando tipo de arquivo...");
 			final ExtractorImpl extractor = new ExtractorImpl();
 			if(!contentType.contains("rar") && !contentType.contains("zip")){
+				output.out("Arquivo inválido, zip ou rar esperado, mas retornou "+contentType);
+				final String fileContents = FileUtils.readFileToString(zipTempDestination);
+				if(contentType.startsWith("text"))
+					output.out("Conteúdo do retorno:\n"+fileContents);
 				return null;
 			}
 			if(contentType.contains("rar")){
+				output.out("Arquivo rar.");
 				extractor.unrar(zipTempDestination, unzippedTempDestination);
 			}
 			if(contentType.contains("zip")){
+				output.out("Arquivo zip.");
 				extractor.unzip(zipTempDestination, unzippedTempDestination);
 			}
 			output.out("Pacote de legendas descompactado.");

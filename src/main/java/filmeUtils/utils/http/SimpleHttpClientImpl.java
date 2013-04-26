@@ -39,7 +39,7 @@ public class SimpleHttpClientImpl implements SimpleHttpClient {
 
 	public static final int TIMEOUT_IN_SECONDS = 7*60;
 	private final DefaultHttpClient httpclient;
-	private final File cookieFile;
+	private File cookieFile;
 	
 	public SimpleHttpClientImpl(){
 		this(null);
@@ -69,10 +69,6 @@ public class SimpleHttpClientImpl implements SimpleHttpClient {
 		return result;
 	}
 
-	private void setFirefoxAsAgent(final HttpRequestBase httpGet) {
-		httpGet.setHeader("User-Agent", "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.13) Gecko/20101206 Ubuntu/10.10 (maverick) Firefox/3.6.13");
-	}
-
 	@Override
 	public String post(final String postUrl, final Map<String, String> params) throws ClientProtocolException, IOException {
 		final HttpPost httpost = new HttpPost(postUrl);
@@ -100,8 +96,13 @@ public class SimpleHttpClientImpl implements SimpleHttpClient {
 	@Override
 	public String getToFile(final String link, final File destFile) throws ClientProtocolException, IOException {
 		final HttpGet httpGet = new HttpGet(link);
+		setFirefoxAsAgent(httpGet);
 		return executeSaveResponseToFileReturnContentType(httpGet, destFile);
 	} 
+
+	private void setFirefoxAsAgent(final HttpRequestBase httpGet) {
+		httpGet.setHeader("User-Agent", "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.13) Gecko/20101206 Ubuntu/10.10 (maverick) Firefox/3.6.13");
+	}
 
 	private HttpResponse execute(final HttpUriRequest httpost) throws ClientProtocolException, IOException {
 		return httpclient.execute(httpost);
@@ -167,7 +168,8 @@ public class SimpleHttpClientImpl implements SimpleHttpClient {
 	}
 	
 	private void storeCookies() throws IOException{
-		if(cookieFile == null)return;
+		if(cookieFile == null)
+			cookieFile = File.createTempFile("SIMPLEHTTP", "COOKIES");
 		
 		if(!cookieFile.exists()){
 			cookieFile.createNewFile(); 

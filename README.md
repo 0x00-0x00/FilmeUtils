@@ -3,6 +3,7 @@ FilmeUtils
 
 FilmeUtils baixa filmes e séries do legendas.tv  
 
+Versão está com erros, versão corrigida a caminho
 [Download](https://www.dropbox.com/s/vtsa54ervupiqhm/filmeUtils.jar)
 =============
 

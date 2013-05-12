@@ -135,7 +135,7 @@ public class FileSystemUtils {
 		}
 		try {
 			FileUtils.deleteDirectory(source);
-		}catch(final IOException e){/*don't really care*/}
+		}catch(final IOException e){/*don't really care, it's on temp*/}
 		return filesThatMatch;
 	}
 

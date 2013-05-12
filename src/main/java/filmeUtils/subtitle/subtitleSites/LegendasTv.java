@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -75,6 +76,7 @@ public class LegendasTv {
 		try {
 			searchRecursively(1, searchListener, searchTerm);
 		} catch (final Exception e) {
+			outputListener.out(ExceptionUtils.getFullStackTrace(e));
 			throw new RuntimeException("Ocorreu um erro na procura: ",e);
 		}
 	}

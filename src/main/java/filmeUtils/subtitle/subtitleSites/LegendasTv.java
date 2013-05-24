@@ -135,7 +135,7 @@ public class LegendasTv {
 	}
 
 	private boolean onMaintenance(final String content) {
-		return content.contains("Estamos realizando manuten");
+		return content.contains("Estamos realizando manuten") || content.contains("temporariamente fora do ar");
 	}
 
 	private boolean isOffline(final String content) {
@@ -208,6 +208,9 @@ public class LegendasTv {
 			final String downloadLink = getDownloadFromOnClick(subtitleDiv);
 			final SubtitlePackageAndLink nameAndlink = new SubtitlePackageAndLink(subtitleName, downloadLink);
 			searchListener.process(nameAndlink);
+		}
+		if(currentIndex==0){
+			throw new RuntimeException("Não foi possível achar novas legendas no site:\n"+content);
 		}
 		if(currentIndex<howMuchNewAddsToShow){
 			searchNewAddsRecursivelly(currentIndex, howMuchNewAddsToShow, searchListener);

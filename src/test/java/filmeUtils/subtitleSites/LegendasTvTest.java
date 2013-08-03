@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import junit.framework.Assert;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import filmeUtils.commons.OutputListener;
@@ -22,6 +23,7 @@ public class LegendasTvTest {
 		dummyOutputListener = new DummyOutputListener();
 	}
 	
+	@Ignore
 	@Test
 	public void simpleSearchWithOneResultTest(){
 		mock.setResponseForUrl("http://legendas.tv/index.php?opcao=buscarlegenda&pagina=1", "LegendasTvOneResult.html");
@@ -39,6 +41,7 @@ public class LegendasTvTest {
 		Assert.assertTrue(wasCalled.get());
 	}
 
+	@Ignore
 	@Test
 	public void simpleSearchWithMoreThanOneResultOnePageGreedyTest(){
 		final String response = "LegendasTvLotsOfResultsOnePage.html";
@@ -51,8 +54,8 @@ public class LegendasTvTest {
 		subject.search("foo", new SubtitleLinkSearchCallback() {
 			@Override
 			public void process(final SubtitlePackageAndLink subAndLink) {
-				String name = subAndLink.name;
-				String link = subAndLink.link;
+				final String name = subAndLink.name;
+				final String link = subAndLink.link;
 				final String linkExpected = expectedResults.get(name);
 				Assert.assertEquals("For "+name,linkExpected, link);
 				expectedResults.remove(name);
@@ -61,6 +64,7 @@ public class LegendasTvTest {
 		Assert.assertEquals(0, expectedResults.size());
 	}
 	
+	@Ignore
 	@Test
 	public void simpleSearchWithMoreThanOneResultTwoPagesGreedyTest(){
 		mock.setResponseForUrl("http://legendas.tv/index.php?opcao=buscarlegenda&pagina=1", "LegendasTvLotsOfResultsTwoPages.html");
@@ -74,8 +78,8 @@ public class LegendasTvTest {
 		subject.search("foo", new SubtitleLinkSearchCallback() {
 			@Override
 			public void process(final SubtitlePackageAndLink subAndLink) {
-				String name = subAndLink.name;
-				String link = subAndLink.link;
+				final String name = subAndLink.name;
+				final String link = subAndLink.link;
 				final String linkExpected = expectedResults.get(name);
 				Assert.assertEquals("For "+name,linkExpected, link);
 				expectedResults.remove(name);

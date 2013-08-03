@@ -1,4 +1,6 @@
 Atenção, Legendas tv está temporariamente fora do ar!!!
+ENQUANTO O LEGENDAS TV ESTIVER SÓ COM A VERSÃO DEV
+SÓ A OPÇÃO -n ou -auto NA LINHA DE COMANDO VAI FUNCIONAR
 ====================
 
 FilmeUtils

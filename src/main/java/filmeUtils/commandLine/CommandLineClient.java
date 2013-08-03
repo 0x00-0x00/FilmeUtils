@@ -37,6 +37,8 @@ public class CommandLineClient implements CommandLine {
 	@Override
 	public void h() {
 		output.out("FilmeUtils "+Version.getVersion()+"\n" +
+				"ENQUANTO O LEGENDAS TV ESTIVER SÓ COM A VERSÃO DEV\n" +
+				"SÓ A OPÇÃO -n ou -auto NA LINHA DE COMANDO VAI FUNCIONAR\n" +
 				"Ajuda dos comandos:\n" +
 				"Sem argumentos  \n" + 
 				"	Abre a gui.  \n" + 

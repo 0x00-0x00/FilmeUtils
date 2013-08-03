@@ -25,12 +25,16 @@ public class LegendasTv {
 	private static final String NEW_ADDS_URL = "/destaques.php?start=";
 	private static final String SEARCH_ON_PAGE_URL = "/index.php?opcao=buscarlegenda&pagina=";
 	
+	private static final boolean USING_DEV_VERSION = true;
+	
 	private final SimpleHttpClient httpclient;
 	private final OutputListener outputListener;
+	private final DevLegendasTv devLegendasTv;
 	
 	public LegendasTv(final SimpleHttpClient httpclient, final OutputListener outputListener, final boolean login) {
 		this.httpclient = httpclient;
 		this.outputListener = outputListener;
+		devLegendasTv = new DevLegendasTv(httpclient);
 		if(login)
 			login();
 	}
@@ -39,7 +43,11 @@ public class LegendasTv {
 		this(httpclient, outputListener, true);
 	}
 	
-	public void login(){		
+	public void login(){	
+		if(USING_DEV_VERSION){
+			outputListener.out("Login desabilitado enquanto o legendas tv não voltar com a versão oficial.");
+			return;
+		}
         try {
 			final HashMap<String, String> params = new HashMap<String, String>();
 			final FileSystemUtils instance = FileSystemUtils.getInstance();
@@ -73,6 +81,10 @@ public class LegendasTv {
 	}
 
 	public void search(final String searchTerm, final SubtitleLinkSearchCallback searchListener){
+		if(USING_DEV_VERSION){
+			outputListener.out("Procura desabilitada enquanto o legendas tv não voltar com a versão oficial.");
+			return;
+		}
 		try {
 			searchRecursively(1, searchListener, searchTerm);
 		} catch (final Exception e) {
@@ -82,7 +94,15 @@ public class LegendasTv {
 	}
 
 	public void getNewer(final SubtitleLinkSearchCallback searchListener){
-		searchNewAddsRecursivelly(searchListener);
+		if(USING_DEV_VERSION){
+			try {
+				devLegendasTv.searchNewAdds(searchListener);
+			} catch (final Exception e) {
+				throw new RuntimeException("Não foi possível achar novas legendas no site:\n"+e);
+			}
+		}else{
+			searchNewAdds(searchListener);
+		}
 	}
 	
 	private void searchRecursively(final int page, final SubtitleLinkSearchCallback searchCallback, final String searchTerm) throws IOException{
@@ -187,7 +207,7 @@ public class LegendasTv {
 	}
 
 
-	private void searchNewAddsRecursivelly(final SubtitleLinkSearchCallback searchListener) {
+	private void searchNewAdds(final SubtitleLinkSearchCallback searchListener) {
 		final int newAddsToShow = 23*3;
 		searchNewAddsRecursivelly(0, newAddsToShow, searchListener);
 	}

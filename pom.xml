@@ -108,7 +108,7 @@
 		<dependency>
 			<groupId>com.github.beothorn</groupId>
 			<artifactId>URISchemeHandler</artifactId>
-			<version>1.6-SNAPSHOT</version>
+			<version>1.6</version>
 		</dependency>
 	</dependencies>
 </project>

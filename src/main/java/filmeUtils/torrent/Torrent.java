@@ -2,7 +2,7 @@ package filmeUtils.torrent;
 
 import filmeUtils.commons.OutputListener;
 import filmeUtils.torrent.torrentSites.TorrentSearcherImpl;
-import filmeUtils.utils.http.OSMagnetLinkHandler;
+import filmeUtils.utils.http.URISchemeLinkHandlerImpl;
 import filmeUtils.utils.http.SimpleHttpClient;
 import filmeUtils.utils.http.SimpleHttpClientImpl;
 
@@ -24,7 +24,7 @@ public class Torrent {
 			return;
 		}
 		output.out("Encontrado "+magnetLinkForTermOrNull);
-		new OSMagnetLinkHandler().openURL(magnetLinkForTermOrNull);
+		new URISchemeLinkHandlerImpl().openURL(magnetLinkForTermOrNull);
 	}
 
 }

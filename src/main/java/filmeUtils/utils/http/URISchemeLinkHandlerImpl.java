@@ -5,11 +5,11 @@ import java.net.URI;
 import uriSchemeHandler.URISchemeHandler;
 
 
-public class OSMagnetLinkHandler implements MagnetLinkHandler {
+public class URISchemeLinkHandlerImpl implements URISchemeLinkHandler {
 	
 	private final URISchemeHandler urlProtocolHandler;
 
-	public OSMagnetLinkHandler() {
+	public URISchemeLinkHandlerImpl() {
 		urlProtocolHandler = new URISchemeHandler();
 	}
 	

@@ -72,4 +72,10 @@ class SimpleHttpClientMock implements SimpleHttpClient {
 	public void storeCookiesOn(final File storeDir) {
 	}
 
+	@Override
+	public String post(final String postUrl, final String params)
+			throws ClientProtocolException, IOException {
+		throw new RuntimeException("NOT IMPLEMENTED");
+	}
+
 }

@@ -19,7 +19,7 @@ import filmeUtils.torrent.torrentSites.TorrentSearcher;
 import filmeUtils.torrent.torrentSites.TorrentSearcherImpl;
 import filmeUtils.utils.RegexForSubPackageAndSubFile;
 import filmeUtils.utils.extraction.Extractor;
-import filmeUtils.utils.http.OSMagnetLinkHandler;
+import filmeUtils.utils.http.URISchemeLinkHandlerImpl;
 import filmeUtils.utils.http.SimpleHttpClient;
 
 public class Downloader {
@@ -121,7 +121,7 @@ public class Downloader {
 
 	private void downloadMagnetLink(final String magnetLink) {
 		outputListener.outVerbose("Abrindo magnet link no cliente: "+magnetLink);
-		new OSMagnetLinkHandler().openURL(magnetLink);
+		new URISchemeLinkHandlerImpl().openURL(magnetLink);
 	}
 
 	private void downloadLinkToTempDir(final String name, final String link, final File folder) {

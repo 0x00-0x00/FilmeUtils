@@ -10,6 +10,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -69,6 +70,21 @@ public class SimpleHttpClientImpl implements SimpleHttpClient {
 		return result;
 	}
 
+	@Override
+	public String post(final String postUrl, final String params) throws ClientProtocolException, IOException {
+		final Map<String, String> paramsMap = new LinkedHashMap<String, String>();
+		final String[] paramsTuples = params.split("&");
+		for (final String tuple : paramsTuples) {
+			final String[] splittedTuple = tuple.split("=");
+			String value = "";
+			if(splittedTuple.length == 2){
+				value = splittedTuple[1];
+			}
+			paramsMap.put(splittedTuple[0], value);
+		}
+		return post(postUrl, paramsMap);
+	}
+	
 	@Override
 	public String post(final String postUrl, final Map<String, String> params) throws ClientProtocolException, IOException {
 		final HttpPost httpost = new HttpPost(postUrl);
@@ -200,5 +216,6 @@ public class SimpleHttpClientImpl implements SimpleHttpClient {
 		}
 		
 	}
+
 
 }

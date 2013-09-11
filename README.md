@@ -1,4 +1,4 @@
-Atenção, Legendas tv está temporariamente fora do ar!!!
+Ainda está sendo adaptado para o novo site
 ====================
 
 ENQUANTO O LEGENDAS TV ESTIVER SÓ COM A VERSÃO DEV
@@ -16,7 +16,7 @@ FilmeUtils baixa filmes e séries do legendas.tv
 Do que você precisa  
 --------------------- 
  - Java 1.6 ou maior instalado. - www.java.com/  
- - Um cliente de torrent qualquer, recomendo o qbittorrent (http://www.qbittorrent.org/).  
+ - Um cliente de torrent qualquer que abra magnet links sem precisar confirmação, recomendo o qbittorrent (http://www.qbittorrent.org/).  
 
 Como funciona  
 ---------------------

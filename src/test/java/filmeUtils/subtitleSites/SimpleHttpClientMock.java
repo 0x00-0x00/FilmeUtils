@@ -42,7 +42,11 @@ class SimpleHttpClientMock implements SimpleHttpClient {
 
 	@Override
 	public String get(final String get) throws ClientProtocolException, IOException {
-		throw new RuntimeException("Method not implemented");
+		final String response = responseForUrl.get(get);
+		if(response == null){
+			throw new RuntimeException("Response not found for url: "+get);
+		}
+		return response;
 	}
 
 	@Override

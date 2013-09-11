@@ -23,9 +23,10 @@ public class LegendasTv {
 	private static final String BASE_URL = "http://legendas.tv";
 	private static final String LOGIN_URL = BASE_URL+"/login_verificar.php";
 	private static final String NEW_ADDS_URL = "/destaques.php?start=";
-	private static final String SEARCH_ON_PAGE_URL = "/index.php?opcao=buscarlegenda&pagina=";
+	private static final String SEARCH_ON_PAGE_URL = BASE_URL+"/busca?q=";
+	private static final String DOWNLOAD_URL = BASE_URL+"/pages/downloadarquivo/";
 	
-	private static final boolean USING_DEV_VERSION = true;
+	private static final boolean USING_DEV_VERSION = false;
 	
 	private final SimpleHttpClient httpclient;
 	private final OutputListener outputListener;
@@ -135,7 +136,7 @@ public class LegendasTv {
 	private ArrayList<SubtitlePackageAndLink> getSubtitleLinks(final String content) {
 		final ArrayList<SubtitlePackageAndLink> links = new ArrayList<SubtitlePackageAndLink>();
 		final Document parsed = Jsoup.parse(content);
-		final Elements subtitleSpans = parsed.select("#conteudodest > div > span");
+		final Elements subtitleSpans = parsed.select(".f_left p a[href^=/download");
 		for(final Element subtitleSpan : subtitleSpans) {
 			final String subtitleName = getSubtitleName(subtitleSpan);
 			final String subtitleLink = getSubtitleLink(subtitleSpan);
@@ -168,12 +169,8 @@ public class LegendasTv {
 
 	private String search(final String searchTerm, final int page)
 			throws ClientProtocolException, IOException {
-		final String postUrl = BASE_URL+SEARCH_ON_PAGE_URL+page;
-		final HashMap<String, String> params = new HashMap<String, String>();
-		params.put("txtLegenda", searchTerm);
-		params.put("selTipo", "1");
-		params.put("int_idioma", "1");
-		final String content = httpclient.post(postUrl,params);
+		final String getUrl = SEARCH_ON_PAGE_URL+searchTerm;
+		final String content = httpclient.get(getUrl);
 		return content;
 	}
 
@@ -185,12 +182,8 @@ public class LegendasTv {
 	}
 
 	private static String getSubtitleLink(final Element subtitleSpan) {
-		Element subtitleLinkSpan = subtitleSpan.getElementsByClass("buscaDestaque").first();
-		if(subtitleLinkSpan == null){
-			subtitleLinkSpan = subtitleSpan.getElementsByClass("buscaNDestaque").first();
-		}
-		final String downloadLink = getDownloadFromOnClick(subtitleLinkSpan);
-		return downloadLink;		
+		final String getSubtitleHash = subtitleSpan.attr("href").replaceAll("/download/([0-9a-z]*)/.*", "$1");
+		return DOWNLOAD_URL+getSubtitleHash;		
 	}
 
 
@@ -201,9 +194,7 @@ public class LegendasTv {
 	}
 
 	private static String getSubtitleName(final Element subtitleSpan) {
-		final Element subtitleNameSpan = subtitleSpan.getElementsByClass("brls").first();
-		final String subtitleName = subtitleNameSpan.text();
-		return subtitleName;
+		return subtitleSpan.text();
 	}
 
 

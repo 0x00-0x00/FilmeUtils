@@ -23,18 +23,17 @@ public class LegendasTvTest {
 		dummyOutputListener = new DummyOutputListener();
 	}
 	
-	@Ignore
 	@Test
 	public void simpleSearchWithOneResultTest(){
-		mock.setResponseForUrl("http://legendas.tv/index.php?opcao=buscarlegenda&pagina=1", "LegendasTvOneResult.html");
+		mock.setResponseForUrl("http://legendas.tv/busca?q=Breaking_Bad_S05E13_HDTV_x264_EVOLVE_AFG_mSD_ChameE_IMMERSE_BS", "LegendasTvOneResult.html");
 		
 		final LegendasTv subject = new LegendasTv(mock, dummyOutputListener);
 		final AtomicBoolean wasCalled = new AtomicBoolean(false);
-		subject.search("foo", new SubtitleLinkSearchCallback() {
+		subject.search("Breaking_Bad_S05E13_HDTV_x264_EVOLVE_AFG_mSD_ChameE_IMMERSE_BS", new SubtitleLinkSearchCallback() {
 			@Override
 			public void process(final SubtitlePackageAndLink subAndLink) {
-				Assert.assertEquals("Castle.S04E21.720p.WEB-DL.DD5.1.H.264-NFHD",subAndLink.name);
-				Assert.assertEquals("http://legendas.tv/info.php?c=1&d=e613c192c4279ff32db5f3ad0640e8d0",subAndLink.link);
+				Assert.assertEquals("Breaking.Bad.S05E13.HDTV.x264-EVOLVE-AFG-mSD-ChameE-IMMERSE-BS",subAndLink.name);
+				Assert.assertEquals("http://legendas.tv/pages/downloadarquivo/137620a9b17d9065bbcad03a9e3feaf7",subAndLink.link);
 				wasCalled.set(true);
 			}
 		});

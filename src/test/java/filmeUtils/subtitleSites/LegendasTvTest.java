@@ -25,7 +25,7 @@ public class LegendasTvTest {
 	
 	@Test
 	public void simpleSearchWithOneResultTest(){
-		mock.setResponseForUrl("http://legendas.tv/busca?q=Breaking_Bad_S05E13_HDTV_x264_EVOLVE_AFG_mSD_ChameE_IMMERSE_BS", "LegendasTvOneResult.html");
+		mock.setResponseForUrl("http://legendas.tv/util/carrega_legendas_busca/termo:Breaking_Bad_S05E13_HDTV_x264_EVOLVE_AFG_mSD_ChameE_IMMERSE_BS/page:1", "LegendasTvOneResult.html");
 		
 		final LegendasTv subject = new LegendasTv(mock, dummyOutputListener);
 		final AtomicBoolean wasCalled = new AtomicBoolean(false);
@@ -63,18 +63,17 @@ public class LegendasTvTest {
 		Assert.assertEquals(0, expectedResults.size());
 	}
 	
-	@Ignore
 	@Test
 	public void simpleSearchWithMoreThanOneResultTwoPagesGreedyTest(){
-		mock.setResponseForUrl("http://legendas.tv/index.php?opcao=buscarlegenda&pagina=1", "LegendasTvLotsOfResultsTwoPages.html");
-		mock.setResponseForUrl("http://legendas.tv/index.php?opcao=buscarlegenda&pagina=2", "LegendasTvOneResult.html");
+		mock.setResponseForUrl("http://legendas.tv/util/carrega_legendas_busca/termo:house of the dead/page:1", "LegendasTvLotsOfResultsTwoPages.html");
+		mock.setResponseForUrl("http://legendas.tv/util/carrega_legendas_busca/termo:house of the dead/page:2", "LegendasTvOneResult.html");
 		final LegendasTv subject = new LegendasTv(mock, dummyOutputListener);
 		final Map<String, String> expectedResults = new LinkedHashMap<String, String>();
-		expectedResults.put("Community.S01.Complete.HDTV (PACK DE LEGENDAS)", "http://legendas.tv/info.php?c=1&d=ae752094b5a1fc977e933fb619527d1a");
-		expectedResults.put("Community.S01.720p.WEB-DL.DD5.1.H.264-myTV/HoodBag (PACK DE LEGENDAS)","http://legendas.tv/info.php?c=1&d=a7faf31ace51a2110b69b822ff84b434");
-		expectedResults.put("Community.S02.720p.WEB-DL.DD5.1.H.264-HoodBag (PACK DE LEGENDAS)","http://legendas.tv/info.php?c=1&d=fe19c9afc9dbf6a53a74d0782da8861a");
-		expectedResults.put("Castle.S04E21.720p.WEB-DL.DD5.1.H.264-NFHD","http://legendas.tv/info.php?c=1&d=e613c192c4279ff32db5f3ad0640e8d0");
-		subject.search("foo", new SubtitleLinkSearchCallback() {
+		expectedResults.put("House [2008]DVDRip[Xvid AC3[5.1]-RoCK&BlueLadyRG", "http://legendas.tv/pages/downloadarquivo/c214ba8d3a08aa5ed2e6d0c228cb7c08");
+		expectedResults.put("House.(1986).DVDRip.XviD-DitriS", "http://legendas.tv/pages/downloadarquivo/2a385576ec54161d101d59aeae496bbf");
+		expectedResults.put("House (1986) Xvid [ENG] Dvdrip", "http://legendas.tv/pages/downloadarquivo/b9348478cdbca402907acfb6ab509874");
+		expectedResults.put("Breaking.Bad.S05E13.HDTV.x264-EVOLVE-AFG-mSD-ChameE-IMMERSE-BS", "http://legendas.tv/pages/downloadarquivo/137620a9b17d9065bbcad03a9e3feaf7");
+		subject.search("house of the dead", new SubtitleLinkSearchCallback() {
 			@Override
 			public void process(final SubtitlePackageAndLink subAndLink) {
 				final String name = subAndLink.name;

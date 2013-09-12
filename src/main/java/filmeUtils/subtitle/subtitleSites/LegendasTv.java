@@ -20,10 +20,12 @@ import filmeUtils.utils.http.SimpleHttpClient;
 
 public class LegendasTv {
 	
+	private static final String PAGE_TOKEN = "$PAGE$";
+	private static final String SEARCH_TERM_TOKEN = "$TERMO$";
 	private static final String BASE_URL = "http://legendas.tv";
 	private static final String LOGIN_URL = BASE_URL+"/login_verificar.php";
 	private static final String NEW_ADDS_URL = "/destaques.php?start=";
-	private static final String SEARCH_ON_PAGE_URL = BASE_URL+"/busca?q=";
+	private static final String SEARCH_ON_PAGE_URL = BASE_URL+"/util/carrega_legendas_busca/termo:" + SEARCH_TERM_TOKEN + "/page:" + PAGE_TOKEN;
 	private static final String DOWNLOAD_URL = BASE_URL+"/pages/downloadarquivo/";
 	
 	private static final boolean USING_DEV_VERSION = false;
@@ -108,21 +110,7 @@ public class LegendasTv {
 	
 	private void searchRecursively(final int page, final SubtitleLinkSearchCallback searchCallback, final String searchTerm) throws IOException{
 		
-		String content = search(searchTerm, page);
-		
-		if(isOffline(content)){
-			outputListener.out("Legendas tv temporariamente offline.");
-			return;
-		}
-		if(onMaintenance(content)){
-			outputListener.out("Legendas tv em manuntenção.");
-			return;
-		}
-		
-		if(isNotLogged(content)){
-			login();
-			content = search(searchTerm, page);
-		}
+		final String content = search(searchTerm, page);
 	
 		final ArrayList<SubtitlePackageAndLink> subtitleLinks = getSubtitleLinks(content);
 		
@@ -155,30 +143,21 @@ public class LegendasTv {
 		}
 	}
 
-	private boolean onMaintenance(final String content) {
-		return content.contains("Estamos realizando manuten") || content.contains("temporariamente fora do ar");
-	}
-
-	private boolean isOffline(final String content) {
-		return content.contains(" temporariamente offline");
-	}
-
-	private boolean isNotLogged(final String content) {
-		return content.contains(" precisa estar logado para acessar essa ");
-	}
-
-	private String search(final String searchTerm, final int page)
-			throws ClientProtocolException, IOException {
-		final String getUrl = SEARCH_ON_PAGE_URL+searchTerm;
+	private String search(final String searchTerm, final int page) throws ClientProtocolException, IOException {
+		final String getUrl = SEARCH_ON_PAGE_URL.replace(SEARCH_TERM_TOKEN, searchTerm).replace(PAGE_TOKEN, page+"");
 		final String content = httpclient.get(getUrl);
 		return content;
 	}
 
 	private boolean pageLinkExists(final String content, final int nextPage) {
 		final Document parsed = Jsoup.parse(content);
-		final Element nextLink = parsed.select("a.paginacao:matches(0?"+nextPage+")").first();
-		final boolean pageLinkExists = nextLink != null;
-		return pageLinkExists;
+		parsed.select("div.pagination button.ajax [text="+nextPage+"]");
+		final Elements pages = parsed.select("div.pagination button.ajax");
+		for (final Element element : pages) {
+			if(element.text().equals(nextPage+""))
+				return true;
+		}
+		return false;
 	}
 
 	private static String getSubtitleLink(final Element subtitleSpan) {

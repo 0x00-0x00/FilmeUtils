@@ -116,23 +116,21 @@ public class Subtitle {
 			unzippedTempDestination = File.createTempFile("Filmeutils", "Filmeutils");
 			unzippedTempDestination.delete();
 			unzippedTempDestination.mkdir();
-			final String contentType = httpclient.getToFile(link, zipTempDestination);
+			final String fileName = httpclient.getToFile(link, zipTempDestination);
 			output.out("Download de pacote de legendas de "+link+" para "+zipTempDestination+" terminado.\nVerificando tipo de arquivo...");
 			final ExtractorImpl extractor = new ExtractorImpl();
-			if(!contentType.contains("rar") && !contentType.contains("zip")){
-				output.out("Arquivo inválido, zip ou rar esperado, mas retornou "+contentType);
-				final String fileContents = FileUtils.readFileToString(zipTempDestination);
-				if(contentType.startsWith("text"))
-					output.out("Conteúdo do retorno:\n"+fileContents);
-				return null;
-			}
-			if(contentType.contains("rar")){
+
+			if(fileName.toLowerCase().endsWith("rar")){
 				output.out("Arquivo rar.");
 				extractor.unrar(zipTempDestination, unzippedTempDestination);
-			}
-			if(contentType.contains("zip")){
+			}else if(fileName.toLowerCase().endsWith("zip")){
 				output.out("Arquivo zip.");
 				extractor.unzip(zipTempDestination, unzippedTempDestination);
+			}else{
+				output.out("Arquivo inválido, zip ou rar esperado, mas retornou "+fileName);
+				final String fileContents = FileUtils.readFileToString(zipTempDestination);
+				output.out("Conteúdo do retorno:\n"+fileContents);
+				return null;				
 			}
 			output.out("Pacote de legendas descompactado.");
 			zipTempDestination.delete();

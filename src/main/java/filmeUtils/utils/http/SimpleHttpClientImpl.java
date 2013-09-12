@@ -113,7 +113,7 @@ public class SimpleHttpClientImpl implements SimpleHttpClient {
 	public String getToFile(final String link, final File destFile) throws ClientProtocolException, IOException {
 		final HttpGet httpGet = new HttpGet(link);
 		setFirefoxAsAgent(httpGet);
-		return executeSaveResponseToFileReturnContentType(httpGet, destFile);
+		return executeSaveResponseToFileReturnFileName(httpGet, destFile);
 	} 
 
 	private void setFirefoxAsAgent(final HttpRequestBase httpGet) {
@@ -144,10 +144,9 @@ public class SimpleHttpClientImpl implements SimpleHttpClient {
 		return content;
 	}
 	
-	private String executeSaveResponseToFileReturnContentType(final HttpUriRequest httpost,final File dest)throws IOException, ClientProtocolException {
+	private String executeSaveResponseToFileReturnFileName(final HttpUriRequest httpost,final File dest)throws IOException, ClientProtocolException {
 		final HttpResponse response = execute(httpost);
 	    final HttpEntity entity = response.getEntity();
-	    final String contentType = entity.getContentType().getValue();
 		final InputStream in = entity.getContent();
 		final OutputStream out = new FileOutputStream(dest);
 		IOUtils.copy(in, out);
@@ -155,7 +154,20 @@ public class SimpleHttpClientImpl implements SimpleHttpClient {
 		out.close();
 		in.close();
 		storeCookies();
-		return contentType;
+		String filename = "";
+		final Header[] allHeaders = response.getAllHeaders();
+		for (final Header header : allHeaders) {
+			final HeaderElement[] elements = header.getElements();
+			for (final HeaderElement headerElement : elements) {
+				final NameValuePair[] parameters = headerElement.getParameters();
+				for (final NameValuePair nameValuePair : parameters) {
+					if(nameValuePair.getName().equals("filename")){
+						filename = nameValuePair.getValue();
+					}
+				}
+			}
+		}
+		return filename;
 	}
 
 	@SuppressWarnings("unchecked")

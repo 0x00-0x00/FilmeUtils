@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.jsoup.Jsoup;
@@ -19,11 +18,12 @@ import filmeUtils.utils.http.SimpleHttpClient;
 public class LegendasTv {
 	
 	private static final String PAGE_TOKEN = "$PAGE$";
-	private static final String SEARCH_TERM_TOKEN = "$TERMO$";
+	private static final String SEARCH_TERM_TOKEN = "$SEARCH_TERM$";
+	private static final String HASH_TOKEN = "$HASH$";
 	private static final String BASE_URL = "http://legendas.tv";
-	private static final String NEW_ADDS_URL = "/destaques.php?start=";
+	private static final String NEW_ADDS_URL = BASE_URL+"/util/carrega_destaques/series/page:"+PAGE_TOKEN;
 	private static final String SEARCH_ON_PAGE_URL = BASE_URL+"/util/carrega_legendas_busca/termo:" + SEARCH_TERM_TOKEN + "/page:" + PAGE_TOKEN;
-	private static final String DOWNLOAD_URL = BASE_URL+"/pages/downloadarquivo/";
+	private static final String DOWNLOAD_URL = BASE_URL+"/pages/downloadarquivo/"+HASH_TOKEN;
 	
 	private final SimpleHttpClient httpclient;
 	private final OutputListener outputListener;
@@ -42,19 +42,20 @@ public class LegendasTv {
 	}
 
 	public void getNewer(final SubtitleLinkSearchCallback searchListener){
-		searchNewAdds(searchListener);
+		final int howMuchPagesToLoad = 10;
+		getNewer(howMuchPagesToLoad, searchListener);
+	}
+	
+	public void getNewer(final int howMuchPagesToLoad,final SubtitleLinkSearchCallback searchListener){
+		searchNewAdds(searchListener, howMuchPagesToLoad);
 	}
 	
 	private void searchRecursively(final int page, final SubtitleLinkSearchCallback searchCallback, final String searchTerm) throws IOException{
-		
 		final String content = search(searchTerm, page);
-	
 		final ArrayList<SubtitlePackageAndLink> subtitleLinks = getSubtitleLinks(content);
-		
 		for (final SubtitlePackageAndLink link : subtitleLinks) {
 			searchCallback.process(link);
 		}
-		
 		searchNextPage(page, searchCallback, searchTerm, content);
 	}
 
@@ -81,7 +82,7 @@ public class LegendasTv {
 	}
 
 	private String search(final String searchTerm, final int page) throws ClientProtocolException, IOException {
-		final String getUrl = SEARCH_ON_PAGE_URL.replace(SEARCH_TERM_TOKEN, searchTerm).replace(PAGE_TOKEN, page+"");
+		final String getUrl = SEARCH_ON_PAGE_URL.replace(SEARCH_TERM_TOKEN, searchTerm.replace(" ", "%20") ).replace(PAGE_TOKEN, page+"");
 		final String content = httpclient.get(getUrl);
 		return content;
 	}
@@ -98,56 +99,42 @@ public class LegendasTv {
 	}
 
 	private static String getSubtitleLink(final Element subtitleSpan) {
-		final String getSubtitleHash = subtitleSpan.attr("href").replaceAll("/download/([0-9a-z]*)/.*", "$1");
-		return DOWNLOAD_URL+getSubtitleHash;		
+		final String subtitleHash = subtitleSpan.attr("href").replaceAll("/download/([0-9a-z]*)/.*", "$1");
+		return getDownloadUrlForHash(subtitleHash);		
 	}
-
-
-	private static String getDownloadFromOnClick(final Element subtitleLinkSpan) {
-		final String openDownloadJavascript = subtitleLinkSpan.attr("onclick");
-		final String downloadLink = StringUtils.substringBetween(openDownloadJavascript, "'");
-		return BASE_URL+"/info.php?c=1&d="+downloadLink;
+	private static String getDownloadUrlForHash(final String hash) {
+		return DOWNLOAD_URL.replace(HASH_TOKEN,hash);
 	}
 
 	private static String getSubtitleName(final Element subtitleSpan) {
-		return subtitleSpan.text();
+		return subtitleSpan.text().replace(".", " ");
 	}
 
-
-	private void searchNewAdds(final SubtitleLinkSearchCallback searchListener) {
-		final int newAddsToShow = 23*3;
-		searchNewAddsRecursivelly(0, newAddsToShow, searchListener);
+	private void searchNewAdds(final SubtitleLinkSearchCallback searchListener, final int howMuchPagesToLoad) {
+		final int firstPage = 1;
+		searchNewAddsRecursivelly(firstPage, howMuchPagesToLoad, searchListener);
 	}
 	
-	private void searchNewAddsRecursivelly(final int startingIndex, final int howMuchNewAddsToShow, final SubtitleLinkSearchCallback searchListener) {
-		final String content = getNewAddsStartingOnIndex(startingIndex);
-		int currentIndex = startingIndex;
+	private void searchNewAddsRecursivelly(final int page, final int howMuchPagesToLoad, final SubtitleLinkSearchCallback searchListener) {
+		final String content = getNewAddsOnPage(page);
 		final Document parsed = Jsoup.parse(content);
-		final Elements subtitleSpans = parsed.select(".Ldestaque");
-		for(final Element subtitleDiv : subtitleSpans) {
-			if(currentIndex==howMuchNewAddsToShow){
-				return;
-			}
-			currentIndex++;
-			String subtitleName = subtitleDiv.attr("onmouseover");
-			final String thirdQuotedWordRegex = "[^']*'[^']*','[^']*','([^']*)'.*";
-			subtitleName = subtitleName.replaceAll(thirdQuotedWordRegex, "$1");
-			final String downloadLink = getDownloadFromOnClick(subtitleDiv);
-			final SubtitlePackageAndLink nameAndlink = new SubtitlePackageAndLink(subtitleName, downloadLink);
+		final Elements subtitleSpans = parsed.select("div.film button.btn");
+		for(final Element subtitleButton : subtitleSpans) {
+			final String onClick = subtitleButton.attr("onClick");
+			final String hash = onClick.replaceAll("window.open\\('/download/([0-9a-z]*)/.*", "$1");
+			final String subtitleName = onClick.replaceAll("window.open\\('/download/.*/.*/([^']*)'.*", "$1").replace("_", " ");
+			final SubtitlePackageAndLink nameAndlink = new SubtitlePackageAndLink(subtitleName, getDownloadUrlForHash(hash));
 			searchListener.process(nameAndlink);
 		}
-		if(currentIndex==0){
-			throw new RuntimeException("Não foi possível achar novas legendas no site:\n"+content);
-		}
-		if(currentIndex<howMuchNewAddsToShow){
-			searchNewAddsRecursivelly(currentIndex, howMuchNewAddsToShow, searchListener);
+		if(page<howMuchPagesToLoad){
+			searchNewAddsRecursivelly(page+1, howMuchPagesToLoad, searchListener);
 		}
 	}
 
 
-	private String getNewAddsStartingOnIndex(final int startingIndex) {
+	private String getNewAddsOnPage(final int page) {
 		try {
-			final String get = BASE_URL+NEW_ADDS_URL+startingIndex;
+			final String get = NEW_ADDS_URL.replace(PAGE_TOKEN, page+"");
 			return httpclient.get(get);
 		}catch(final SocketTimeoutException timeout){
 			throw new RuntimeException("Legendas tv muito lento ou fora do ar: ",timeout);

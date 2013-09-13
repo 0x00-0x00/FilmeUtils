@@ -14,11 +14,6 @@ import filmeUtils.utils.http.SimpleHttpClient;
 class SimpleHttpClientMock implements SimpleHttpClient {
 
 	private final Map<String, String> responseForUrl = new LinkedHashMap<String, String>();
-
-	
-	public SimpleHttpClientMock() {
-		setResponseForUrl("http://legendas.tv/login_verificar.php", "LegendasTvGoodLogin.html");
-	}
 	
 	@Override
 	public String getToFile(final String link, final File destFile)
@@ -56,6 +51,8 @@ class SimpleHttpClientMock implements SimpleHttpClient {
 
 	public void setResponseForUrl(final String url,final String responseResource) {
 		final InputStream resourceAsStream = SimpleHttpClientMock.class.getResourceAsStream(responseResource);
+		if(resourceAsStream==null)
+			throw new RuntimeException(responseResource+" not found.");
 		try {
 			final String response = IOUtils.toString(resourceAsStream);
 			responseForUrl.put(url,response);

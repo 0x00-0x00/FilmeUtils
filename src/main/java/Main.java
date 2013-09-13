@@ -22,8 +22,8 @@ public class Main {
 		if(args.length == 0){
 			showGui();
 		}else{
-			CommandLineClient commandLineClient = createCommandLine();
-			String token = args[0];
+			final CommandLineClient commandLineClient = createCommandLine();
+			final String token = args[0];
 			if(!token.equals("-t")  && 
 			   !token.equals("-lt")	&& 
 			   !token.equals("-l")  && 
@@ -39,8 +39,6 @@ public class Main {
 				t(args, commandLineClient);
 				return;
 			}
-			
-			legendasTv.login();
 			
 			if(token.equals("-lt")){
 				lt(args, commandLineClient);
@@ -69,17 +67,17 @@ public class Main {
 		}
     }
 
-	private static void auto(CommandLineClient commandLineClient) {
+	private static void auto(final CommandLineClient commandLineClient) {
 		commandLineClient.auto();
 	}
 
-	private static void f(String[] args, CommandLineClient commandLineClient) {
+	private static void f(final String[] args, final CommandLineClient commandLineClient) {
 		final String errorMessage = "Uso: -f [arquivo de regex] [-d <diretório de destino>]";
 		if(args.length > 4) throw new RuntimeException(errorMessage);
-		FileSystemUtils instance = FileSystemUtils.getInstance();
+		final FileSystemUtils instance = FileSystemUtils.getInstance();
 		List<String> subtitlesToDownloadPatterns = instance.getSubtitlesToDownloadPatterns();
 		if(args.length >= 2){
-			File file = new File(args[1]);
+			final File file = new File(args[1]);
 			subtitlesToDownloadPatterns = instance.getSubtitlesToDownloadPatterns(file);
 		}
 		File subtitlesDestination = instance.getSubtitlesDestination();
@@ -88,22 +86,22 @@ public class Main {
 			subtitlesDestination = new File(args[3]);
 		}
 		
-		List<RegexForSubPackageAndSubFile> regexes = new ArrayList<RegexForSubPackageAndSubFile>();
-		for (String maybeComposedRegex : subtitlesToDownloadPatterns) {
+		final List<RegexForSubPackageAndSubFile> regexes = new ArrayList<RegexForSubPackageAndSubFile>();
+		for (final String maybeComposedRegex : subtitlesToDownloadPatterns) {
 			regexes.add(RegexUtils.getRegexForSubPackageAndSubFile(maybeComposedRegex));
 		}
 		
 		commandLineClient.f(regexes, subtitlesDestination);
 	}
 
-	private static void t(String[] args, CommandLineClient commandLineClient) {
+	private static void t(final String[] args, final CommandLineClient commandLineClient) {
 		if(args.length != 2) throw new RuntimeException("Uso: -t <termo da procura do torrent>");
 		commandLineClient.t(args[1]);
 	}
 
-	private static void l(String[] args, CommandLineClient commandLineClient) {
-		String errorMessage = "Uso: -l <termo da procura da legenda>  [-r <regex para arquivos de legenda>] [-d <diretório de destino>]";
-		SubSearchTermRegexAndDestDir regexAndDestDir = getRegexAnDestDir(args, errorMessage);
+	private static void l(final String[] args, final CommandLineClient commandLineClient) {
+		final String errorMessage = "Uso: -l <termo da procura da legenda>  [-r <regex para arquivos de legenda>] [-d <diretório de destino>]";
+		final SubSearchTermRegexAndDestDir regexAndDestDir = getRegexAnDestDir(args, errorMessage);
 		commandLineClient.l(regexAndDestDir.subtitleSearchTerm, regexAndDestDir.regex, regexAndDestDir.destinyDirectory);
 	}
 
@@ -111,12 +109,12 @@ public class Main {
 		commandLineClient.h();
 	}
 
-	private static void n(String[] args, final CommandLineClient commandLineClient) {
+	private static void n(final String[] args, final CommandLineClient commandLineClient) {
 		if(args.length == 1){
 			commandLineClient.n();
 			return;
 		}
-		String errorMessage = "Uso: -n  [-r <regex para pacote de legenda>[:regex para legenda]] [-d <diretório de destino>]";
+		final String errorMessage = "Uso: -n  [-r <regex para pacote de legenda>[:regex para legenda]] [-d <diretório de destino>]";
 		if(args.length > 5) throw new RuntimeException(errorMessage);
 		String regex = ".*";
 		File destinyDirectory = FileSystemUtils.getInstance().getSubtitlesDestination();
@@ -131,7 +129,7 @@ public class Main {
 			destinyDirectory = new File(args[2]);
 		}
 		
-		RegexForSubPackageAndSubFile regexForSubPackageAndSubFile = RegexUtils.getRegexForSubPackageAndSubFile(regex);
+		final RegexForSubPackageAndSubFile regexForSubPackageAndSubFile = RegexUtils.getRegexForSubPackageAndSubFile(regex);
 		
 		commandLineClient.n(regexForSubPackageAndSubFile,destinyDirectory);
 	}
@@ -141,7 +139,7 @@ public class Main {
 		public final String regex;
 		public final File destinyDirectory;
 		
-		private SubSearchTermRegexAndDestDir(String subtitleSearchTerm, String regex, File destinyDirectory) {
+		private SubSearchTermRegexAndDestDir(final String subtitleSearchTerm, final String regex, final File destinyDirectory) {
 			this.subtitleSearchTerm = subtitleSearchTerm;
 			this.regex = regex;
 			this.destinyDirectory = destinyDirectory;
@@ -149,14 +147,14 @@ public class Main {
 	}
 	
 	private static void lt(final String[] args, final CommandLineClient commandLineClient) {
-		String errorMessage = "Uso: -lt <termo da procura da legenda>  [-r <regex para arquivos de legenda>] [-d <diretório de destino>]";
-		SubSearchTermRegexAndDestDir subSearchTermRegexDestDir = getRegexAnDestDir(args, errorMessage);
+		final String errorMessage = "Uso: -lt <termo da procura da legenda>  [-r <regex para arquivos de legenda>] [-d <diretório de destino>]";
+		final SubSearchTermRegexAndDestDir subSearchTermRegexDestDir = getRegexAnDestDir(args, errorMessage);
 		commandLineClient.lt(subSearchTermRegexDestDir.subtitleSearchTerm, subSearchTermRegexDestDir.regex, subSearchTermRegexDestDir.destinyDirectory);
 	}
 
-	private static SubSearchTermRegexAndDestDir getRegexAnDestDir(final String[] args, String errorMessage) {
+	private static SubSearchTermRegexAndDestDir getRegexAnDestDir(final String[] args, final String errorMessage) {
 		if(args.length < 2 || args.length > 6) throw new RuntimeException(errorMessage);
-		String subtitleSearchTerm = args[1];
+		final String subtitleSearchTerm = args[1];
 		String regex = ".*";
 		File destinyDirectory = FileSystemUtils.getInstance().getSubtitlesDestination();
 		if(args.length > 3){
@@ -176,29 +174,29 @@ public class Main {
 				throw new RuntimeException(errorMessage);
 			}
 		}
-		SubSearchTermRegexAndDestDir regexAndDestDir = new SubSearchTermRegexAndDestDir(subtitleSearchTerm,regex,destinyDirectory);
+		final SubSearchTermRegexAndDestDir regexAndDestDir = new SubSearchTermRegexAndDestDir(subtitleSearchTerm,regex,destinyDirectory);
 		return regexAndDestDir;
 	}
 
 	private static void p(final String[] args,
-			CommandLineClient commandLineClient) {
+			final CommandLineClient commandLineClient) {
 		if(args.length != 2)
 			throw new RuntimeException("Uso: -p <termo da procura>");
-		String subtitleSearchTerm = args[1];
+		final String subtitleSearchTerm = args[1];
 		commandLineClient.p(subtitleSearchTerm);
 	}
 
 	private static CommandLineClient createCommandLine() {
 		final SimpleHttpClient httpclient = new SimpleHttpClientImpl();
 		final VerboseSysOut output = new VerboseSysOut();
-		legendasTv = new LegendasTv(httpclient, output, false);
+		legendasTv = new LegendasTv(httpclient, output);
 		final ExtractorImpl extractor = new ExtractorImpl();
 		final CommandLineClient commandLineClient = new CommandLineClient(httpclient, legendasTv, extractor, output);
 		return commandLineClient;
 	}
 
 	private static void showGui() {
-		Gui gui = new Gui();
+		final Gui gui = new Gui();
 		gui.open();
 	}
 }

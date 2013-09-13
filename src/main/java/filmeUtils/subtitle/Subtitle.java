@@ -74,29 +74,9 @@ public class Subtitle {
 	}
 
 	private void downloadSubtitlesMatchingRegexToDir(final File destDir, final String subtitleRegex,final SubtitlePackageAndLink nameAndlink) {
-		
 		output.out("Fazendo download de pacote de legendas "+nameAndlink.name);
 		final String link = nameAndlink.link;
-		
-		File unzippedTempDestination = downloadAndExtractToTempDirReturnUnzippedDirOrNull(link);
-		if(unzippedTempDestination == null){
-			final boolean logged = false;
-			int tries = 0;
-			while(!logged && tries < 4){
-				tries++;
-				unzippedTempDestination = downloadAndExtractToTempDirReturnUnzippedDirOrNull(link);
-				if(unzippedTempDestination == null){					
-					output.out("Erro no download!!! Não logou no legendas.tv, tentando novamente...");
-					legendasTv.login();
-				}
-			}
-			if(!logged){
-				output.out("Não foi possível logar no legendas.tv");
-				System.exit(1);
-			}
-		}
-		
-		
+		final File unzippedTempDestination = downloadAndExtractToTempDirReturnUnzippedDirOrNull(link);		
 		final List<String> filesThatMatches = FileSystemUtils.copyFilesMatchingRegexAndDeleteSourceDir(unzippedTempDestination,destDir, subtitleRegex);
 		for (final String file : filesThatMatches) {
 			output.out("Legenda "+file+" copiada para "+destDir.getAbsolutePath());

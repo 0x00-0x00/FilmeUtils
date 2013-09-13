@@ -175,7 +175,7 @@ public class CommandLineClient implements CommandLine {
 		for (final String maybeComposedRegex : subtitlesToDownloadPatterns) {
 			regexes.add(RegexUtils.getRegexForSubPackageAndSubFile(maybeComposedRegex));
 		}
-		final LegendasTv legendasTv = new LegendasTv(httpclient, output, false);
+		final LegendasTv legendasTv = new LegendasTv(httpclient, output);
 		final Downloader downloader = new Downloader(extractor, httpclient,legendasTv, output);
 		downloader.downloadFromNewest(regexes, instance.getSubtitlesDestination(),instance.getAlreadyDownloaded());
 	}

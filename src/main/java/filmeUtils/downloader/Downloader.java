@@ -19,8 +19,8 @@ import filmeUtils.torrent.torrentSites.TorrentSearcher;
 import filmeUtils.torrent.torrentSites.TorrentSearcherImpl;
 import filmeUtils.utils.RegexForSubPackageAndSubFile;
 import filmeUtils.utils.extraction.Extractor;
-import filmeUtils.utils.http.URISchemeLinkHandlerImpl;
 import filmeUtils.utils.http.SimpleHttpClient;
+import filmeUtils.utils.http.URISchemeLinkHandlerImpl;
 
 public class Downloader {
 	
@@ -136,29 +136,20 @@ public class Downloader {
 	}
 
 	private void downloadLinkToFolder(final String link, final File folder) throws IOException, ClientProtocolException, ZipException {
-		String contentType = "";
 		final File destFile = File.createTempFile("filmeUtils", "filmeUtils");
 		
-		while(isNotAFile(contentType)){
-			outputListener.out("Nao esta logado, tentando logar...");
-			legendasTv.login(); 
-			destFile.delete();
-			contentType = httpclient.getToFile(link, destFile);
-		}
-		extract(destFile, folder, contentType);
+		destFile.delete();
+		final String filename = httpclient.getToFile(link, destFile);
+		extract(destFile, folder, filename);
 		destFile.delete();
 	}
-
-	private boolean isNotAFile(final String contentType) {
-		return contentType.contains("text/html") || contentType.isEmpty();
-	}
 	
-	private void extract(final File compressedFile,final File destinationFolder, final String contentType)throws ZipException, IOException {
+	private void extract(final File compressedFile,final File destinationFolder, final String fileName)throws ZipException, IOException {
 		outputListener.outVerbose("Extraindo legendas para "+destinationFolder.getAbsolutePath());
-		final boolean isRar = contentType.contains(RAR);
-		final boolean isZip = contentType.contains(ZIP);
+		final boolean isRar = fileName.toLowerCase().endsWith(RAR);
+		final boolean isZip = fileName.toLowerCase().endsWith(ZIP);
 		if(!isRar && !isZip)
-			throw new RuntimeException("Tipo desconhecido: "+contentType);
+			throw new RuntimeException("Tipo desconhecido: "+fileName);
 		
 		if(isRar){
 			extract.unrar(compressedFile, destinationFolder);

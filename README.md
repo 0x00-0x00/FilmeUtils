@@ -1,15 +1,9 @@
-Ainda está sendo adaptado para o novo site
-====================
-
-ENQUANTO O LEGENDAS TV ESTIVER SÓ COM A VERSÃO DEV
-SÓ A OPÇÃO -n ou -auto VAI FUNCIONAR
-E SÓ NA LINHA DE COMANDO
 FilmeUtils
 ====================
 
-FilmeUtils baixa filmes e séries do legendas.tv  
+FilmeUtils baixa legendas de séries do legendas.tv e respectivos torrents.   
 
-[Download v3.11](https://www.dropbox.com/s/vtsa54ervupiqhm/filmeUtils.jar)
+[Download v3.12](https://www.dropbox.com/s/vtsa54ervupiqhm/filmeUtils.jar)
 =============
 
 
@@ -21,8 +15,8 @@ Do que você precisa
 Como funciona  
 ---------------------
 FilmeUtils procura a legenda no legendas.tv e depois o torrent no piratebay/bitsnoop/rarbg .  
-Funciona melhor com legendas novas. Usando a linha de comando -auto e um agendador de taefas
-é possível colocar o filmeUtils pra fazer o download do seriado assim que sai a legenda.  
+Funciona melhor com legendas novas. Usando a linha de comando -auto e um agendador de tarefas
+é possível colocar o filmeUtils pra fazer o download do seriado assim que sair a legenda.  
 
 GUI  
 ---------------------

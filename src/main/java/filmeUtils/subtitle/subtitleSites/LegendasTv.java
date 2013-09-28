@@ -118,11 +118,11 @@ public class LegendasTv {
 	private void searchNewAddsRecursivelly(final int page, final int howMuchPagesToLoad, final SubtitleLinkSearchCallback searchListener) {
 		final String content = getNewAddsOnPage(page);
 		final Document parsed = Jsoup.parse(content);
-		final Elements subtitleSpans = parsed.select("div.film button.btn");
+		final Elements subtitleSpans = parsed.select("div.film span.bt_seta_download a.texto");
 		for(final Element subtitleButton : subtitleSpans) {
-			final String onClick = subtitleButton.attr("onClick");
-			final String hash = onClick.replaceAll("window.open\\('/download/([0-9a-z]*)/.*", "$1");
-			final String subtitleName = onClick.replaceAll("window.open\\('/download/.*/.*/([^']*)'.*", "$1").replace("_", " ");
+			final String downloadPreviewLink = subtitleButton.attr("href");
+			final String hash = downloadPreviewLink.replaceAll("/download/([0-9a-z]*)/.*", "$1");
+			final String subtitleName = downloadPreviewLink.replaceAll(".*/(.*)", "$1").replace("_", " ");
 			final SubtitlePackageAndLink nameAndlink = new SubtitlePackageAndLink(subtitleName, getDownloadUrlForHash(hash));
 			searchListener.process(nameAndlink);
 		}

@@ -2,6 +2,7 @@ package filmeUtils.subtitleSites;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import junit.framework.Assert;
 
@@ -11,6 +12,7 @@ import filmeUtils.commons.OutputListener;
 import filmeUtils.subtitle.subtitleSites.LegendasTv;
 import filmeUtils.subtitle.subtitleSites.SubtitleLinkSearchCallback;
 import filmeUtils.subtitle.subtitleSites.SubtitlePackageAndLink;
+import filmeUtils.utils.http.SimpleHttpClientImpl;
 
 public class LegendasTvTest {
 	
@@ -61,4 +63,13 @@ public class LegendasTvTest {
 		Assert.assertEquals(0, expectedResults.size());
 	}
 	
+	@Test
+	public void getNewAddsForReal(){
+		final LegendasTv subject = new LegendasTv(new SimpleHttpClientImpl(), dummyOutputListener);
+		final AtomicBoolean atLeastOne = new AtomicBoolean(false);
+		subject.getNewer(1, new SubtitleLinkSearchCallback(){@Override public void process(final SubtitlePackageAndLink subAndLink) {
+			atLeastOne.set(true);
+		}});
+		Assert.assertTrue(atLeastOne.get());
+	}
 }

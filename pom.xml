@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.beothorn</groupId>
 	<artifactId>filmeUtils</artifactId>
-	<version>3.14</version>
+	<version>3.15-SNAPSHOT</version>
 
 	<scm>
 		<connection>scm:git:git@github.com:beothorn/FilmeUtils.git</connection>

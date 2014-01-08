@@ -12,6 +12,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import filmeUtils.commons.FileSystemUtils;
 import filmeUtils.commons.OutputListener;
 import filmeUtils.utils.http.SimpleHttpClient;
 
@@ -42,7 +43,7 @@ public class LegendasTv {
 	}
 
 	public void getNewer(final SubtitleLinkSearchCallback searchListener){
-		final int howMuchPagesToLoad = 10;
+		final int howMuchPagesToLoad = FileSystemUtils.getInstance().newerPagesSearchCount();
 		getNewer(howMuchPagesToLoad, searchListener);
 	}
 	

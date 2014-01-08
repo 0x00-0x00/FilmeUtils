@@ -3,10 +3,14 @@ package filmeUtils.commons;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.io.FileUtils;
 
 import filmeUtils.utils.RegexUtils;
@@ -18,6 +22,10 @@ public class FileSystemUtils {
 	private static final String SERIALIZED_COOKIES_FILE = "cookies.serialized";
 	private static final String SUBTITLE_FOLDER_CONFIG_FILE = "subtitlefolder";
 	private static final String FILME_UTILS_FOLDER = ".filmeUtils";
+	private static final String OPTIONS_FILE = "config";
+	
+	private static final String CONFIG_NEWER_PAGES_TO_SEARCH = "quantidade_de_paginas_de_novas_legendas_para_procurar";
+	
 	private static FileSystemUtils filmeUtilsFolder;
 	
 	public static final FileSystemUtils getInstance(){
@@ -157,5 +165,31 @@ public class FileSystemUtils {
 			}
 		}
 		return fileContainingAlreadyDownloaded;
+	}
+	
+	private File getFileContainingOptions() {
+		final File fileOptions = new File(getFolder(),OPTIONS_FILE);
+		if(!fileOptions.exists()){
+			try {
+				fileOptions.createNewFile();
+				FileUtils.writeLines(fileOptions, 
+						Arrays.asList(new String[]{
+								CONFIG_NEWER_PAGES_TO_SEARCH+"=10"
+						}));
+			} catch (final IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		return fileOptions;
+	}
+
+	public int newerPagesSearchCount() {
+		final File fileContainingOptions = getFileContainingOptions();
+		try {
+			final Configuration config = new PropertiesConfiguration(fileContainingOptions);
+			return Integer.parseInt(config.getString(CONFIG_NEWER_PAGES_TO_SEARCH));
+		} catch (final ConfigurationException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

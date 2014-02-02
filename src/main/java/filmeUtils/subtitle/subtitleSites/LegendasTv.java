@@ -23,7 +23,7 @@ public class LegendasTv {
 	private static final String HASH_TOKEN = "$HASH$";
 	private static final String BASE_URL = "http://legendas.tv";
 	private static final String NEW_ADDS_URL = BASE_URL+"/util/carrega_destaques/page:"+PAGE_TOKEN;
-	private static final String SEARCH_ON_PAGE_URL = BASE_URL+"/util/carrega_legendas_busca/termo:" + SEARCH_TERM_TOKEN + "/page:" + PAGE_TOKEN;
+	private static final String SEARCH_ON_PAGE_URL = BASE_URL+"/util/carrega_legendas_busca/id_idioma:1/termo:" + SEARCH_TERM_TOKEN + "/page:" + PAGE_TOKEN;
 	private static final String DOWNLOAD_URL = BASE_URL+"/pages/downloadarquivo/"+HASH_TOKEN;
 	
 	private final SimpleHttpClient httpclient;

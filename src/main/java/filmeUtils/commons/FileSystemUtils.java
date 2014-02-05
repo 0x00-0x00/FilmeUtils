@@ -126,7 +126,7 @@ public class FileSystemUtils {
 
 	public static List<String> copyFilesMatchingRegexAndDeleteSourceDir(final File source,final File dest, final String regex) {
 		final ArrayList<String> filesThatMatch = new ArrayList<String>();
-		final Iterator<File> iterateFiles = FileUtils.iterateFiles(source, new String[]{"srt"}, true);
+		final Iterator<File> iterateFiles = FileUtils.iterateFiles(source, new String[]{"srt", "SRT"}, true);
 		while(iterateFiles.hasNext()){
 			final File file = iterateFiles.next();
 			try {

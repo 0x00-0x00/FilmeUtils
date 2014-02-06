@@ -133,10 +133,15 @@ public class FileSystemUtils {
 		final Iterator<File> iterateFiles = FileUtils.iterateFiles(source, new IOFileFilter(){
 			@Override
 			public boolean accept(final File file) {
-				return FilenameUtils.getExtension(file.getName()).toLowerCase().equals("srt");
+				final String name = file.getName();
+				return isNameValid(name);
 			}
 			@Override
 			public boolean accept(final File dir, final String name) {
+				return isNameValid(name);
+			}
+			
+			private boolean isNameValid(final String name) {
 				return FilenameUtils.getExtension(name).toLowerCase().equals("srt");
 			}
 		},

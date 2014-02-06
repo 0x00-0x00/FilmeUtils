@@ -12,6 +12,9 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 
 import filmeUtils.utils.RegexUtils;
 
@@ -126,7 +129,19 @@ public class FileSystemUtils {
 
 	public static List<String> copyFilesMatchingRegexAndDeleteSourceDir(final File source,final File dest, final String regex) {
 		final ArrayList<String> filesThatMatch = new ArrayList<String>();
-		final Iterator<File> iterateFiles = FileUtils.iterateFiles(source, new String[]{"srt", "SRT"}, true);
+
+		final Iterator<File> iterateFiles = FileUtils.iterateFiles(source, new IOFileFilter(){
+			@Override
+			public boolean accept(final File file) {
+				return FilenameUtils.getExtension(file.getName()).toLowerCase().equals("srt");
+			}
+			@Override
+			public boolean accept(final File dir, final String name) {
+				return FilenameUtils.getExtension(name).toLowerCase().equals("srt");
+			}
+		},
+		TrueFileFilter.INSTANCE);
+		
 		while(iterateFiles.hasNext()){
 			final File file = iterateFiles.next();
 			try {
@@ -187,7 +202,9 @@ public class FileSystemUtils {
 		final File fileContainingOptions = getFileContainingOptions();
 		try {
 			final Configuration config = new PropertiesConfiguration(fileContainingOptions);
-			return Integer.parseInt(config.getString(CONFIG_NEWER_PAGES_TO_SEARCH));
+			final String string = config.getString(CONFIG_NEWER_PAGES_TO_SEARCH);
+			final int parseInt = Integer.parseInt(string);
+			return parseInt;
 		} catch (final ConfigurationException e) {
 			throw new RuntimeException(e);
 		}

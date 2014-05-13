@@ -154,7 +154,22 @@ public class SimpleHttpClientImpl implements SimpleHttpClient {
 		out.close();
 		in.close();
 		storeCookies();
-		String filename = "";
+                
+                /**
+                 * Solução temporária
+                 * 
+                 * Legendas tv está usando redirect.
+                 * O HttpClient está redirecionando, mas o content type
+                 * não vem com o tipo nem vem a Location
+                 * que teria a extensão.
+                 * Isso causa o filename ficar com o valor inicial.
+                 * 
+                 * Por enquanto vou assmir que vem sempre rar, o que é 
+                 * verdade para todos os novos arquivos mesmo...
+                 * 
+                 */
+		String filename = "unknown.rar";
+                
 		final Header[] allHeaders = response.getAllHeaders();
 		for (final Header header : allHeaders) {
 			final HeaderElement[] elements = header.getElements();

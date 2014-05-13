@@ -6,3 +6,4 @@ bin
 .settings/*
 pom.xml.releaseBackup
 release.properties
+nbactions.xml

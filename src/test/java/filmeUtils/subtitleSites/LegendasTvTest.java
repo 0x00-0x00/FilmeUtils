@@ -25,8 +25,8 @@ public class LegendasTvTest {
 	
 	@Test
 	public void simpleSearchWithMoreThanOneResultTwoPagesGreedyTest(){
-		mock.setResponseForUrl("http://legendas.tv/util/carrega_legendas_busca/id_idioma:1/termo:house%20of%20the%20dead/page:1", "LegendasTvLotsOfResultsTwoPages.html");
-		mock.setResponseForUrl("http://legendas.tv/util/carrega_legendas_busca/id_idioma:1/termo:house%20of%20the%20dead/page:2", "LegendasTvOneResult.html");
+		mock.setResponseForUrl("http://legendas.tv/util/carrega_legendas_busca/house%20of%20the%20dead/1/-/1", "LegendasTvLotsOfResultsTwoPages.html");
+		mock.setResponseForUrl("http://legendas.tv/util/carrega_legendas_busca/house%20of%20the%20dead/1/-/2", "LegendasTvOneResult.html");
 		final LegendasTv subject = new LegendasTv(mock, dummyOutputListener);
 		final Map<String, String> expectedResults = new LinkedHashMap<String, String>();
 		expectedResults.put("House [2008]DVDRip[Xvid AC3[5 1]-RoCK&BlueLadyRG", "http://legendas.tv/pages/downloadarquivo/c214ba8d3a08aa5ed2e6d0c228cb7c08");
@@ -45,8 +45,8 @@ public class LegendasTvTest {
 	
 	@Test
 	public void getNewAdds(){
-		mock.setResponseForUrl("http://legendas.tv/util/carrega_destaques/page:1", "LegendasTvNewSeriesFirstPage.html");
-		mock.setResponseForUrl("http://legendas.tv/util/carrega_destaques/page:2", "LegendasTvNewSeriesSecondPage.html");
+		mock.setResponseForUrl("http://legendas.tv/util/carrega_destaques/todos/1", "LegendasTvNewSeriesFirstPage.html");
+		mock.setResponseForUrl("http://legendas.tv/util/carrega_destaques/todos/2", "LegendasTvNewSeriesSecondPage.html");
 		final LegendasTv subject = new LegendasTv(mock, dummyOutputListener);
 		final Map<String, String> expectedResults = new LinkedHashMap<String, String>();
 		expectedResults.put("Sons of Anarchy S06E01 PROPER HDTV x264 ASAP REPACK AFG REPACK FUM REPACK EVOLVE", "http://legendas.tv/pages/downloadarquivo/d5179f666b2d04c77b0c4de496050860");

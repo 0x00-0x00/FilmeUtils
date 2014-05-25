@@ -7,8 +7,6 @@ FilmeUtils baixa legendas de séries do legendas.tv e respectivos torrents.
 =============
 
 
-(Torrent do pirate bay não esta funcionando no momento)
-
 Do que você precisa  
 --------------------- 
  - Java 1.6 ou maior instalado. - www.java.com/  

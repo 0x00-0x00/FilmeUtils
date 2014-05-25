@@ -3,7 +3,7 @@ FilmeUtils
 
 FilmeUtils baixa legendas de séries do legendas.tv e respectivos torrents.   
 
-[Download v3.16](https://www.dropbox.com/s/vtsa54ervupiqhm/filmeUtils.jar)
+[Download v3.16](https://github.com/beothorn/FilmeUtils/releases/download/filmeUtils-3.16/filmeUtils.jar)
 =============
 
 

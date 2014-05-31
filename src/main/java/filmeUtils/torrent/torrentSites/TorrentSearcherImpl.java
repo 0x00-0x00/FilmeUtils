@@ -12,7 +12,7 @@ public class TorrentSearcherImpl implements TorrentSearcher {
 
 	public TorrentSearcherImpl(final SimpleHttpClient httpclient) {
 		sites = new ArrayList<TorrentSite>();
-		sites.add(new PirateBaySeWebgrude());
+		sites.add(new PirateBaySe());
 		sites.add(new Rarbg(httpclient));
 		sites.add(new BitSnoop(httpclient));
 	}

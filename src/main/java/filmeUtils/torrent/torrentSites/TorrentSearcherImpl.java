@@ -14,7 +14,7 @@ public class TorrentSearcherImpl implements TorrentSearcher {
 		sites = new ArrayList<TorrentSite>();
 		sites.add(new PirateBaySe());
 		sites.add(new Rarbg(httpclient));
-		sites.add(new BitSnoop(httpclient));
+		sites.add(new BitSnoop());
 	}
 	
 	@Override
@@ -27,7 +27,7 @@ public class TorrentSearcherImpl implements TorrentSearcher {
 			String magnetLinkFirstResultOrNull = null;
 			try {
 				magnetLinkFirstResultOrNull = site.getMagnetLinkFirstResultOrNull(exactFileName);
-			} catch (SiteOfflineException e) {
+			} catch (Exception e) {
 				outputListener.out("Erro procurando torrent para "+exactFileName+" : "+e.getMessage());
 			}
 			if(magnetLinkFirstResultOrNull != null){

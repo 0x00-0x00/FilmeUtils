@@ -6,47 +6,32 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import filmeUtils.utils.http.SimpleHttpClient;
+import webGrude.Browser;
+import webGrude.annotations.Page;
+import webGrude.annotations.Selector;
+import webGrude.elements.Link;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.List;
 
 public class BitSnoop implements TorrentSite {
 
-	private static final String BITSNOOP_URL = "http://bitsnoop.com";
-	private static final String BITSNOOP_SEARCH_URL = BITSNOOP_URL+"/search/all/"+TorrentSiteUtils.SEARCH_TERM_TOKEN;
-	
-	private final SimpleHttpClient httpclient;
-	
-	public BitSnoop(final SimpleHttpClient httpclient) {
-		this.httpclient = httpclient;
-	}
-	
-	public String getMagnetLinkFirstResultOrNull(final String exactFileName) throws SiteOfflineException {
-		final String url = TorrentSiteUtils.getUrlFor(BITSNOOP_SEARCH_URL,exactFileName);
-		final String searchResult = httpclient.getOrNull(url);
-		if(searchResult == null){
-			throw new SiteOfflineException(getSiteName());
-		}
-		final Document parsed = Jsoup.parse(searchResult);
-		final Elements select = parsed.select("#torrents li a");
-		final Element firstLink = select.first();
-		if(firstLink == null) return null;
-		return magnetFromLink(firstLink.attr("href"));
+    @Page
+    public static class SearchResultLinked {
+        @Selector(value = "a.dl_mag2[href*=magnet]", attr = "href") public String magnetLink;
+    }
+
+    @Page("http://bitsnoop.com/search/all/{0}")
+    public static class SearchResult {
+        @Selector("#torrents li a") public List<Link<SearchResultLinked>> link;
+    }
+
+    @Override
+	public String getMagnetLinkFirstResultOrNull(final String exactFileName){
+        return Browser.open(SearchResult.class, exactFileName).link.get(0).visit().magnetLink;
 	}
 
-	private String magnetFromLink(final String link) throws SiteOfflineException {
-		final String url = BITSNOOP_URL + link;
-		final String searchResult = httpclient.getOrNull(url);
-		if(searchResult == null){
-			throw new SiteOfflineException(getSiteName());
-		}
-		final Document parsed = Jsoup.parse(searchResult);
-		final Elements elementsByClass = parsed.getElementsByClass("dl_mag2");
-		if(elementsByClass.isEmpty()) return null;
-		final String magnetLink = elementsByClass.attr("href");
-		return magnetLink;
-	}
-
-	@Override
-	public String getSiteName() {
-		return "BitSnoop";
-	}
+    @Override public String getSiteName() { return "BitSnoop"; }
 
 }

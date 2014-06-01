@@ -1,5 +1,6 @@
 package filmeUtils.subtitle.subtitleSites.legendasTV;
 
+import filmeUtils.subtitle.subtitleSites.SubtitlePackageAndLink;
 import webGrude.Browser;
 import webGrude.annotations.Page;
 import webGrude.annotations.Selector;
@@ -18,10 +19,10 @@ public class NewerSubtitles {
 
     @Selector("button.active") public Integer currentPage;
 
-    public List<SubtitleLink> getSubtitlePackageAndLink() {
+    public List<SubtitlePackageAndLink> getSubtitlePackageAndLink() {
         return novaLink
                 .stream()
-                .map(l -> new SubtitleLink(l))
+                .map(l -> new SubtitlePackageAndLink(l))
                 .collect(Collectors.toList());
     }
 

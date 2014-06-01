@@ -1,16 +1,16 @@
 package filmeUtils.subtitle.subtitleSites.legendasTV;
 
-import webGrude.Browser;
+import filmeUtils.subtitle.subtitleSites.SubtitlePackageAndLink;
 
 public class LegendasTvWebgrudeTest {
 
     public static void main(String... args) {
         newer();
-//        search();
+        search();
     }
 
     private static void search() {
-        String term = "house";
+        String term = "house m.d.";
         Search result = Search.search(term);
         result.links.forEach(l -> System.out.println(l));
         while(result.hasNext()){
@@ -21,11 +21,10 @@ public class LegendasTvWebgrudeTest {
 
     private static void newer() {
         NewerSubtitles newerSubtitles = NewerSubtitles.open();
-        newerSubtitles = newerSubtitles.nextPage();
-        System.out.println(newerSubtitles.currentPage);
-        for (SubtitleLink subtitlePackageAndLink : newerSubtitles.getSubtitlePackageAndLink()) {
-            System.out.println("name " + subtitlePackageAndLink.name);
-            System.out.println("link " + subtitlePackageAndLink.link);
+        while (newerSubtitles.currentPage <= 3) {
+            System.out.println(newerSubtitles.currentPage);
+            newerSubtitles.getSubtitlePackageAndLink().forEach(sl -> System.out.println(sl));
+            newerSubtitles = newerSubtitles.nextPage();
         }
     }
 }

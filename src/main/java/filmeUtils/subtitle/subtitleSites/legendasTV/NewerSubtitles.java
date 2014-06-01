@@ -22,7 +22,12 @@ public class NewerSubtitles {
     public List<SubtitlePackageAndLink> getSubtitlePackageAndLink() {
         return novaLink
                 .stream()
-                .map(l -> new SubtitlePackageAndLink(l))
+                .map(
+                        l -> new SubtitlePackageAndLink(
+                            l.replaceAll(".*/(.*)", "$1").replace("_", " ") ,
+                            "http://legendas.tv/pages/downloadarquivo/"+ l.replaceAll("/download/([0-9a-z]*)/.*", "$1")
+                    )
+                )
                 .collect(Collectors.toList());
     }
 

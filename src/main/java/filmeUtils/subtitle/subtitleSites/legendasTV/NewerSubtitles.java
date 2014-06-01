@@ -14,11 +14,9 @@ public class NewerSubtitles {
         return Browser.open(NewerSubtitles.class, "1");
     }
 
-    @Selector(value = "div.film span.bt_seta_download a.texto", attr = "href")
-    public List<String> novaLink;
+    @Selector(value = "div.film span.bt_seta_download a.texto", attr = "href") public List<String> novaLink;
 
-    @Selector("button.active")
-    public String currentPage;
+    @Selector("button.active") public Integer currentPage;
 
     public List<SubtitleLink> getSubtitlePackageAndLink() {
         return novaLink
@@ -27,11 +25,7 @@ public class NewerSubtitles {
                 .collect(Collectors.toList());
     }
 
-    private String nextPageAsString() {
-        return Integer.toString(Integer.valueOf(currentPage) + 1);
-    }
+    public NewerSubtitles nextPage() { return Browser.open(NewerSubtitles.class, nextPageAsString()); }
 
-    public NewerSubtitles nextPage() {
-        return Browser.open(NewerSubtitles.class, nextPageAsString());
-    }
+    private String nextPageAsString() { return Integer.toString(currentPage + 1); }
 }

@@ -5,13 +5,18 @@ import webGrude.Browser;
 public class LegendasTvWebgrudeTest {
 
     public static void main(String... args) {
-        //newer();
-        search();
+        newer();
+//        search();
     }
 
     private static void search() {
-        Search result = Search.search("house");
+        String term = "house";
+        Search result = Search.search(term);
         result.links.forEach(l -> System.out.println(l));
+        while(result.hasNext()){
+            result = result.next();
+            result.links.forEach(l -> System.out.println(l));
+        }
     }
 
     private static void newer() {

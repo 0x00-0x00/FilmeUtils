@@ -189,7 +189,7 @@ public class Main {
 	private static CommandLineClient createCommandLine() {
 		final SimpleHttpClient httpclient = new SimpleHttpClientImpl();
 		final VerboseSysOut output = new VerboseSysOut();
-		legendasTv = new LegendasTv(httpclient, output);
+		legendasTv = new LegendasTv( output);
 		final ExtractorImpl extractor = new ExtractorImpl();
 		final CommandLineClient commandLineClient = new CommandLineClient(httpclient, legendasTv, extractor, output);
 		return commandLineClient;

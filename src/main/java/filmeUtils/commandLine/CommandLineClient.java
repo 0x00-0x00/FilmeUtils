@@ -114,7 +114,7 @@ public class CommandLineClient implements CommandLine {
 
 	@Override
 	public void lt(final String subtitleSearchTerm, final String regexToApplyOnSubtitlesFiles, final File destinantion) {
-		final LegendasTv legendasTv = new LegendasTv(httpclient, output);
+		final LegendasTv legendasTv = new LegendasTv( output);
 		final Downloader downloader = new Downloader(extractor,  httpclient, legendasTv, output);
 		output.out("Procurando "+subtitleSearchTerm+" aplicando regex "+regexToApplyOnSubtitlesFiles+" salvando em "+destinantion.getAbsolutePath());
 		downloader.download(subtitleSearchTerm, destinantion, regexToApplyOnSubtitlesFiles);
@@ -146,14 +146,14 @@ public class CommandLineClient implements CommandLine {
 		output.out("Aplicando "+regex.fileRegex+" nos arquivos de legendas");
 		output.out("Salvando em "+destinantion.getAbsolutePath());
 		
-		final LegendasTv legendasTv = new LegendasTv(httpclient, output);
+		final LegendasTv legendasTv = new LegendasTv( output);
 		final Downloader downloader = new Downloader(extractor, httpclient, legendasTv, output);
 		downloader.downloadFromNewest(regex, destinantion);
 	}
 
 	@Override
 	public void f(final List<RegexForSubPackageAndSubFile> regexes, final File destinantion) {
-		final LegendasTv legendasTv = new LegendasTv(httpclient, output);
+		final LegendasTv legendasTv = new LegendasTv( output);
 		final Downloader downloader = new Downloader(extractor, httpclient,legendasTv, output);
 		downloader.downloadFromNewest(regexes, destinantion);
 	}
@@ -173,7 +173,7 @@ public class CommandLineClient implements CommandLine {
 		for (final String maybeComposedRegex : subtitlesToDownloadPatterns) {
 			regexes.add(RegexUtils.getRegexForSubPackageAndSubFile(maybeComposedRegex));
 		}
-		final LegendasTv legendasTv = new LegendasTv(httpclient, output);
+		final LegendasTv legendasTv = new LegendasTv( output);
 		final Downloader downloader = new Downloader(extractor, httpclient,legendasTv, output);
 		downloader.downloadFromNewest(regexes, instance.getSubtitlesDestination(),instance.getAlreadyDownloaded());
 	}

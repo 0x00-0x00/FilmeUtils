@@ -20,7 +20,7 @@ public class Gui {
 		final File cookieFile = FileSystemUtils.getInstance().getCookiesFile();
     	final SimpleHttpClient httpclient = new SimpleHttpClientImpl(cookieFile);
     	final VerboseSysOut output = new VerboseSysOut();
-    	final LegendasTv legendasTv = new LegendasTv(httpclient, output);
+    	final LegendasTv legendasTv = new LegendasTv( output);
 		final Downloader downloader = new Downloader(extract, httpclient,  legendasTv, output);
 		final Subtitle subtitle = new Subtitle(output, httpclient, legendasTv);
 		final SearchScreenNeeds searchScreenNeeds = new SearchScreenNeeds(legendasTv, downloader, subtitle);

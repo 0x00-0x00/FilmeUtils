@@ -9,7 +9,7 @@ import filmeUtils.commons.FileSystemUtils;
 import filmeUtils.commons.OutputListener;
 import filmeUtils.downloader.Downloader;
 import filmeUtils.subtitle.Subtitle;
-import filmeUtils.subtitle.subtitleSites.LegendasTv;
+import filmeUtils.subtitle.subtitleSites.legendasTV.LegendasTv;
 import filmeUtils.torrent.Torrent;
 import filmeUtils.utils.RegexForSubPackageAndSubFile;
 import filmeUtils.utils.RegexUtils;

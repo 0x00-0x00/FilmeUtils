@@ -5,8 +5,6 @@ import webGrude.Browser;
 import webGrude.annotations.Page;
 import webGrude.annotations.Selector;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.List;
 
 public class PirateBaySe implements TorrentSite {

@@ -7,7 +7,7 @@ import filmeUtils.commandLine.CommandLineClient;
 import filmeUtils.commons.FileSystemUtils;
 import filmeUtils.commons.VerboseSysOut;
 import filmeUtils.gui.Gui;
-import filmeUtils.subtitle.subtitleSites.LegendasTv;
+import filmeUtils.subtitle.subtitleSites.legendasTV.LegendasTv;
 import filmeUtils.utils.RegexForSubPackageAndSubFile;
 import filmeUtils.utils.RegexUtils;
 import filmeUtils.utils.extraction.ExtractorImpl;

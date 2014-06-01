@@ -4,11 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-
 import filmeUtils.commons.FileSystemUtils;
 import filmeUtils.commons.OutputListener;
-import filmeUtils.subtitle.subtitleSites.LegendasTv;
+import filmeUtils.subtitle.subtitleSites.legendasTV.LegendasTv;
 import filmeUtils.subtitle.subtitleSites.SubtitleLinkSearchCallback;
 import filmeUtils.subtitle.subtitleSites.SubtitlePackageAndLink;
 import filmeUtils.utils.RegexForSubPackageAndSubFile;

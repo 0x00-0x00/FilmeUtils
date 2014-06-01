@@ -7,7 +7,7 @@ import filmeUtils.commons.FileSystemUtils;
 import filmeUtils.commons.OutputListener;
 import filmeUtils.downloader.Downloader;
 import filmeUtils.subtitle.Subtitle;
-import filmeUtils.subtitle.subtitleSites.LegendasTv;
+import filmeUtils.subtitle.subtitleSites.legendasTV.LegendasTv;
 import filmeUtils.subtitle.subtitleSites.SubtitleLinkSearchCallback;
 import filmeUtils.subtitle.subtitleSites.SubtitlePackageAndLink;
 

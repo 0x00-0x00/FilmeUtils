@@ -1,18 +1,10 @@
 package filmeUtils.torrent.torrentSites;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import filmeUtils.utils.http.SimpleHttpClient;
 import webGrude.Browser;
 import webGrude.annotations.Page;
 import webGrude.annotations.Selector;
 import webGrude.elements.Link;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.List;
 
 public class BitSnoop implements TorrentSite {

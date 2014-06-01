@@ -20,7 +20,7 @@ public class Search {
         public SubtitlePackageAndLink getSubtitlePackageAndLink(){
             return new SubtitlePackageAndLink(
                     text.replace(".", " "),
-                    "http://legendas.tv/pages/downloadarquivo/" + href.replaceAll("/download/([0-9a-z]*)/.*", "$1")
+                    LegendasTv.getDownloadLink(href)
             );
         }
     }

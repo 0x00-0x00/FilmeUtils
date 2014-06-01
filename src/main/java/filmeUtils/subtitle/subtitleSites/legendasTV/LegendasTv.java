@@ -1,22 +1,10 @@
-package filmeUtils.subtitle.subtitleSites;
+package filmeUtils.subtitle.subtitleSites.legendasTV;
 
-
-import java.io.IOException;
-import java.net.SocketTimeoutException;
-import java.util.ArrayList;
-
-import filmeUtils.subtitle.subtitleSites.legendasTV.NewerSubtitles;
-import filmeUtils.subtitle.subtitleSites.legendasTV.Search;
-import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.http.client.ClientProtocolException;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import filmeUtils.commons.FileSystemUtils;
 import filmeUtils.commons.OutputListener;
-import filmeUtils.utils.http.SimpleHttpClient;
+import filmeUtils.subtitle.subtitleSites.SubtitleLinkSearchCallback;
+import org.apache.commons.lang.exception.ExceptionUtils;
 
 public class LegendasTv {
 
@@ -51,5 +39,9 @@ public class LegendasTv {
             newerSubtitles.getSubtitlePackageAndLink().forEach(sl -> searchListener.process(sl));
             newerSubtitles = newerSubtitles.nextPage();
         }
+    }
+
+    public static String getDownloadLink(String l) {
+        return "http://legendas.tv/pages/downloadarquivo/"+ l.replaceAll("/download/([0-9a-z]*)/.*", "$1");
     }
 }

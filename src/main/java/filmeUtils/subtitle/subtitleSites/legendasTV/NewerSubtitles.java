@@ -25,7 +25,7 @@ public class NewerSubtitles {
                 .map(
                         l -> new SubtitlePackageAndLink(
                             l.replaceAll(".*/(.*)", "$1").replace("_", " ") ,
-                            "http://legendas.tv/pages/downloadarquivo/"+ l.replaceAll("/download/([0-9a-z]*)/.*", "$1")
+                            LegendasTv.getDownloadLink(l)
                     )
                 )
                 .collect(Collectors.toList());

@@ -7,7 +7,7 @@ import filmeUtils.downloader.Downloader;
 import filmeUtils.gui.gui.SearchScreen;
 import filmeUtils.gui.gui.SearchScreenNeeds;
 import filmeUtils.subtitle.Subtitle;
-import filmeUtils.subtitle.subtitleSites.LegendasTv;
+import filmeUtils.subtitle.subtitleSites.legendasTV.LegendasTv;
 import filmeUtils.utils.extraction.ExtractorImpl;
 import filmeUtils.utils.http.SimpleHttpClient;
 import filmeUtils.utils.http.SimpleHttpClientImpl;

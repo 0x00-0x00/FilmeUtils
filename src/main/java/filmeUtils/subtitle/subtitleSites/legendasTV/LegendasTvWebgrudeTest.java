@@ -1,7 +1,5 @@
 package filmeUtils.subtitle.subtitleSites.legendasTV;
 
-import filmeUtils.subtitle.subtitleSites.SubtitlePackageAndLink;
-
 public class LegendasTvWebgrudeTest {
 
     public static void main(String... args) {

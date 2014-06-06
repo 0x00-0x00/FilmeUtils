@@ -42,10 +42,13 @@ buildscript {
     }
 }
 
-task awesomeFunJar(type: OneJar) {
+task shade(type: OneJar) {
     mainClass = 'Main'
     manifest {
         attributes 'Timestamp': String.valueOf(System.currentTimeMillis())
         attributes 'Implementation-Version': version
     }
 }
+
+//TODO: release plugin https://github.com/townsfolk/gradle-release
+//TODO: release on github https://developer.github.com/v3/repos/releases/

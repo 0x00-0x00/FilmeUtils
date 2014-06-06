@@ -2,6 +2,7 @@ package filmeUtils.subtitle.subtitleSites.legendasTV;
 
 import filmeUtils.subtitle.subtitleSites.SubtitlePackageAndLink;
 import webGrude.Browser;
+import webGrude.annotations.AfterPageLoad;
 import webGrude.annotations.Page;
 import webGrude.annotations.Selector;
 import webGrude.elements.Link;
@@ -29,10 +30,17 @@ public class Search {
 
     @Selector(".load_more") public Link<Search> moreToLoad;
 
+    private List<SubtitlePackageAndLink> sls;
+
     public static Search search(String term) { return Browser.open(Search.class,term,"1"); }
 
     public List<SubtitlePackageAndLink> getSubtitlePackageAndLink() {
-        return links
+        return sls;
+    }
+
+    @AfterPageLoad
+    public void after() {
+        sls =  links
                 .stream()
                 .map(l -> l.getSubtitlePackageAndLink())
                 .collect(Collectors.toList());

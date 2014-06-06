@@ -9,3 +9,7 @@ bin
 pom.xml.releaseBackup
 release.properties
 nbactions.xml
+bin/
+build/
+gradle/
+.gradle/

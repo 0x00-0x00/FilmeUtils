@@ -1,5 +1,6 @@
 package filmeUtils.torrent.torrentSites;
 
+import filmeUtils.Debug;
 import webGrude.Browser;
 import webGrude.annotations.Page;
 import webGrude.annotations.Selector;
@@ -16,12 +17,26 @@ public class BitSnoop implements TorrentSite {
 
     @Page("http://bitsnoop.com/search/all/{0}")
     public static class SearchResult {
-        @Selector("#torrents li a") public List<Link<SearchResultLinked>> link;
+        @Selector("#torrents li a") public List<Link<SearchResultLinked>> links;
     }
 
     @Override
 	public String getMagnetLinkFirstResultOrNull(final String exactFileName){
-        return Browser.open(SearchResult.class, exactFileName).link.get(0).visit().magnetLink;
+        List<Link<SearchResultLinked>> links = Browser.open(SearchResult.class, exactFileName.replace('.',' ')).links;
+        if(Debug.IS_DEBUG) {
+            System.out.println("_______________________________");
+            System.out.println("Searching on");
+            System.out.println(Browser.getCurentUrl());
+
+            System.out.println(Browser.getCurentPage());
+
+            System.out.println("Found:");
+            links.forEach(s -> System.out.println(s));
+            System.out.println("_______________________________");
+        }
+        if(links.size()>0)
+            return links.get(0).visit().magnetLink;
+        return null;
 	}
 
     @Override public String getSiteName() { return "BitSnoop"; }

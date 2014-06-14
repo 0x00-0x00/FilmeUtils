@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 
+import filmeUtils.Debug;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -88,7 +89,11 @@ public class FileSystemUtils {
 		}
 	}
 
+
 	public List<String> getAlreadyDownloaded() {
+        if(Debug.IS_DEBUG){
+            return new ArrayList<>();
+        }
 		try {
 			return FileUtils.readLines(getFileContainingAlreadyDownloaded());
 		} catch (final IOException e) {
@@ -107,6 +112,11 @@ public class FileSystemUtils {
 	}
 
 	public List<String> getSubtitlesToDownloadPatterns() {
+        if(Debug.IS_DEBUG){
+            ArrayList<String> strings = new ArrayList<>();
+            strings.add(".*Game.*thrones.*:.*720.*");
+            return strings;
+        }
 		final File file = getRegexFileWithPatternsToDownload();
 		return getSubtitlesToDownloadPatterns(file);
 	}

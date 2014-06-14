@@ -1,6 +1,8 @@
 package filmeUtils.torrent.torrentSites;
 
 
+import filmeUtils.Debug;
+import filmeUtils.commons.VerboseSysOut;
 import webGrude.Browser;
 import webGrude.annotations.Page;
 import webGrude.annotations.Selector;
@@ -15,7 +17,21 @@ public class PirateBaySe implements TorrentSite {
     }
 
 	public String getMagnetLinkFirstResultOrNull(final String exactFileName){
-        return  Browser.open(SearchResult.class, exactFileName).link.get(0);
+        List<String> links = Browser.open(SearchResult.class, exactFileName).link;
+        if(Debug.IS_DEBUG) {
+            System.out.println("_______________________________");
+            System.out.println("Searching on");
+            System.out.println(Browser.getCurentUrl());
+
+            System.out.println(Browser.getCurentPage());
+
+            System.out.println("Found:");
+            links.forEach(s -> System.out.println(s));
+            System.out.println("_______________________________");
+        }
+        if(links.size() > 0)
+            return  links.get(0);
+        return  null;
 	}
 
 	@Override

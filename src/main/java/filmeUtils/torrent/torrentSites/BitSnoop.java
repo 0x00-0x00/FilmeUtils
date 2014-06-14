@@ -22,18 +22,17 @@ public class BitSnoop implements TorrentSite {
 
     @Override
 	public String getMagnetLinkFirstResultOrNull(final String exactFileName){
+
         List<Link<SearchResultLinked>> links = Browser.open(SearchResult.class, exactFileName.replace('.',' ')).links;
-        if(Debug.IS_DEBUG) {
-            System.out.println("_______________________________");
-            System.out.println("Searching on");
-            System.out.println(Browser.getCurentUrl());
 
-            System.out.println(Browser.getCurentPage());
+        Debug.log("_______________________________");
+        Debug.log("Searching on");
+        Debug.log(Browser.getCurentUrl());
+        Debug.log(Browser.getCurentPage());
+        Debug.log("Found:");
+        links.forEach(s -> Debug.log(s.toString()));
+        Debug.log("_______________________________");
 
-            System.out.println("Found:");
-            links.forEach(s -> System.out.println(s));
-            System.out.println("_______________________________");
-        }
         if(links.size()>0)
             return links.get(0).visit().magnetLink;
         return null;

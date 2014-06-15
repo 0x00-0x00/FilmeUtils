@@ -23,7 +23,6 @@ public class FileSystemUtils {
 	
 	private static final String ALREADY_DOWNLOADED_FILE = "alreadyDownloaded";
 	private static final String REGEX_FILE_WITH_PATTERNS_TO_DOWNLOAD = "downloadThis";
-	private static final String SERIALIZED_COOKIES_FILE = "cookies.serialized";
 	private static final String SUBTITLE_FOLDER_CONFIG_FILE = "subtitlefolder";
 	private static final String FILME_UTILS_FOLDER = ".filmeUtils";
 	private static final String OPTIONS_FILE = "config";
@@ -62,10 +61,6 @@ public class FileSystemUtils {
 			throw new RuntimeException("Não é uma pasta: "+destinationFolderPath);
 		}
 		return subtitlesDestinationFolder;
-	}
-
-	public File getCookiesFile() {
-		return new File(getFolder(),SERIALIZED_COOKIES_FILE);
 	}
 
 	public File writeErrorFile(final Exception e) {

@@ -11,8 +11,6 @@ import filmeUtils.subtitle.subtitleSites.legendasTV.LegendasTv;
 import filmeUtils.utils.RegexForSubPackageAndSubFile;
 import filmeUtils.utils.RegexUtils;
 import filmeUtils.utils.extraction.ExtractorImpl;
-import filmeUtils.utils.http.SimpleHttpClient;
-import filmeUtils.utils.http.SimpleHttpClientImpl;
 
 public class Main {
 
@@ -187,11 +185,10 @@ public class Main {
 	}
 
 	private static CommandLineClient createCommandLine() {
-		final SimpleHttpClient httpclient = new SimpleHttpClientImpl();
 		final VerboseSysOut output = new VerboseSysOut();
 		legendasTv = new LegendasTv( output);
 		final ExtractorImpl extractor = new ExtractorImpl();
-		final CommandLineClient commandLineClient = new CommandLineClient(httpclient, legendasTv, extractor, output);
+		final CommandLineClient commandLineClient = new CommandLineClient(legendasTv, extractor, output);
 		return commandLineClient;
 	}
 

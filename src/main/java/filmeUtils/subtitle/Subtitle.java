@@ -14,17 +14,15 @@ import filmeUtils.subtitle.subtitleSites.SubtitlePackageAndLink;
 import filmeUtils.utils.RegexForSubPackageAndSubFile;
 import filmeUtils.utils.RegexUtils;
 import filmeUtils.utils.extraction.ExtractorImpl;
-import filmeUtils.utils.http.SimpleHttpClient;
+import filmeUtils.utils.http.FilmeUtilsHttpClient;
 
 public class Subtitle {
 	
 	private final LegendasTv legendasTv;
 	private OutputListener output;
-	private final SimpleHttpClient httpclient;
 
-	public Subtitle(final OutputListener output,final SimpleHttpClient httpclient,final LegendasTv legendasTv) {
+	public Subtitle(final OutputListener output,final LegendasTv legendasTv) {
 		this.output = output;
-		this.httpclient = httpclient;
 		this.legendasTv = legendasTv;
 	}
 
@@ -99,7 +97,7 @@ public class Subtitle {
 			unzippedTempDestination = File.createTempFile("Filmeutils", "Filmeutils");
 			unzippedTempDestination.delete();
 			unzippedTempDestination.mkdir();
-			final String fileName = httpclient.getToFile(link, zipTempDestination);
+			final String fileName = FilmeUtilsHttpClient.getToFile(link, zipTempDestination);
 			output.out("Download de pacote de legendas de "+link+" para "+zipTempDestination+" terminado.\nVerificando tipo de arquivo...");
 			final ExtractorImpl extractor = new ExtractorImpl();
 

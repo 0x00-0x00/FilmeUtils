@@ -4,13 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import filmeUtils.commons.OutputListener;
-import filmeUtils.utils.http.SimpleHttpClient;
 
 public class TorrentSearcherImpl implements TorrentSearcher {
 
 	private final List<TorrentSite> sites;
 
-	public TorrentSearcherImpl(final SimpleHttpClient httpclient) {
+	public TorrentSearcherImpl() {
 		sites = new ArrayList<TorrentSite>();
 		sites.add(new PirateBaySe());
 		sites.add(new BitSnoop());

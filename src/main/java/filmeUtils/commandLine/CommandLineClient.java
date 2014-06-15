@@ -14,21 +14,17 @@ import filmeUtils.torrent.Torrent;
 import filmeUtils.utils.RegexForSubPackageAndSubFile;
 import filmeUtils.utils.RegexUtils;
 import filmeUtils.utils.extraction.Extractor;
-import filmeUtils.utils.http.SimpleHttpClient;
 
 public class CommandLineClient implements CommandLine {
-	
-	private final SimpleHttpClient httpclient;
+
 	private final LegendasTv legendasTv;
 	private final OutputListener output;
 	private final Extractor extractor;
 
 	public CommandLineClient(
-			final SimpleHttpClient httpclient,
 			final LegendasTv legendasTv,
 			final Extractor extract,
 			final OutputListener output) {
-		this.httpclient = httpclient;
 		this.legendasTv = legendasTv;
 		extractor = extract;
 		this.output = output;
@@ -115,14 +111,14 @@ public class CommandLineClient implements CommandLine {
 	@Override
 	public void lt(final String subtitleSearchTerm, final String regexToApplyOnSubtitlesFiles, final File destinantion) {
 		final LegendasTv legendasTv = new LegendasTv( output);
-		final Downloader downloader = new Downloader(extractor,  httpclient, legendasTv, output);
+		final Downloader downloader = new Downloader(extractor, legendasTv, output);
 		output.out("Procurando "+subtitleSearchTerm+" aplicando regex "+regexToApplyOnSubtitlesFiles+" salvando em "+destinantion.getAbsolutePath());
 		downloader.download(subtitleSearchTerm, destinantion, regexToApplyOnSubtitlesFiles);
 	}
 
 	@Override
 	public void l(final String subtitleSearchTerm, final String regexToApplyOnSubtitlesFiles, final File destinantion) {
-		final Subtitle subtitle = new Subtitle(output,httpclient,legendasTv);
+		final Subtitle subtitle = new Subtitle(output, legendasTv);
 		output.out("Procurando "+subtitleSearchTerm);
 		subtitle.download(subtitleSearchTerm,regexToApplyOnSubtitlesFiles,destinantion);
 	}
@@ -135,7 +131,7 @@ public class CommandLineClient implements CommandLine {
 
 	@Override
 	public void n() {
-		final Subtitle subtitle = new Subtitle(output,httpclient,legendasTv);
+		final Subtitle subtitle = new Subtitle(output, legendasTv);
 		output.out("Legendas adicionadas recentemente");
 		subtitle.listNewSubtitles();
 	}
@@ -147,20 +143,20 @@ public class CommandLineClient implements CommandLine {
 		output.out("Salvando em "+destinantion.getAbsolutePath());
 		
 		final LegendasTv legendasTv = new LegendasTv( output);
-		final Downloader downloader = new Downloader(extractor, httpclient, legendasTv, output);
+		final Downloader downloader = new Downloader(extractor, legendasTv, output);
 		downloader.downloadFromNewest(regex, destinantion);
 	}
 
 	@Override
 	public void f(final List<RegexForSubPackageAndSubFile> regexes, final File destinantion) {
 		final LegendasTv legendasTv = new LegendasTv( output);
-		final Downloader downloader = new Downloader(extractor, httpclient,legendasTv, output);
+		final Downloader downloader = new Downloader(extractor, legendasTv, output);
 		downloader.downloadFromNewest(regexes, destinantion);
 	}
 
 	@Override
 	public void p(final String subtitleSearchTerm) {
-		final Subtitle subtitle = new Subtitle(output,httpclient,legendasTv);
+		final Subtitle subtitle = new Subtitle(output, legendasTv);
 		output.out("Procurando "+subtitleSearchTerm);
 		subtitle.search(subtitleSearchTerm);
 	}
@@ -174,7 +170,7 @@ public class CommandLineClient implements CommandLine {
 			regexes.add(RegexUtils.getRegexForSubPackageAndSubFile(maybeComposedRegex));
 		}
 		final LegendasTv legendasTv = new LegendasTv( output);
-		final Downloader downloader = new Downloader(extractor, httpclient,legendasTv, output);
+		final Downloader downloader = new Downloader(extractor, legendasTv, output);
 		downloader.downloadFromNewest(regexes, instance.getSubtitlesDestination(),instance.getAlreadyDownloaded());
 	}
 

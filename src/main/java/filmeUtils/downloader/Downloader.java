@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.zip.ZipException;
 
+import filmeUtils.utils.http.FilmeUtilsHttpClient;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.http.client.ClientProtocolException;
@@ -17,7 +18,6 @@ import filmeUtils.torrent.torrentSites.TorrentSearcher;
 import filmeUtils.torrent.torrentSites.TorrentSearcherImpl;
 import filmeUtils.utils.RegexForSubPackageAndSubFile;
 import filmeUtils.utils.extraction.Extractor;
-import filmeUtils.utils.http.SimpleHttpClient;
 import filmeUtils.utils.http.URISchemeLinkHandlerImpl;
 
 public class Downloader {
@@ -25,12 +25,10 @@ public class Downloader {
 	private static final String ZIP = "zip";
 	private static final String RAR = "rar";
 	private final Extractor extract;
-	private final SimpleHttpClient httpclient;
 	private final LegendasTv legendasTv;
 	private OutputListener outputListener;
 	
-	public Downloader(final Extractor extract,final SimpleHttpClient httpclient, final LegendasTv legendasTv, final OutputListener outputListener) {
-		this.httpclient = httpclient;
+	public Downloader(final Extractor extract,final LegendasTv legendasTv, final OutputListener outputListener) {
 		this.legendasTv = legendasTv;
 		this.extract = extract;
 		this.outputListener = outputListener;
@@ -79,7 +77,7 @@ public class Downloader {
 	}
 
 	private Subtitle getSubtitleDownloader() {
-		final Subtitle subtitle = new Subtitle(outputListener,httpclient,legendasTv);
+		final Subtitle subtitle = new Subtitle(outputListener,legendasTv);
 		return subtitle;
 	}
 
@@ -95,7 +93,7 @@ public class Downloader {
 
 	private boolean searchTorrentsForSubtitlesOnFolderAndCopySubtitlesThatHaveTorrentToDestFolderThenDeleteSourceFolder(final File tmpFolder, final File subtitlesDestinationFolder, Map<String, List<String>> donloadedSubtitlesByPackageName) {
 		boolean success = false;
-		final TorrentSearcher torrentSearcher = new TorrentSearcherImpl(httpclient);
+		final TorrentSearcher torrentSearcher = new TorrentSearcherImpl();
 		final Iterator<File> iterateFiles = FileUtils.iterateFiles(tmpFolder, new String[]{"srt"}, true);
 		while(iterateFiles.hasNext()){
 			final File subtitleFile = iterateFiles.next();
@@ -145,7 +143,7 @@ public class Downloader {
 		final File destFile = File.createTempFile("filmeUtils", "filmeUtils");
 		
 		destFile.delete();
-		final String filename = httpclient.getToFile(link, destFile);
+		final String filename = FilmeUtilsHttpClient.getToFile(link, destFile);
 		extract(destFile, folder, filename);
 		destFile.delete();
 	}

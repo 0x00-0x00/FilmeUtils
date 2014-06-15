@@ -3,8 +3,6 @@ package filmeUtils.torrent;
 import filmeUtils.commons.OutputListener;
 import filmeUtils.torrent.torrentSites.TorrentSearcherImpl;
 import filmeUtils.utils.http.URISchemeLinkHandlerImpl;
-import filmeUtils.utils.http.SimpleHttpClient;
-import filmeUtils.utils.http.SimpleHttpClientImpl;
 
 public class Torrent {
 	
@@ -13,8 +11,7 @@ public class Torrent {
 
 	public Torrent(final OutputListener output) {
 		this.output = output;
-		final SimpleHttpClient httpclient = new SimpleHttpClientImpl();
-		torrentSearcherImpl = new TorrentSearcherImpl(httpclient);
+		torrentSearcherImpl = new TorrentSearcherImpl();
 	}
 	
 	public void download(final String searchTerm){

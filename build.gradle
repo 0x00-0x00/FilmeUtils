@@ -50,7 +50,7 @@ buildscript {
 
 jar {
 
-    compileJava.doLast {
+    doFirst {
 
 	    from(configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }) {
 		exclude "META-INF/*.SF"

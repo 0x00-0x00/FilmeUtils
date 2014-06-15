@@ -33,6 +33,7 @@ dependencies {
 
 
 apply plugin: 'fatjar'
+apply plugin: 'release'
 
 buildscript {
 
@@ -42,6 +43,7 @@ buildscript {
 
     dependencies {
         classpath 'eu.appsatori:gradle-fatjar-plugin:0.2'
+	classpath 'com.github.townsfolk:gradle-release:1.2'
     }
 }
 

@@ -57,7 +57,7 @@ jar {
 
     manifest {
         attributes 'Implementation-Title': artifactId,
-                'Implementation-Version': releaseVersion,
+                'Implementation-Version': version,
         	'Timestamp': String.valueOf(System.currentTimeMillis()),	
                 'Built-By': System.getProperty('user.name'),
                 'Built-Date': new Date(),

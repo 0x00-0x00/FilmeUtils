@@ -3,13 +3,13 @@ FilmeUtils
 
 FilmeUtils baixa legendas de séries do legendas.tv e respectivos torrents.   
 
-[Download v3.16](https://github.com/beothorn/FilmeUtils/releases/download/filmeUtils-3.16/filmeUtils.jar)
+[Download v4.0.3](https://github.com/beothorn/FilmeUtils/releases/download/4.0.3/filmeUtils-4.0.3.jar)
 =============
 
 
 Do que você precisa  
 --------------------- 
- - Java 1.6 ou maior instalado. - www.java.com/  
+ - Java 1.8 ou maior instalado. - www.java.com/  
  - Um cliente de torrent qualquer que abra magnet links sem precisar confirmação, recomendo o qbittorrent (http://www.qbittorrent.org/).  
 
 Como funciona  

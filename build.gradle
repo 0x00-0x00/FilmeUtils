@@ -23,7 +23,7 @@ dependencies {
             [group: 'com.github.junrar', name: 'junrar', version: '0.7'],
             [group: 'commons-io', name: 'commons-io', version: '2.4'],
             [group: 'com.github.beothorn', name: 'URISchemeHandler', version: '1.7'],
-            [group: 'com.github.beothorn', name: 'webGrude', version: '0.0.3']
+            [group: 'com.github.beothorn', name: 'webGrude', version: '0.0.4']
     )
 
     testCompile(
@@ -31,22 +31,35 @@ dependencies {
     )
 }
 
-apply plugin: 'gradle-one-jar'
+
+apply plugin: 'fatjar'
 
 buildscript {
+
     repositories {
         mavenCentral()
     }
+
     dependencies {
-        classpath 'com.github.rholder:gradle-one-jar:1.0.4'
+        classpath 'eu.appsatori:gradle-fatjar-plugin:0.2-rc1'
     }
 }
 
-task shade(type: OneJar) {
-    mainClass = 'Main'
+jar {
+    from(configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }) {
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
+    }
+
     manifest {
-        attributes 'Timestamp': String.valueOf(System.currentTimeMillis())
-        attributes 'Implementation-Version': version
+        attributes 'Implementation-Title': 'Foobar',
+                'Implementation-Version': version,
+        	'Timestamp': String.valueOf(System.currentTimeMillis()),	
+                'Built-By': System.getProperty('user.name'),
+                'Built-Date': new Date(),
+                'Built-JDK': System.getProperty('java.version'),
+                'Main-Class': 'Main'
     }
 }
 

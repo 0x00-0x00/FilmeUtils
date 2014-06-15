@@ -2,7 +2,9 @@ package filmeUtils.subtitle;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import filmeUtils.commons.FileSystemUtils;
 import filmeUtils.commons.OutputListener;
@@ -46,7 +48,7 @@ public class Subtitle {
 		download(searchTerm,".*",destDir);
 	}
 	
-	public void downloadNewer(final File destDir,final List<RegexForSubPackageAndSubFile> regexes, final List<String> ignoredPackages) {
+	public void downloadNewer(final File destDir,final List<RegexForSubPackageAndSubFile> regexes, final List<String> ignoredPackages,final Map<String,List<String>> outSuccessfullPackagesFiles) {
 		final SubtitleLinkSearchCallback searchListener = new SubtitleLinkSearchCallback() {	
 			@Override
 			public void process(final SubtitlePackageAndLink nameAndlink) {
@@ -54,8 +56,8 @@ public class Subtitle {
 				if(ignoredPackages.contains(packageName)) return;
 				final RegexForSubPackageAndSubFile regexMatchingPackageOrNull = RegexUtils.getRegexMatchingPackageOrNull(packageName,regexes);
 				if(regexMatchingPackageOrNull == null) return;
-				downloadSubtitlesMatchingRegexToDir(destDir, regexMatchingPackageOrNull.fileRegex , nameAndlink);
-				FileSystemUtils.getInstance().addAlreadyDownloaded(packageName);
+                List<String> outDownloadedSubtitles = downloadSubtitlesMatchingRegexToDir(destDir, regexMatchingPackageOrNull.fileRegex , nameAndlink);
+                outSuccessfullPackagesFiles.put(packageName, outDownloadedSubtitles);
 			}
 		};
 		legendasTv.getNewer(searchListener);
@@ -71,14 +73,17 @@ public class Subtitle {
 		legendasTv.search(searchTerm, searchListener);
 	}
 
-	private void downloadSubtitlesMatchingRegexToDir(final File destDir, final String subtitleRegex,final SubtitlePackageAndLink nameAndlink) {
+	private List<String> downloadSubtitlesMatchingRegexToDir(final File destDir, final String subtitleRegex,final SubtitlePackageAndLink nameAndlink) {
+        final List<String> outDownloadedSubtitles = new ArrayList<>();
 		output.out("Fazendo download de pacote de legendas "+nameAndlink.name);
 		final String link = nameAndlink.link;
 		final File unzippedTempDestination = downloadAndExtractToTempDirReturnUnzippedDirOrNull(link);		
 		final List<String> filesThatMatches = FileSystemUtils.copyFilesMatchingRegexAndDeleteSourceDir(unzippedTempDestination,destDir, subtitleRegex);
 		for (final String file : filesThatMatches) {
+            outDownloadedSubtitles.add(file);
 			output.out("Legenda "+file+" copiada para "+destDir.getAbsolutePath());
 		}
+        return outDownloadedSubtitles;
 	}
 
 	public void listNewSubtitles() {

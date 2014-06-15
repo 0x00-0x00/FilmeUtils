@@ -102,6 +102,7 @@ public class FileSystemUtils {
 	}
 
 	public void addAlreadyDownloaded(final String alreadyDownloadedFile) {
+        Debug.log("Adding to already downloaded "+alreadyDownloadedFile);
 		final File alreadyDownloadedFiles = getFileContainingAlreadyDownloaded();
 		try {
 			final boolean append = true;

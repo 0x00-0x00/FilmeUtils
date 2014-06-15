@@ -2,9 +2,7 @@ package filmeUtils.downloader;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.zip.ZipException;
 
 import org.apache.commons.io.FileUtils;
@@ -56,22 +54,23 @@ public class Downloader {
 	public void downloadFromNewest(final List<RegexForSubPackageAndSubFile> regexes, final File destinantion, final List<String> subtitlesPackagesToIgnore) {		
 		final Subtitle subtitle = getSubtitleDownloader();
 		final File tmpFolder = createTempDir();
-		subtitle.downloadNewer(tmpFolder, regexes, subtitlesPackagesToIgnore);
-		searchTorrentsForSubtitlesOnFolderAndCopySubtitlesThatHaveTorrentToDestFolderThenDeleteSourceFolder(tmpFolder, destinantion);
+        Map<String,List<String>> donloadedSubtitlesByPackageName = new LinkedHashMap<>();
+		subtitle.downloadNewer(tmpFolder, regexes, subtitlesPackagesToIgnore, donloadedSubtitlesByPackageName);
+		searchTorrentsForSubtitlesOnFolderAndCopySubtitlesThatHaveTorrentToDestFolderThenDeleteSourceFolder(tmpFolder, destinantion, donloadedSubtitlesByPackageName);
 	}
 
 	public void download(final String searchTerm, final File subtitlesDestinationFolder,final String subtitleRegex){
 		final Subtitle subtitle = getSubtitleDownloader();
 		final File tmpFolder = createTempDir();
 		subtitle.download(searchTerm, subtitleRegex, tmpFolder);
-		final boolean success = searchTorrentsForSubtitlesOnFolderAndCopySubtitlesThatHaveTorrentToDestFolderThenDeleteSourceFolder(tmpFolder, subtitlesDestinationFolder);
+		final boolean success = searchTorrentsForSubtitlesOnFolderAndCopySubtitlesThatHaveTorrentToDestFolderThenDeleteSourceFolder(tmpFolder, subtitlesDestinationFolder, null);
 		if(!success) outputListener.out("Nenhum torrent para nenhuma legenda encontrada");
 	}
 
 	public boolean downloadWithKnownLink(final String name,final String link,final String subtitleRegex, final File subtitlesDestinationFolder){
 		final File temporaryFolder = createTempDir();
 		downloadLinkToTempDir(name,link,temporaryFolder);
-		final boolean success = searchTorrentsForSubtitlesOnFolderAndCopySubtitlesThatHaveTorrentToDestFolderThenDeleteSourceFolder(temporaryFolder, subtitlesDestinationFolder);
+		final boolean success = searchTorrentsForSubtitlesOnFolderAndCopySubtitlesThatHaveTorrentToDestFolderThenDeleteSourceFolder(temporaryFolder, subtitlesDestinationFolder, null);
 		return success;
 	}
 
@@ -94,7 +93,7 @@ public class Downloader {
 		return tmpFolder;
 	}
 
-	private boolean searchTorrentsForSubtitlesOnFolderAndCopySubtitlesThatHaveTorrentToDestFolderThenDeleteSourceFolder(final File tmpFolder, final File subtitlesDestinationFolder) {
+	private boolean searchTorrentsForSubtitlesOnFolderAndCopySubtitlesThatHaveTorrentToDestFolderThenDeleteSourceFolder(final File tmpFolder, final File subtitlesDestinationFolder, Map<String, List<String>> donloadedSubtitlesByPackageName) {
 		boolean success = false;
 		final TorrentSearcher torrentSearcher = new TorrentSearcherImpl(httpclient);
 		final Iterator<File> iterateFiles = FileUtils.iterateFiles(tmpFolder, new String[]{"srt"}, true);
@@ -103,6 +102,13 @@ public class Downloader {
 			final String filenameWithoutExtension = FilenameUtils.removeExtension(subtitleFile.getName());
 			final String magnetLinkForTermOrNull = torrentSearcher.getMagnetLinkForTermOrNull(filenameWithoutExtension, outputListener);
 			if(magnetLinkForTermOrNull != null){
+                if(donloadedSubtitlesByPackageName != null) {
+                    donloadedSubtitlesByPackageName.forEach((packageName, subtileFileList) -> {
+                        if (subtileFileList.contains(subtitleFile.getName())) {
+                            FileSystemUtils.getInstance().addAlreadyDownloaded(packageName);
+                        }
+                    });
+                }
 				downloadMagnetLink(magnetLinkForTermOrNull);
 				try {
 					outputListener.out("Salvando legenda em "+subtitlesDestinationFolder.getAbsolutePath());

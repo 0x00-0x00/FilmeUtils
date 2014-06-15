@@ -55,7 +55,7 @@ jar {
 
     manifest {
         attributes 'Implementation-Title': 'Foobar',
-                'Implementation-Version': version,
+                'Implementation-Version': releaseVersion,
         	'Timestamp': String.valueOf(System.currentTimeMillis()),	
                 'Built-By': System.getProperty('user.name'),
                 'Built-Date': new Date(),

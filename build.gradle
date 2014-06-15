@@ -64,6 +64,3 @@ jar {
                 'Main-Class': 'Main'
     }
 }
-
-//TODO: release plugin https://github.com/townsfolk/gradle-release
-//TODO: release on github https://developer.github.com/v3/repos/releases/

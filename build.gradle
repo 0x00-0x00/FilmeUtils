@@ -1,8 +1,6 @@
 apply plugin: 'java'
 apply plugin: 'maven'
 
-artifactId = 'FilmeUtils'
-
 group = 'com.github.beothorn'
 
 description = """FilmeUtils baixa legendas de séries do legendas.tv e respectivos torrents."""
@@ -59,7 +57,7 @@ jar {
 	    }
 
 	    manifest {
-		attributes 'Implementation-Title': artifactId,
+		attributes 'Implementation-Title': rootProject.name,
 			'Implementation-Version': version,
 			'Timestamp': String.valueOf(System.currentTimeMillis()),	
 			'Built-By': System.getProperty('user.name'),

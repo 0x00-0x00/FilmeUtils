@@ -3,7 +3,7 @@ FilmeUtils
 
 FilmeUtils baixa legendas de séries do legendas.tv e respectivos torrents.   
 
-[Download v4.0.3](https://github.com/beothorn/FilmeUtils/releases/download/4.0.3/filmeUtils-4.0.3.jar)
+[Download v4.0.4](https://github.com/beothorn/FilmeUtils/releases/download/4.0.4/filmeUtils-4.0.4.jar)
 =============
 
 

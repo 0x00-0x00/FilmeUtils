@@ -15,6 +15,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
 
 public class FilmeUtilsHttpClient {
 
@@ -29,18 +30,15 @@ public class FilmeUtilsHttpClient {
 
             if(httpClient == null){
             	httpClient = HttpClients.createDefault();
-            	//Aqui vai o código pra logar
-//            	SimpleHttpClientImpl simpleHttpClientImpl = new SimpleHttpClientImpl();
-//        		simpleHttpClientImpl.post("http://legendas.tv/login", new BasicNameValuePair("data[User][username]", "filmeutils"), 
-//        				new BasicNameValuePair("data[User][password]", "filmeutilsfilme"));
-//        		System.out.println(simpleHttpClientImpl.get("http://legendas.tv/pages/downloadarquivo/546fad1aa88c5"));
-//        		
-//            	
-//            	HttpUriRequest login = RequestBuilder.post()
-//                        .setUri(link)
-//                        .setHeader("User-Agent", "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.13) Gecko/20101206 Ubuntu/10.10 (maverick) Firefox/3.6.13")
-//                        .build();
-//            	httpClient
+            	
+            	HttpUriRequest loginRequest = RequestBuilder.post().
+        				addParameters(new BasicNameValuePair("data[User][username]", "filmeutils"), 
+        							  new BasicNameValuePair("data[User][password]", "filmeutilsfilme") ).
+        				setUri("http://legendas.tv/login").
+        				setHeader("User-Agent", "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.13) Gecko/20101206 Ubuntu/10.10 (maverick) Firefox/3.6.13")
+        				.build();
+
+            	httpClient.execute(loginRequest);
             }
             
             CloseableHttpResponse execute = httpClient.execute(request);

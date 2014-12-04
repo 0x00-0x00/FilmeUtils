@@ -46,7 +46,7 @@ import filmeUtils.commons.OutputListener;
 public class SearchScreen extends JFrame {
 	
 	private JTextField searchString;
-	private final DefaultListModel defaultListModel;
+	private final DefaultListModel<String> defaultListModel;
 	private JPanel upperPanel;
 	private JPanel searchPanel;
 	private GridBagLayout gbl_searchPanel;
@@ -56,7 +56,7 @@ public class SearchScreen extends JFrame {
 	private JPanel optionsPanel;
 	private JButton newSubtitlesFolder;
 	private GridBagConstraints gbc_btnNovasLegendas;
-	private JComboBox resolution;
+	private JComboBox<?> resolution;
 	private GridBagConstraints gbc_resolution;
 	private JLabel subtitlesFolder;
 	private GridBagConstraints gbc_subtitlesFolder;
@@ -65,7 +65,7 @@ public class SearchScreen extends JFrame {
 	private JButton subtitlesDest;
 	private GridBagConstraints gbc_subtitlesDest;
 	private JPanel searchResultsPanel;
-	private JList result;
+	private JList<String> result;
 	private JScrollPane resultJScrollPane;
 	private JScrollPane outputJScrollPane;
 	private JTextArea outputTextArea;
@@ -83,7 +83,7 @@ public class SearchScreen extends JFrame {
 		
 		this.searchScreenNeeds = searchScreenNeeds;
 		
-		defaultListModel = new DefaultListModel();
+		defaultListModel = new DefaultListModel<String>();
 		
 		endSearch = new GUISearchCallback() {
 			@Override
@@ -160,8 +160,8 @@ public class SearchScreen extends JFrame {
 	}
 	
 	private void downloadSubtitleAtPosition(final int index) {
-		final ListModel dlm = result.getModel();
-		final String subtitlePackage = (String) dlm.getElementAt(index);
+		final ListModel<String> dlm = result.getModel();
+		final String subtitlePackage = dlm.getElementAt(index);
 		result.ensureIndexIsVisible(index);
 		download(subtitlePackage);
 	}
@@ -213,7 +213,7 @@ public class SearchScreen extends JFrame {
 		splitPane.setContinuousLayout(true);
 		resultJScrollPane = new JScrollPane();	
 		
-		result = new JList();
+		result = new JList<String>();
 		result.setFocusable(false);
 		result.setModel(defaultListModel);
 		result.addMouseListener(new MouseAdapter() { @Override public void mouseClicked(final MouseEvent e) {
@@ -244,7 +244,7 @@ public class SearchScreen extends JFrame {
 		menuDownloadSubtitles.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				final String item = (String) result.getSelectedValue();
+				final String item = result.getSelectedValue();
 				downloadSubtitle(item);
 			}
 		});
@@ -253,7 +253,7 @@ public class SearchScreen extends JFrame {
 		menuDownloadSubtitlesAndTorrent.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				final String item = (String) result.getSelectedValue();
+				final String item = result.getSelectedValue();
 				download(item);
 			}
 		});
@@ -349,7 +349,7 @@ public class SearchScreen extends JFrame {
 		searchPanel.add(searchButton, gbc_searchButton);
 	}
 
-	@SuppressWarnings({ })
+	@SuppressWarnings({"rawtypes", "unchecked" })
 	private void setupOptionsPanel() {
 		optionsPanel = new JPanel();
 		final GridBagLayout gbl_optionsPanel = new GridBagLayout();

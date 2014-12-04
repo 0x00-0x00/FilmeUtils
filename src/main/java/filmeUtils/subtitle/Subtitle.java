@@ -97,7 +97,7 @@ public class Subtitle {
 			unzippedTempDestination = File.createTempFile("Filmeutils", "Filmeutils");
 			unzippedTempDestination.delete();
 			unzippedTempDestination.mkdir();
-			final String fileName = FilmeUtilsHttpClient.getToFile(link, zipTempDestination);
+			FilmeUtilsHttpClient.getToFile(link, zipTempDestination);
 			output.out("Download de pacote de legendas de "+link+" para "+zipTempDestination+" terminado.\nVerificando tipo de arquivo...");
 			final ExtractorImpl extractor = new ExtractorImpl();
 

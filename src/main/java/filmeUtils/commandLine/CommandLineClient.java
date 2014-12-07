@@ -171,7 +171,7 @@ public class CommandLineClient implements CommandLine {
 		}
 		final LegendasTv legendasTv = new LegendasTv( output);
 		final Downloader downloader = new Downloader(extractor, legendasTv, output);
-		downloader.downloadFromNewest(regexes, instance.getSubtitlesDestination(),instance.getAlreadyDownloaded());
+		downloader.downloadFromNewest(regexes, instance.getSubtitlesDestination(), instance.getAlreadyDownloaded());
 	}
 
 }

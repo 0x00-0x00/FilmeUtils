@@ -18,11 +18,6 @@ FilmeUtils procura a legenda no legendas.tv e depois o torrent no piratebay/bits
 Funciona melhor com legendas novas. Usando a linha de comando -auto e um agendador de tarefas
 é possível colocar o filmeUtils pra fazer o download do seriado assim que sair a legenda.  
 
-GUI  
----------------------
-
-![Screenshot da gui](https://raw.github.com/beothorn/FilmeUtils/master/gui.png "GUI")  
-
 Comandos  
 ---------------------
 

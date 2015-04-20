@@ -36,7 +36,7 @@ Sem argumentos
 	HOME/.filmeUtils/subtitlefolder  
 	O termo de procura não é uma regex.    
 	Ex:  
-	java -jar filmeUtils.jar -lt "game of" -r ".*720.*" -d "/home/foo/Downloads"  
+	java -jar filmeUtils.jar -lt "Pioneer Oneg" -r ".*720.*" -d "/home/foo/Downloads"  
 
 -l &lt;termo da procura da legenda&gt;  [-r &lt;regex para arquivos de legenda&gt;] [-d &lt;diretório de destino&gt;]  
 	Procura e faz download do pacote de legendas,   
@@ -45,13 +45,13 @@ Sem argumentos
 	HOME/.filmeUtils/subtitlefolder  
 	O termo de procura não é uma regex.
 	Ex:  
-	java -jar filmeUtils.jar -l "game of" -r ".*720.*" -d "/home/foo/Downloads"     
+	java -jar filmeUtils.jar -l "Pioneer One" -r ".*720.*" -d "/home/foo/Downloads"     
 
 -t &lt;termo da procura do torrent&gt;  
 	Procura e faz download do torrent com mais seeds.  
 	O termo de procura não é uma regex.      
 	Ex:  
-	java -jar filmeUtils.jar -t "game of S01E01"  
+	java -jar filmeUtils.jar -t "Pioneer One S01E01"  
 
 -n  [-r &lt;regex para pacote de legenda&gt;[:regex para legenda]] [-d &lt;diretório de destino&gt;]  
 	Se não for passado uma regex, mostra a lista legendas adicionadas  
@@ -64,7 +64,7 @@ Sem argumentos
 	Ex:  
 	java -jar filmeUtils.jar -n  
 		Lista os pacotes de legendas novos
-	java -jar filmeUtils.jar -n -r ".*game.*of.*:.*720.*" -d "/home/foo/Downloads"  
+	java -jar filmeUtils.jar -n -r ".*Pioneer.*One.*:.*720.*" -d "/home/foo/Downloads"  
 
 
 -f [arquivo de regex] [-d &lt;diretório de destino&gt;]  

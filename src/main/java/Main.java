@@ -73,15 +73,18 @@ public class Main {
 		final String errorMessage = "Uso: -f [arquivo de regex] [-d <diretório de destino>]";
 		if(args.length > 4) throw new RuntimeException(errorMessage);
 		final FileSystemUtils instance = FileSystemUtils.getInstance();
-		List<String> subtitlesToDownloadPatterns = instance.getSubtitlesToDownloadPatterns();
+		List<String> subtitlesToDownloadPatterns = null;
 		if(args.length >= 2){
 			final File file = new File(args[1]);
 			subtitlesToDownloadPatterns = instance.getSubtitlesToDownloadPatterns(file);
 		}
-		File subtitlesDestination = instance.getSubtitlesDestination();
+		File subtitlesDestination = null;
 		if(args.length > 2){
 			if(!args[2].equals("-d")) throw new RuntimeException(errorMessage);
 			subtitlesDestination = new File(args[3]);
+		}
+		if(subtitlesDestination == null){
+			subtitlesDestination = instance.getSubtitlesDestination();
 		}
 		
 		final List<RegexForSubPackageAndSubFile> regexes = new ArrayList<RegexForSubPackageAndSubFile>();

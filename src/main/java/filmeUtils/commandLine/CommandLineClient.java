@@ -79,18 +79,17 @@ public class CommandLineClient implements CommandLine {
 				"	java -jar filmeUtils.jar -n -r \".*game.*of.*:.*720.*\" -d \"/home/foo/Downloads\"  \n" + 
 				"\n" + 
 				"\n" + 
-				"-f [arquivo de regex] [-d <diretório de destino>]  \n" + 
-				"	Procura nas legendas adicionadas recentemente os pacotes de legenda que dão  \n" + 
-				"	match com as regex no arquivo passado. Para os pacotes de legenda que dão  \n" + 
-				"	match, aplica a segunda regex nos arquivos de legenda e faz download da    \n" + 
-				"	legenda e do torrent. Copia as legendas para o caminho de destion. Se o  \n" + 
-				"	destino não for	especificado, usa-se o que estiver  \n" + 
-				"	no HOME/.filmeUtils/subtitlefolder   \n" + 
-				"	Se não for passado o caminho do arquivo de regex,  \n" + 
-				"	usa-se o arquivo padrão em HOME/.filmeUtils/downloadThis  \n" + 
+				"-f [diretório com arquivos de configuração]\n" + 
+				"	Procura nas legendas adicionadas recentemente as legendas que dão match  \n" + 
+				"	com as regex no arquivo [diretório com arquivos de configuração]/downloadThis . Procura o torrent  \n" + 
+				"	para essas legendas, se encontrar, baixa o torrent para o diretório  \n" + 
+				"	configurado em [diretório com arquivos de configuração]/subtitlefolder . Depois adiciona o nome  \n" + 
+				"	do pacote de legendas no arquivo [diretório com arquivos de configuração]/alreadyDownloaded . Se  \n" + 
+				"	um torrent/legenda já foi pego, ele não faz o download.   \n" + 
 				"	Formato do arquivo de regex  \n" + 
-				"	<regex para pacote de legendas>[:regex para legenda]  \n" + 
+				"	&lt;regex para pacote de legendas&gt;[:regex para legenda]  \n" + 
 				"	ex:  \n" + 
+				"	.*meu.*seriado.*so.*em.*hd.*:.*720.*|.*1080.*  \n" + 
 				"	.*meu.*seriado.*so.*em.*hd.*:720  \n" + 
 				"	.*meu.*seriado.*qqer.*resolucao.*  \n" + 
 				"\n" + 

@@ -67,15 +67,13 @@ Sem argumentos
 	java -jar filmeUtils.jar -n -r ".*Pioneer.*One.*:.*720.*" -d "/home/foo/Downloads"  
 
 
--f [arquivo de regex] [-d &lt;diretório de destino&gt;]  
-	Procura nas legendas adicionadas recentemente os pacotes de legenda que dão  
-	match com as regex no arquivo passado. Para os pacotes de legenda que dão  
-	match, aplica a segunda regex nos arquivos de legenda e faz download da    
-	legenda e do torrent. Copia as legendas para o caminho de destion. Se o  
-	destino não for	especificado, usa-se o que estiver  
-	no HOME/.filmeUtils/subtitlefolder   
-	Se não for passado o caminho do arquivo de regex,  
-	usa-se o arquivo padrão em HOME/.filmeUtils/downloadThis  
+-f [diretório com arquivos de configuração]
+	Procura nas legendas adicionadas recentemente as legendas que dão match  
+	com as regex no arquivo [diretório com arquivos de configuração]/downloadThis . Procura o torrent  
+	para essas legendas, se encontrar, baixa o torrent para o diretório  
+	configurado em [diretório com arquivos de configuração]/subtitlefolder . Depois adiciona o nome  
+	do pacote de legendas no arquivo [diretório com arquivos de configuração]/alreadyDownloaded . Se  
+	um torrent/legenda já foi pego, ele não faz o download.   
 	Formato do arquivo de regex  
 	&lt;regex para pacote de legendas&gt;[:regex para legenda]  
 	ex:  

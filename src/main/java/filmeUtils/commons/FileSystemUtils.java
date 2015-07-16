@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import filmeUtils.Debug;
+
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -21,11 +22,12 @@ import filmeUtils.utils.RegexUtils;
 
 public class FileSystemUtils {
 	
+	private static final String FILME_UTILS_DEFAULT_FOLDER = ".filmeUtils";
 	private static final String ALREADY_DOWNLOADED_FILE = "alreadyDownloaded";
 	private static final String REGEX_FILE_WITH_PATTERNS_TO_DOWNLOAD = "downloadThis";
 	private static final String SUBTITLE_FOLDER_CONFIG_FILE = "subtitlefolder";
-	private static final String FILME_UTILS_FOLDER = ".filmeUtils";
 	private static final String OPTIONS_FILE = "config";
+	private static String filmeUtilsConfigDir = "";
 	
 	private static final String CONFIG_NEWER_PAGES_TO_SEARCH = "quantidade_de_paginas_de_novas_legendas_para_procurar";
 	
@@ -170,7 +172,13 @@ public class FileSystemUtils {
 	}
 
 	private final File getFolder(){
-		final File filmeUtilsFolder = new File(System.getProperty("user.home"),FILME_UTILS_FOLDER);
+		final File filmeUtilsFolder;
+		if(filmeUtilsConfigDir.isEmpty()){
+			filmeUtilsFolder = new File(System.getProperty("user.home"),FILME_UTILS_DEFAULT_FOLDER);
+		}else{
+			filmeUtilsFolder = new File(filmeUtilsConfigDir);
+		}
+		
 		if(!filmeUtilsFolder.exists()){
 			filmeUtilsFolder.mkdir();
 		}
@@ -219,5 +227,9 @@ public class FileSystemUtils {
 		} catch (final ConfigurationException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public void setHome(String homeDir) {
+		filmeUtilsConfigDir = homeDir;
 	}
 }

@@ -1,7 +1,5 @@
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import filmeUtils.commandLine.CommandLineClient;
 import filmeUtils.commons.FileSystemUtils;
@@ -70,29 +68,11 @@ public class Main {
 	}
 
 	private static void f(final String[] args, final CommandLineClient commandLineClient) {
-		final String errorMessage = "Uso: -f [arquivo de regex] [-d <diretório de destino>]";
-		if(args.length > 4) throw new RuntimeException(errorMessage);
+		final String errorMessage = "Uso: -f [diretório com arquivos de configuração]";
+		if(args.length > 2) throw new RuntimeException(errorMessage);
 		final FileSystemUtils instance = FileSystemUtils.getInstance();
-		List<String> subtitlesToDownloadPatterns = null;
-		if(args.length >= 2){
-			final File file = new File(args[1]);
-			subtitlesToDownloadPatterns = instance.getSubtitlesToDownloadPatterns(file);
-		}
-		File subtitlesDestination = null;
-		if(args.length > 2){
-			if(!args[2].equals("-d")) throw new RuntimeException(errorMessage);
-			subtitlesDestination = new File(args[3]);
-		}
-		if(subtitlesDestination == null){
-			subtitlesDestination = instance.getSubtitlesDestination();
-		}
-		
-		final List<RegexForSubPackageAndSubFile> regexes = new ArrayList<RegexForSubPackageAndSubFile>();
-		for (final String maybeComposedRegex : subtitlesToDownloadPatterns) {
-			regexes.add(RegexUtils.getRegexForSubPackageAndSubFile(maybeComposedRegex));
-		}
-		
-		commandLineClient.f(regexes, subtitlesDestination);
+		instance.setHome(args[1]);
+		commandLineClient.auto();
 	}
 
 	private static void t(final String[] args, final CommandLineClient commandLineClient) {

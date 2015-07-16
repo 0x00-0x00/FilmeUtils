@@ -3,7 +3,7 @@ FilmeUtils
 
 FilmeUtils baixa legendas de séries do legendas.tv e respectivos torrents.   
 
-[Download v4.0.7](https://github.com/beothorn/FilmeUtils/releases/download/4.0.7/filmeUtils.jar)
+[Download v4.1.0](https://github.com/beothorn/FilmeUtils/releases/download/4.1.0/filmeUtils.jar)
 =============
 
 
@@ -36,7 +36,7 @@ Sem argumentos
 	HOME/.filmeUtils/subtitlefolder  
 	O termo de procura não é uma regex.    
 	Ex:  
-	java -jar filmeUtils.jar -lt "Pioneer Oneg" -r ".*720.*" -d "/home/foo/Downloads"  
+	java -jar filmeUtils.jar -lt "Pioneer One" -r ".*720.*" -d "/home/foo/Downloads"  
 
 -l &lt;termo da procura da legenda&gt;  [-r &lt;regex para arquivos de legenda&gt;] [-d &lt;diretório de destino&gt;]  
 	Procura e faz download do pacote de legendas,   
@@ -77,6 +77,7 @@ Sem argumentos
 	Formato do arquivo de regex  
 	&lt;regex para pacote de legendas&gt;[:regex para legenda]  
 	ex:  
+	.*meu.*seriado.*so.*em.*hd.*:.*720.*|.*1080.*  
 	.*meu.*seriado.*so.*em.*hd.*:720  
 	.*meu.*seriado.*qqer.*resolucao.*  
 

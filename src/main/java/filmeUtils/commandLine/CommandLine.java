@@ -13,7 +13,7 @@ public interface CommandLine {
 	public void t(final String torrentSearchTerm);
 	public void n();
 	public void n(final RegexForSubPackageAndSubFile regexToApplyOnSubtitlesPackage, final File destinantion);
-	public void f(final List<RegexForSubPackageAndSubFile> regexes, final File destinantion);
+	public void f(final List<RegexForSubPackageAndSubFile> regexes, final File destination);
 	public void p(final String subtitleSearchTerm);
 	public void auto();
 	

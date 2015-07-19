@@ -67,7 +67,7 @@ Sem argumentos
 	java -jar filmeUtils.jar -n -r ".*Pioneer.*One.*:.*720.*" -d "/home/foo/Downloads"  
 
 
--f [diretório com arquivos de configuração]
+-f <diretório com arquivos de configuração> [saveToFile]
 	Procura nas legendas adicionadas recentemente as legendas que dão match  
 	com as regex no arquivo [diretório com arquivos de configuração]/downloadThis . Procura o torrent  
 	para essas legendas, se encontrar, baixa o torrent para o diretório  

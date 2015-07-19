@@ -37,6 +37,8 @@ public class FileSystemUtils {
 		if(filmeUtilsFolder == null) filmeUtilsFolder = new FileSystemUtils();
 		return filmeUtilsFolder;
 	}
+
+	private String saveToFile = null;
 	
 	public final File getSubtitlesDestination(){
 		final File filmeUtilsFolder = getFolder();
@@ -231,5 +233,17 @@ public class FileSystemUtils {
 
 	public void setHome(String homeDir) {
 		filmeUtilsConfigDir = homeDir;
+	}
+
+	public void useSaveMagnetsToFileStrategy(String path) {
+		this.saveToFile = path;
+	}
+
+	public boolean shouldSaveToFile() {
+		return saveToFile != null;
+	}
+	
+	public File magnetsDestination(){
+		return new File(saveToFile);
 	}
 }

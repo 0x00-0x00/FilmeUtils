@@ -68,10 +68,13 @@ public class Main {
 	}
 
 	private static void f(final String[] args, final CommandLineClient commandLineClient) {
-		final String errorMessage = "Uso: -f [diretório com arquivos de configuração]";
-		if(args.length > 2) throw new RuntimeException(errorMessage);
+		final String errorMessage = "Uso: -f <diretório com arquivos de configuração> [-saveToFile caminho]";
+		if(args.length > 4) throw new RuntimeException(errorMessage);
 		final FileSystemUtils instance = FileSystemUtils.getInstance();
 		instance.setHome(args[1]);
+		if(args.length == 4 && args[2].toLowerCase().equals("-savetofile")){
+			instance.useSaveMagnetsToFileStrategy(args[3]);
+		}
 		commandLineClient.auto();
 	}
 

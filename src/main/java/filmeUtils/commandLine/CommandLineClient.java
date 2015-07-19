@@ -79,7 +79,7 @@ public class CommandLineClient implements CommandLine {
 				"	java -jar filmeUtils.jar -n -r \".*game.*of.*:.*720.*\" -d \"/home/foo/Downloads\"  \n" + 
 				"\n" + 
 				"\n" + 
-				"-f [diretório com arquivos de configuração]\n" + 
+				"-f <diretório com arquivos de configuração> [-saveToFile caminho]\n" + 
 				"	Procura nas legendas adicionadas recentemente as legendas que dão match  \n" + 
 				"	com as regex no arquivo [diretório com arquivos de configuração]/downloadThis . Procura o torrent  \n" + 
 				"	para essas legendas, se encontrar, baixa o torrent para o diretório  \n" + 

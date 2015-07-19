@@ -124,8 +124,20 @@ public class Downloader {
 	}
 
 	private void downloadMagnetLink(final String magnetLink) {
-		outputListener.outVerbose("Abrindo magnet link no cliente: "+magnetLink);
-		new URISchemeLinkHandlerImpl().openURL(magnetLink);
+		FileSystemUtils instance = FileSystemUtils.getInstance();
+		if(instance.shouldSaveToFile()){
+			try {
+				File magnetsDestination = instance.magnetsDestination();
+				FileUtils.writeStringToFile(magnetsDestination, magnetLink+"\n", true);
+				outputListener.outVerbose("Salvando magnet link : "+magnetLink);
+				outputListener.outVerbose("em "+magnetsDestination.getAbsolutePath());
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}else{
+			outputListener.outVerbose("Abrindo magnet link no cliente: "+magnetLink);
+			new URISchemeLinkHandlerImpl().openURL(magnetLink);
+		}
 	}
 
 	private void downloadLinkToTempDir(final String name, final String link, final File folder) {

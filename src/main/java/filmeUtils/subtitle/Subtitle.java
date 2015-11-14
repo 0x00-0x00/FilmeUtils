@@ -1,10 +1,13 @@
 package filmeUtils.subtitle;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.io.IOUtils;
 
 import filmeUtils.commons.FileSystemUtils;
 import filmeUtils.commons.OutputListener;
@@ -35,7 +38,7 @@ public class Subtitle {
 				searchTerm, 
 				nameAndlink -> {
 					output.out(nameAndlink.name);
-					final File tempDirWithSubtitles = downloadAndExtractToTempDirReturnUnzippedDirOrNull(nameAndlink.link);
+					final File tempDirWithSubtitles = downloadAndExtractToTempDirReturnUnzippedDir(nameAndlink.link);
 					final String[] subtitlesFilenames = tempDirWithSubtitles.list();
 					for (final String subtitlesFilename : subtitlesFilenames) {
 						if(RegexUtils.matchesCaseInsensitive(subtitlesFilename, subtitleRegex))
@@ -68,7 +71,7 @@ public class Subtitle {
         final List<String> outDownloadedSubtitles = new ArrayList<>();
 		output.out("Fazendo download de pacote de legendas "+nameAndlink.name);
 		final String link = nameAndlink.link;
-		final File unzippedTempDestination = downloadAndExtractToTempDirReturnUnzippedDirOrNull(link);		
+		final File unzippedTempDestination = downloadAndExtractToTempDirReturnUnzippedDir(link);		
 		final List<String> filesThatMatches = FileSystemUtils.copyFilesMatchingRegexAndDeleteSourceDir(unzippedTempDestination, destDir, subtitleRegex);
 		filesThatMatches.forEach( file -> {
             outDownloadedSubtitles.add(file);
@@ -86,7 +89,7 @@ public class Subtitle {
 		legendasTv.getNewer(searchListener );
 	}
 
-	private File downloadAndExtractToTempDirReturnUnzippedDirOrNull(final String link) {
+	private File downloadAndExtractToTempDirReturnUnzippedDir(final String link) {
 		final File unzippedTempDestination;
 		try {
 			final File zipTempDestination = File.createTempFile("Filmeutils", "Filmeutils");
@@ -106,7 +109,16 @@ public class Subtitle {
 					output.out("Arquivo zip.");
 				} catch (Exception e2) {
 					output.out("Arquivo inválido, zip ou rar esperado");
-					return null;
+					FileInputStream fileInputStream = new FileInputStream(zipTempDestination);
+					try{
+						String fileContents = IOUtils.toString(fileInputStream);
+						output.out("Conteúdo do arquivo");
+						output.out(fileContents);
+					}finally{
+						fileInputStream.close();
+					}
+					
+					return unzippedTempDestination;
 				}
 			}
 

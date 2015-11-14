@@ -17,6 +17,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 
+import filmeUtils.commons.FileSystemUtils;
+
 public class FilmeUtilsHttpClient {
 
 	private static CloseableHttpClient httpClient;
@@ -31,9 +33,12 @@ public class FilmeUtilsHttpClient {
             if(httpClient == null){
             	httpClient = HttpClients.createDefault();
             	
+            	FileSystemUtils config = FileSystemUtils.getInstance();
+            	
             	HttpUriRequest loginRequest = RequestBuilder.post().
-        				addParameters(new BasicNameValuePair("data[User][username]", "filmeutils"), 
-        							  new BasicNameValuePair("data[User][password]", "filmeutilsfilme") ).
+        				addParameters(new BasicNameValuePair("data[User][username]", config.user()), 
+        							  new BasicNameValuePair("data[User][password]", config.password()),
+        							  new BasicNameValuePair("data[lembrar]", "on")).
         				setUri("http://legendas.tv/login").
         				setHeader("User-Agent", "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.13) Gecko/20101206 Ubuntu/10.10 (maverick) Firefox/3.6.13")
         				.build();

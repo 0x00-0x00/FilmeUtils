@@ -30,6 +30,8 @@ public class FileSystemUtils {
 	private static String filmeUtilsConfigDir = "";
 	
 	private static final String CONFIG_NEWER_PAGES_TO_SEARCH = "quantidade_de_paginas_de_novas_legendas_para_procurar";
+	private static final String CONFIG_USER = "user";
+	private static final String CONFIG_PASSWORD = "password";
 	
 	private static FileSystemUtils filmeUtilsFolder;
 	
@@ -211,6 +213,7 @@ public class FileSystemUtils {
 				FileUtils.writeLines(fileOptions, 
 						Arrays.asList(new String[]{
 								CONFIG_NEWER_PAGES_TO_SEARCH+"=10"
+								
 						}));
 			} catch (final IOException e) {
 				throw new RuntimeException(e);
@@ -231,6 +234,34 @@ public class FileSystemUtils {
 		}
 	}
 
+	public String user() {
+		final File fileContainingOptions = getFileContainingOptions();
+		try {
+			final Configuration config = new PropertiesConfiguration(fileContainingOptions);
+			final String user = config.getString(CONFIG_USER);
+			if(user == null){
+				return "filmeutils";
+			}
+			return user;
+		} catch (final ConfigurationException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public String password() {
+		final File fileContainingOptions = getFileContainingOptions();
+		try {
+			final Configuration config = new PropertiesConfiguration(fileContainingOptions);
+			final String passwd = config.getString(CONFIG_PASSWORD);
+			if(passwd == null){
+				return "filmeutilsfilme";
+			}
+			return passwd;
+		} catch (final ConfigurationException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
 	public void setHome(String homeDir) {
 		filmeUtilsConfigDir = homeDir;
 	}

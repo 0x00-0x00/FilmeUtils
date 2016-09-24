@@ -1,27 +1,31 @@
 package filmeUtils.torrent;
 
+import java.util.Optional;
+
 import filmeUtils.commons.OutputListener;
 import filmeUtils.torrent.torrentSites.TorrentSearcherImpl;
 import filmeUtils.utils.http.URISchemeLinkHandlerImpl;
 
 public class Torrent {
-	
-	private OutputListener output;
-	private TorrentSearcherImpl torrentSearcherImpl;
 
-	public Torrent(final OutputListener output) {
-		this.output = output;
-		torrentSearcherImpl = new TorrentSearcherImpl();
-	}
-	
-	public void download(final String searchTerm){
-		String magnetLinkForTermOrNull = torrentSearcherImpl.getMagnetLinkForTermOrNull(searchTerm, output);
-		if(magnetLinkForTermOrNull == null){
-			output.out("Nenhum magnet link encontrado!!!");
-			return;
-		}
-		output.out("Encontrado "+magnetLinkForTermOrNull);
-		new URISchemeLinkHandlerImpl().openURL(magnetLinkForTermOrNull);
-	}
+    private final OutputListener output;
+    private final TorrentSearcherImpl torrentSearcherImpl;
+
+    public Torrent(final OutputListener output) {
+        this.output = output;
+        this.torrentSearcherImpl = new TorrentSearcherImpl();
+    }
+
+    public void download(final String searchTerm) {
+        final Optional<String> maybeMagnetLinkForTerm = this.torrentSearcherImpl.getMagnetLinkForTerm(searchTerm,
+                this.output);
+        if (!maybeMagnetLinkForTerm.isPresent()) {
+            this.output.out("Nenhum magnet link encontrado!!!");
+            return;
+        }
+        final String magnetLinkForTerm = maybeMagnetLinkForTerm.get();
+        this.output.out("Encontrado " + magnetLinkForTerm);
+        new URISchemeLinkHandlerImpl().openURL(magnetLinkForTerm);
+    }
 
 }

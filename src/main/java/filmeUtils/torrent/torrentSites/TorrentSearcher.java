@@ -1,9 +1,9 @@
 package filmeUtils.torrent.torrentSites;
 
+import java.util.Optional;
+
 import filmeUtils.commons.OutputListener;
 
 public interface TorrentSearcher {
-
-	public String getMagnetLinkForTermOrNull(final String term,OutputListener outputListener);
-
+    public Optional<String> getMagnetLinkForTerm(final String term, OutputListener outputListener);
 }

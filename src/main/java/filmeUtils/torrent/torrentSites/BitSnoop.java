@@ -1,43 +1,53 @@
 package filmeUtils.torrent.torrentSites;
 
+import java.util.List;
+import java.util.Optional;
+
 import filmeUtils.Debug;
 import webGrude.Browser;
 import webGrude.annotations.Page;
 import webGrude.annotations.Selector;
 import webGrude.elements.Link;
 
-import java.util.List;
-
 public class BitSnoop implements TorrentSite {
 
     @Page
     public static class SearchResultLinked {
-        @Selector(value = "a.dl_mag2[href*=magnet]", attr = "href") public String magnetLink;
+        @Selector(value = "a.dl_mag2[href*=magnet]", attr = "href")
+        public String magnetLink;
     }
 
     @Page("http://bitsnoop.com/search/all/{0}")
     public static class SearchResult {
-        @Selector("#torrents li a") public List<Link<SearchResultLinked>> links;
+        @Selector("#torrents li a")
+        public List<Link<SearchResultLinked>> links;
     }
 
     @Override
-	public String getMagnetLinkFirstResultOrNull(final String exactFileName){
+    public Optional<String> getMagnetLinkFirstResult(final String exactFileName) {
 
-        List<Link<SearchResultLinked>> links = Browser.open(SearchResult.class, exactFileName.replace('.',' ')).links;
+        final SearchResult searchResult = Browser.get(SearchResult.class, exactFileName.replace('.', ' '));
+        final List<Link<SearchResultLinked>> links = searchResult.links;
+        this.printDebug(links);
+        if (links.size() == 0) {
+            return Optional.empty();
+        }
+        return Optional.of(links.get(0).visit().magnetLink);
+    }
 
+    private void printDebug(final List<Link<SearchResultLinked>> links) {
         Debug.log("_______________________________");
         Debug.log("Searching on");
         Debug.log(Browser.getCurentUrl());
-        Debug.log(Browser.getCurentPage());
+        Debug.log(Browser.getCurentPageContents());
         Debug.log("Found:");
         links.forEach(s -> Debug.log(s.toString()));
         Debug.log("_______________________________");
+    }
 
-        if(links.size()>0)
-            return links.get(0).visit().magnetLink;
-        return null;
-	}
-
-    @Override public String getSiteName() { return "BitSnoop"; }
+    @Override
+    public String getSiteName() {
+        return "BitSnoop";
+    }
 
 }

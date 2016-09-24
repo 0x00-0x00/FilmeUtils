@@ -6,9 +6,8 @@ import java.util.zip.ZipException;
 
 public interface Extractor {
 
-	public abstract void unzip(final File zip, final File destinationFolder)
-			throws ZipException, IOException;
+    public abstract void unzip(final File zip, final File destinationFolder) throws ZipException, IOException;
 
-	public abstract void unrar(final File rar, final File destinationFolder);
+    public abstract void unrar(final File rar, final File destinationFolder);
 
 }

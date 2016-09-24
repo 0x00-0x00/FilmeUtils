@@ -6,15 +6,18 @@ import filmeUtils.commons.OutputListener;
 
 public class DummyOutputListener implements OutputListener {
 
-	public void out(final String string) {
-		//do nothing
-	}
+    @Override
+    public void out(final String string) {
+        // do nothing
+    }
 
-	public void outVerbose(final String string) {
-		//do nothing
-	}
+    @Override
+    public void outVerbose(final String string) {
+        // do nothing
+    }
 
-	public void printHelp(final String applicationName, final Options options) {
-		//do nothing
-	}
+    @Override
+    public void printHelp(final String applicationName, final Options options) {
+        // do nothing
+    }
 }

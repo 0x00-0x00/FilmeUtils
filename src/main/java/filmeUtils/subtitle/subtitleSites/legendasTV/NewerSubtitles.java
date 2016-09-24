@@ -1,45 +1,47 @@
 package filmeUtils.subtitle.subtitleSites.legendasTV;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import filmeUtils.subtitle.subtitleSites.SubtitlePackageAndLink;
 import webGrude.Browser;
 import webGrude.annotations.AfterPageLoad;
 import webGrude.annotations.Page;
 import webGrude.annotations.Selector;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Page("http://legendas.tv/util/carrega_destaques/todos/{0}")
 public class NewerSubtitles {
 
-    public static NewerSubtitles open(){
-        return Browser.open(NewerSubtitles.class, "1");
+    public static NewerSubtitles open() {
+        return openOnPage(0);
     }
 
-    @Selector(value = "div.film span.bt_seta_download a.texto", attr = "href") public List<String> novaLink;
+    private static NewerSubtitles openOnPage(final int page) {
+        final NewerSubtitles newer = Browser.get(NewerSubtitles.class, Integer.toString(page));
+        newer.currentPage = page;
+        return newer;
+    }
 
-    @Selector("button.active") public Integer currentPage;
+    @Selector(value = "div.film span.bt_seta_download a.texto", attr = "href")
+    public List<String> novaLink;
+
+    public int currentPage;
 
     private List<SubtitlePackageAndLink> sls;
 
     @AfterPageLoad
-    public void after(){
-        sls = novaLink
-                .stream()
-                .map(
-                        l -> new SubtitlePackageAndLink(
-                                l.replaceAll(".*/(.*)", "$1").replace("_", " ") ,
-                                LegendasTv.getDownloadLink(l)
-                        )
-                )
+    public void after() {
+        this.sls = this.novaLink.stream()
+                .map(l -> new SubtitlePackageAndLink(l.replaceAll(".*/(.*)", "$1").replace("_", " "),
+                        LegendasTv.getDownloadLink(l)))
                 .collect(Collectors.toList());
     }
 
     public List<SubtitlePackageAndLink> getSubtitlePackageAndLink() {
-        return sls;
+        return this.sls;
     }
 
-    public NewerSubtitles nextPage() { return Browser.open(NewerSubtitles.class, nextPageAsString()); }
-
-    private String nextPageAsString() { return Integer.toString(currentPage + 1); }
+    public NewerSubtitles nextPage() {
+        return openOnPage(this.currentPage + 1);
+    }
 }
